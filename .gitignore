@@ -31,6 +31,9 @@ node_modules/
 DOCUMENTO-PRACTICA.md
 MODULOS-PRACTICA.md
 
+# Cursor IDE (local)
+.cursor/
+
 # Entorno local
 .env
 *.log
