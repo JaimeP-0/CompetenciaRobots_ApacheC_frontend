@@ -116,8 +116,18 @@ var app = w.CR_APP || w.CR_CONFIG;
             return request('GET', '/cr-catalog/teams/search', { query: { q: q } });
         },
 
+        /** Equipos con última verificación aprobada (GET /validaciones?pass=1). */
+        getValidaciones: function (query) {
+            var path = app.validacionesPath || '/validaciones';
+            return request('GET', path, { query: query || { pass: 1 } });
+        },
+
         fetchRegistroTeams: function (force) {
-            return Equipos.fetchTeams(!!force);
+            return Equipos.fetchTeams(!!force, {});
+        },
+        /** Solo equipos sin verificación pass (pantalla #/registro). */
+        fetchRegistroTeamsPendientes: function (force) {
+            return Equipos.fetchTeams(!!force, { excludeValidated: true });
         },
         fetchRegistroTeamsPage: function (opts) {
             return Equipos.fetchTeamsPaged(opts || {});

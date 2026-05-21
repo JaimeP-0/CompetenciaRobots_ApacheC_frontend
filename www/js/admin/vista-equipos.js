@@ -19,15 +19,23 @@
         return Dom && Dom.escapeHtml ? Dom.escapeHtml(s) : String(s == null ? '' : s);
     }
 
+    function decorateIcons(el) {
+        if (w.CRIcons && typeof w.CRIcons.decorate === 'function' && el) {
+            w.CRIcons.decorate(el);
+        }
+    }
+
     function initAdminEquipos(outlet) {
         if (w.CRAdminNav) {
             w.CRAdminNav.mount(outlet, 'equipos');
         }
+        decorateIcons(outlet);
+
         var listHost = outlet.querySelector('#admin-equipos-list');
+        var countEl = outlet.querySelector('#admin-equipos-count');
         var pagTop = outlet.querySelector('#admin-equipos-pagination');
         var pagFoot = outlet.querySelector('#admin-equipos-pagination-foot');
         var msgEl = outlet.querySelector('#admin-equipos-msg');
-        var modoEl = outlet.querySelector('#admin-equipos-modo');
         var formFiltro = outlet.querySelector('#f-admin-equipos-filtro');
         var inputBuscar = outlet.querySelector('#admin-equipos-buscar');
         var selFiltroCat = outlet.querySelector('#admin-equipos-filtro-cat');
@@ -51,29 +59,21 @@
             }
             if (!text) {
                 msgEl.classList.add('hidden');
+                msgEl.textContent = '';
                 return;
             }
             msgEl.textContent = text;
             msgEl.classList.remove('hidden');
             msgEl.classList.toggle('cr-admin-msg--error', !!isError);
+            msgEl.classList.toggle('cr-admin-cats-toast--ok', !isError);
         }
 
-        function updateModoLabel(aviso) {
-            if (!modoEl) {
+        function updateCount() {
+            if (!countEl) {
                 return;
             }
-            var cfgModo =
-                typeof w.CRApi.adminEquiposPaginacionModo === 'function'
-                    ? w.CRApi.adminEquiposPaginacionModo()
-                    : 'cliente';
-            var texto =
-                cfgModo === 'servidor'
-                    ? 'Paginación desde el servidor (GET /registro con page y limit).'
-                    : 'Una sola carga del listado; filtro y páginas en el navegador.';
-            if (aviso) {
-                texto += ' ' + aviso;
-            }
-            modoEl.textContent = texto;
+            var n = state.total;
+            countEl.textContent = n === 1 ? '1 equipo' : n + ' equipos';
         }
 
         function fillCategoriaFiltro(cats) {
@@ -134,7 +134,7 @@
                       end +
                       ' de ' +
                       state.total +
-                      ' equipos · Página ' +
+                      ' · Página ' +
                       state.page +
                       ' de ' +
                       tp
@@ -168,56 +168,84 @@
             });
         }
 
-        function renderTable() {
+        function renderEquipoCard(t, cats) {
+            var schoolLine = [t.school, t.grade].filter(Boolean).join(' · ') || '—';
+            var teacher = t.teacher ? 'Tutor: ' + esc(t.teacher) : '';
+            return (
+                '<article class="cr-admin-equipo-card" data-team-id="' +
+                esc(t.id) +
+                '">' +
+                '<div class="cr-admin-equipo-card-inner">' +
+                '<header class="cr-admin-equipo-card-top">' +
+                '<div class="cr-admin-cat-card-id" aria-label="Identificador">#' +
+                esc(t.id) +
+                '</div>' +
+                '<div class="cr-admin-equipo-card-info">' +
+                '<p class="cr-admin-equipo-card-name">' +
+                esc(t.name) +
+                '</p>' +
+                '<p class="cr-admin-equipo-card-meta">' +
+                esc(schoolLine) +
+                '</p>' +
+                (teacher ? '<p class="cr-admin-equipo-card-teacher">' + teacher + '</p>' : '') +
+                '</div></header>' +
+                '<section class="cr-admin-equipo-cat-panel" aria-labelledby="equipo-cat-' +
+                esc(t.id) +
+                '">' +
+                '<h3 id="equipo-cat-' +
+                esc(t.id) +
+                '" class="cr-admin-equipo-cat-title">' +
+                '<span class="cr-admin-cat-rules-title-icon" data-cr-icon="tag" aria-hidden="true"></span>' +
+                'Categoría de competencia</h3>' +
+                '<div class="cr-admin-equipo-cat-row">' +
+                '<label class="sr-only" for="equipo-cat-sel-' +
+                esc(t.id) +
+                '">Categoría para ' +
+                esc(t.name) +
+                '</label>' +
+                '<select id="equipo-cat-sel-' +
+                esc(t.id) +
+                '" class="cr-admin-select cr-admin-equipo-cat">' +
+                optionsCategorias(cats, t.category_id) +
+                '</select>' +
+                '<button type="button" class="cr-admin-icon-btn cr-admin-btn-save-equipo" title="Guardar categoría">' +
+                '<span data-cr-icon="check" data-cr-icon-class="cr-icon--btn-only"></span>' +
+                '<span class="cr-admin-icon-btn-label">Guardar</span></button>' +
+                '</div></section></div></article>'
+            );
+        }
+
+        function renderList() {
             var teams = state.teams;
             var cats = state.cats;
+            updateCount();
+
             if (!state.total) {
                 listHost.innerHTML =
-                    '<p class="cr-catalog-msg">No hay equipos que coincidan. Prueba otro filtro o revisa el registro en el servidor.</p>';
+                    '<div class="cr-admin-cats-empty">' +
+                    '<span class="cr-admin-cats-empty-icon" data-cr-icon="user-group" aria-hidden="true"></span>' +
+                    '<p class="cr-admin-cats-empty-title">Sin equipos</p>' +
+                    '<p class="cr-admin-cats-empty-desc">Prueba otro filtro o agrega equipos desde el registro.</p>' +
+                    '</div>';
+                decorateIcons(listHost);
                 mountPagination();
                 return;
             }
-            listHost.innerHTML =
-                '<div class="cr-admin-equipos-table-wrap">' +
-                '<table class="cr-admin-equipos-table">' +
-                '<thead><tr>' +
-                '<th scope="col">Equipo</th>' +
-                '<th scope="col">Escuela</th>' +
-                '<th scope="col">Categoría</th>' +
-                '<th scope="col"><span class="sr-only">Acción</span></th>' +
-                '</tr></thead><tbody>' +
-                teams
-                    .map(function (t) {
-                        return (
-                            '<tr class="cr-admin-equipo-row" data-team-id="' +
-                            esc(t.id) +
-                            '">' +
-                            '<td class="cr-admin-equipo-name">' +
-                            esc(t.name) +
-                            '</td>' +
-                            '<td class="cr-admin-equipo-meta" data-label="Escuela">' +
-                            esc(t.school || '—') +
-                            '</td>' +
-                            '<td data-label="Categoría">' +
-                            '<label class="sr-only">Categoría para ' +
-                            esc(t.name) +
-                            '</label>' +
-                            '<select class="cr-admin-select cr-admin-equipo-cat">' +
-                            optionsCategorias(cats, t.category_id) +
-                            '</select></td>' +
-                            '<td class="cr-admin-equipo-actions">' +
-                            '<button type="button" class="cr-app-btn cr-app-btn--primary cr-admin-btn-save-equipo">Guardar</button>' +
-                            '</td></tr>'
-                        );
-                    })
-                    .join('') +
-                '</tbody></table></div>';
+
+            listHost.innerHTML = teams.map(function (t) {
+                return renderEquipoCard(t, cats);
+            }).join('');
+            decorateIcons(listHost);
             mountPagination();
         }
 
         function loadPage(opts) {
             opts = opts || {};
             listHost.setAttribute('aria-busy', 'true');
+            listHost.innerHTML = '<p class="cr-admin-cats-loading">Cargando equipos…</p>';
+            if (countEl) {
+                countEl.textContent = '…';
+            }
             [pagTop, pagFoot].forEach(function (el) {
                 if (el) {
                     el.classList.add('hidden');
@@ -252,14 +280,20 @@
                         state.page = tp || 1;
                         return loadPage({ force: opts.force });
                     }
-                    updateModoLabel(res.aviso || '');
-                    renderTable();
+                    renderList();
                 })
                 .catch(function (err) {
                     listHost.innerHTML =
-                        '<p class="cr-catalog-msg cr-catalog-msg--error">' +
+                        '<div class="cr-admin-cats-empty cr-admin-cats-empty--error">' +
+                        '<span class="cr-admin-cats-empty-icon" data-cr-icon="exclamation-triangle" aria-hidden="true"></span>' +
+                        '<p class="cr-admin-cats-empty-title">No se pudieron cargar</p>' +
+                        '<p class="cr-admin-cats-empty-desc">' +
                         esc((err && err.message) || 'Error al cargar equipos') +
-                        '</p>';
+                        '</p></div>';
+                    decorateIcons(listHost);
+                    if (countEl) {
+                        countEl.textContent = '—';
+                    }
                     [pagTop, pagFoot].forEach(function (el) {
                         if (el) {
                             el.classList.add('hidden');
@@ -297,12 +331,12 @@
             if (!btn) {
                 return;
             }
-            var row = btn.closest('tr.cr-admin-equipo-row');
-            if (!row) {
+            var card = btn.closest('.cr-admin-equipo-card');
+            if (!card) {
                 return;
             }
-            var teamId = row.getAttribute('data-team-id');
-            var sel = row.querySelector('.cr-admin-equipo-cat');
+            var teamId = card.getAttribute('data-team-id');
+            var sel = card.querySelector('.cr-admin-equipo-cat');
             var catId = sel ? sel.value : '';
             btn.disabled = true;
             Almacen.setEquipoCategoria(teamId, catId === '' ? null : catId)

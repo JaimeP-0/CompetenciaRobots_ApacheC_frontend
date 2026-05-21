@@ -175,6 +175,43 @@
     </form>
 
     <div
+        id="reg-modal-confirmar"
+        class="fixed inset-0 z-[103] hidden items-center justify-center bg-graphite/55 p-4 backdrop-blur-sm sm:p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reg-modal-confirmar-titulo"
+        aria-hidden="true"
+    >
+        <div
+            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl"
+            role="document"
+        >
+            <p class="cr-catalog-kicker mb-1">Confirmar</p>
+            <h2 id="reg-modal-confirmar-titulo" class="text-lg font-bold leading-tight text-navy sm:text-2xl">¿Continuar?</h2>
+            <p
+                id="reg-modal-confirmar-mensaje"
+                class="mt-3 whitespace-pre-line text-sm leading-relaxed text-graphite sm:mt-4 sm:text-base md:text-lg"
+            ></p>
+            <div class="mt-6 flex flex-wrap justify-end gap-2 sm:mt-8 sm:gap-3">
+                <button
+                    type="button"
+                    id="reg-modal-confirmar-cancelar"
+                    class="cr-app-btn cr-app-btn--outline min-h-11 min-w-[7.5rem] max-w-full text-sm sm:min-h-14 sm:text-base"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="button"
+                    id="reg-modal-confirmar-aceptar"
+                    class="cr-app-btn cr-app-btn--primary min-h-11 min-w-[7.5rem] max-w-full text-sm sm:min-h-14 sm:text-base"
+                >
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div
         id="reg-modal-descalificar"
         class="fixed inset-0 z-[102] hidden items-center justify-center bg-graphite/55 p-4 backdrop-blur-sm sm:p-6"
         role="dialog"

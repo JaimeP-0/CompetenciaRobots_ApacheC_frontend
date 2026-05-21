@@ -14,7 +14,9 @@
     var buildUrl = Http.buildUrl;
 
     var registroTeamsCache = null;
+    var registroTeamsPendientesCache = null;
     var registroTeamsInflight = null;
+    var registroTeamsPendientesInflight = null;
 
     function normalizeMember(m) {
         if (m == null) {
@@ -189,7 +191,7 @@
                                 page: page,
                                 limit: limit,
                                 modo: 'cliente',
-                                aviso: 'El servidor devolvió la lista completa; paginación local.'
+                                aviso: ''
                             };
                         });
                     }
@@ -221,18 +223,12 @@
         });
     }
 
-    function fetchRegistroTeams(force) {
-        if (!force && registroTeamsCache) {
-            return Promise.resolve(registroTeamsCache);
-        }
-        if (!force && registroTeamsInflight) {
-            return registroTeamsInflight;
-        }
-        var url = buildUrl(app.registroEquiposPath || '/registro', {});
+    function fetchRegistroTeamsFromApi(queryParams) {
+        var url = buildUrl(app.registroEquiposPath || '/registro', queryParams);
         if (app.debugApi) {
             console.log('[CR] fetch', url);
         }
-        registroTeamsInflight = fetch(url, { headers: { Accept: 'application/json' } })
+        return fetch(url, { headers: { Accept: 'application/json' } })
             .then(function (res) {
                 if (!res.ok) {
                     return res.text().then(function (t) {
@@ -255,9 +251,44 @@
                             t.category_name = Cats.labelById(t.category_id);
                         });
                     }
-                    registroTeamsCache = teams;
-                    return registroTeamsCache;
+                    return teams;
                 });
+            });
+    }
+
+    function fetchRegistroTeams(force, opts) {
+        opts = opts || {};
+        var soloPendientes = !!(opts.excludeValidated || opts.soloPendientes);
+        if (soloPendientes) {
+            if (!force && registroTeamsPendientesCache) {
+                return Promise.resolve(registroTeamsPendientesCache);
+            }
+            if (!force && registroTeamsPendientesInflight) {
+                return registroTeamsPendientesInflight;
+            }
+            registroTeamsPendientesInflight = fetchRegistroTeamsFromApi({
+                limit: 100,
+                exclude_validated: 1
+            })
+                .then(function (teams) {
+                    registroTeamsPendientesCache = teams;
+                    return teams;
+                })
+                .finally(function () {
+                    registroTeamsPendientesInflight = null;
+                });
+            return registroTeamsPendientesInflight;
+        }
+        if (!force && registroTeamsCache) {
+            return Promise.resolve(registroTeamsCache);
+        }
+        if (!force && registroTeamsInflight) {
+            return registroTeamsInflight;
+        }
+        registroTeamsInflight = fetchRegistroTeamsFromApi({ limit: 100 })
+            .then(function (teams) {
+                registroTeamsCache = teams;
+                return teams;
             })
             .finally(function () {
                 registroTeamsInflight = null;
@@ -295,7 +326,7 @@
         if (!n) {
             return Promise.resolve(null);
         }
-        return fetchRegistroTeams().then(function (teams) {
+        return fetchRegistroTeams(false, { excludeValidated: true }).then(function (teams) {
             var exact = teams.filter(function (t) {
                 return t.name.toLowerCase() === n;
             });
@@ -334,12 +365,13 @@
         adminPaginacionModo: adminPaginacionModo,
         clearCache: function () {
             registroTeamsCache = null;
+            registroTeamsPendientesCache = null;
         },
         filterByQuery: filterTeamsByQuery,
         findByName: findRegistroTeamByName,
         toDetallePanel: teamToRegistroDetalle,
         sugerencias: function (q) {
-            return fetchRegistroTeams().then(function (teams) {
+            return fetchRegistroTeams(false, { excludeValidated: true }).then(function (teams) {
                 var needle = String(q || "").trim().toLowerCase();
                 if (!needle) return [];
                 return teams

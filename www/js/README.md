@@ -29,6 +29,13 @@ Sin bundler: cada archivo se carga con `<script>` en `index.html`. Los nombres e
 3. `api/public.js` → método nuevo en `window.CRApi`
 4. Implementación en `equipos-registro-cache.js`, `categorias-cache.js` o `mock-handlers.js`
 
+## Iconos (Heroicons)
+
+- Paquete: `heroicons` en **`node_modules/heroicons`** (devDependency en `package.json`).
+- La app no lee `node_modules` en runtime; **`npm run icons:sync`** copia `24/outline` → `www/vendor/heroicons/24/outline/`.
+- `core/icons.js` (`window.CRIcons`) inserta `<img src="vendor/heroicons/24/outline/{nombre}.svg">` en elementos con `data-cr-icon="nombre"`.
+- Tras instalar dependencias o añadir iconos nuevos: `npm run icons:sync` (o `npm run prepare:all`).
+
 ## Orden de carga (`index.html`)
 
 Ver la lista al final de `www/index.html`. Regla: **config → routes → api/* → catalog/* → core → registro/* → app**.

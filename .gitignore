@@ -24,8 +24,8 @@ node_modules/
 /plugins/
 /platforms/
 
-# Backend PHP/MySQL (repositorio aparte o local)
-/backend/
+# Credenciales backend (usar config.example.php)
+backend/php/config.php
 
 # Entorno local
 .env

@@ -34,7 +34,7 @@
                     if (catId && catLabel) {
                         subt.textContent = 'Filtrado por: ' + catLabel;
                     } else if (catId) {
-                        subt.textContent = 'Categoría seleccionada · ID ' + catId;
+                        subt.textContent = 'Equipos de la categoría seleccionada';
                     } else {
                         subt.textContent = 'Listado completo de equipos inscritos en todas las categorías.';
                     }

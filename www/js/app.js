@@ -62,8 +62,8 @@
                     var boot = section.querySelector('#reg-loading-boot');
                     var form = section.querySelector('#f-registro-equipo');
                     var warmup =
-                        w.CRApi && typeof w.CRApi.fetchRegistroTeams === 'function'
-                            ? w.CRApi.fetchRegistroTeams().catch(function () {
+                        w.CRApi && typeof w.CRApi.fetchRegistroTeamsPendientes === 'function'
+                            ? w.CRApi.fetchRegistroTeamsPendientes().catch(function () {
                                   return [];
                               })
                             : Promise.resolve();

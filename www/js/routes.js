@@ -21,6 +21,7 @@
             '/registro': 'registro/registrar',
             '/categorias': 'public/categorias',
             '/equipos': 'public/equipos',
+            '/validados': 'public/validados',
             '/buscar': 'public/buscar',
             '/admin': 'admin/panel',
             '/admin/login': 'admin/login',
@@ -66,6 +67,7 @@
             'public/categoria-detalle': 'initCategoriaDetalle',
             'public/equipos': 'initEquipos',
             'public/equipo-detalle': 'initEquipoDetalle',
+            'public/validados': 'initValidados',
             'public/buscar': 'initBuscar'
         }
     };

@@ -1,0 +1,44 @@
+<section
+    id="cr-validados-root"
+    class="cr-catalog-page cr-catalog-page--wide cr-validados-page"
+    data-cr-modulo="1-catalogo"
+    aria-label="Equipos verificados"
+>
+    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+
+    <header class="cr-validados-hero">
+        <div class="cr-validados-hero-icon" data-cr-icon="check-circle" aria-hidden="true"></div>
+        <div class="cr-validados-hero-text">
+            <h1 class="cr-catalog-title">Equipos validados</h1>
+        </div>
+    </header>
+
+    <section class="cr-validados-filtros-card" aria-label="Filtrar equipos validados">
+        <form id="f-validados-filtro" class="cr-validados-filtro-form" action="#" method="get">
+            <span class="cr-validados-filtro-icon" data-cr-icon="magnifying-glass" aria-hidden="true"></span>
+            <div class="cr-validados-filtro-field cr-validados-filtro-field--grow">
+                <label class="cr-admin-label" for="cr-validados-buscar">Buscar</label>
+                <input
+                    id="cr-validados-buscar"
+                    type="search"
+                    class="cr-admin-input"
+                    placeholder="Nombre, escuela o tutor…"
+                    autocomplete="off"
+                />
+            </div>
+            <div class="cr-validados-filtro-field cr-validados-filtro-field--cat">
+                <label class="cr-admin-label" for="cr-validados-cat">Categoría</label>
+                <select id="cr-validados-cat" class="cr-admin-select">
+                    <option value="">Todas</option>
+                </select>
+            </div>
+            <button type="submit" class="cr-app-btn cr-app-btn--primary cr-validados-filtro-btn">Filtrar</button>
+        </form>
+    </section>
+
+    <p id="cr-validados-count" class="cr-validados-summary hidden" aria-live="polite"></p>
+
+    <div id="cr-validados-list" class="cr-validados-list" aria-busy="true">
+        <p class="cr-validados-loading">Cargando equipos validados…</p>
+    </div>
+</section>

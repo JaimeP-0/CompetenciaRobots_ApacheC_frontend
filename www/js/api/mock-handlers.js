@@ -158,7 +158,23 @@
             });
         }
         if (method === 'POST' && (path === '/registro' || path === '/registro/validar')) {
+            var tidPost = Number(b.team_id, 10);
+            if (b.pass && Mock.teamYaValidadoMock && Mock.teamYaValidadoMock(tidPost)) {
+                return Promise.reject(new Error('Este equipo ya tiene una verificación registrada.'));
+            }
+            if (Mock.pushMockValidation) {
+                Mock.pushMockValidation(b.team_id, b.pass);
+            }
             return mockDelay(0, { ok: true, mensaje: 'Verificación registrada', payload: b });
+        }
+        if (method === 'GET' && (path === '/registro' || path === '/api/registro')) {
+            return mockDelay(
+                50,
+                Mock.mockRegistroTeamsList ? Mock.mockRegistroTeamsList(q) : { items: [], total: 0 }
+            );
+        }
+        if (method === 'GET' && (path === '/validaciones' || path === '/api/validaciones')) {
+            return mockDelay(50, Mock.mockValidacionesList ? Mock.mockValidacionesList(q) : { items: [], total: 0 });
         }
         if (method === 'GET' && path === '/perfil') {
             return mockDelay(0, {

@@ -20,7 +20,13 @@
 
         if (saludo) {
             var u = Sesion.getUsuario();
-            saludo.textContent = u ? 'Sesión: ' + u : 'Sesión activa';
+            if (u) {
+                saludo.textContent = 'Hola, ' + u;
+                saludo.classList.remove('hidden');
+            } else {
+                saludo.textContent = '';
+                saludo.classList.add('hidden');
+            }
         }
 
         function setStat(el, value, loading) {

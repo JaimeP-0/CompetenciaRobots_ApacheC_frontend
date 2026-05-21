@@ -422,6 +422,90 @@
     .cr-catalog-msg--error {
         @apply border-red-200/80 bg-red-50/90 text-red-800;
     }
+
+    /* —— Equipos validados (#/validados) —— */
+    .cr-validados-page {
+        @apply gap-4 sm:gap-5;
+    }
+    .cr-validados-hero {
+        @apply flex w-full min-w-0 gap-4 rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-snow via-snow to-emerald-500/[0.06] p-4 shadow-sm sm:items-center sm:gap-5 sm:p-5 md:p-6;
+    }
+    .cr-validados-hero-icon {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 sm:h-14 sm:w-14;
+    }
+    .cr-validados-hero-icon .cr-icon {
+        @apply h-7 w-7 text-emerald-700 sm:h-8 sm:w-8;
+    }
+    .cr-validados-hero-text {
+        @apply min-w-0 flex-1;
+    }
+    .cr-validados-hero-text .cr-catalog-title {
+        @apply mb-0.5 sm:text-3xl;
+    }
+    .cr-validados-filtros-card {
+        @apply w-full min-w-0 rounded-2xl border-2 border-dashed border-graphite/20 bg-snow/90 p-4 shadow-sm sm:p-5;
+    }
+    .cr-validados-filtro-form {
+        @apply grid w-full min-w-0 gap-3 sm:grid-cols-[auto_minmax(0,1fr)_minmax(9rem,11rem)_auto] sm:items-end sm:gap-4;
+    }
+    .cr-validados-filtro-icon {
+        @apply hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-marine/10 sm:flex;
+    }
+    .cr-validados-filtro-icon .cr-icon {
+        @apply h-6 w-6 text-marine;
+    }
+    .cr-validados-filtro-field {
+        @apply min-w-0;
+    }
+    .cr-validados-filtro-field--grow {
+        @apply min-w-0;
+    }
+    .cr-validados-filtro-btn {
+        @apply w-full shrink-0 sm:w-auto sm:min-w-[7.5rem];
+    }
+    .cr-validados-summary {
+        @apply m-0 w-full rounded-full border border-emerald-200/70 bg-emerald-50/80 px-4 py-2 text-center text-sm font-semibold text-emerald-900 sm:text-left;
+    }
+    .cr-validados-list {
+        @apply flex w-full min-w-0 flex-col gap-3 sm:gap-4;
+    }
+    .cr-validados-loading {
+        @apply w-full rounded-xl border border-graphite/10 bg-mist/30 px-4 py-8 text-center text-sm text-graphite/70;
+    }
+    .cr-validados-card {
+        @apply w-full border-emerald-200/55;
+    }
+    .cr-validados-badge {
+        @apply inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-300/60 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-900;
+    }
+    .cr-validados-badge-icon .cr-icon {
+        @apply h-4 w-4;
+    }
+    .cr-validados-empty {
+        @apply flex w-full min-w-0 max-w-none flex-col items-center gap-4 rounded-2xl border border-dashed border-graphite/20 bg-mist/25 px-6 py-12 text-center sm:px-10 sm:py-14;
+    }
+    .cr-validados-empty--error {
+        @apply border-red-200/50 bg-red-50/50;
+    }
+    .cr-validados-empty-icon {
+        @apply flex h-16 w-16 items-center justify-center rounded-2xl bg-snow shadow-sm;
+    }
+    .cr-validados-empty-icon .cr-icon {
+        @apply h-9 w-9 text-graphite/40;
+    }
+    .cr-validados-empty--error .cr-validados-empty-icon .cr-icon {
+        @apply text-red-400;
+    }
+    .cr-validados-empty-title {
+        @apply m-0 text-lg font-semibold text-navy sm:text-xl;
+    }
+    .cr-validados-empty-desc {
+        @apply m-0 max-w-md text-sm leading-relaxed text-graphite/75;
+    }
+    .cr-validados-empty-cta {
+        @apply mt-1 w-full max-w-xs no-underline sm:w-auto;
+    }
+
     .cr-catalog-skel {
         @apply animate-pulse rounded-xl bg-mist/60;
     }
@@ -444,7 +528,7 @@
     #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input + label {
         position: relative;
         display: inline-flex;
-        margin: 0.6em 0;
+        margin: 0;
         align-items: center;
         color: #9e9e9e;
         transition: color 250ms cubic-bezier(0.4, 0, 0.23, 1);
@@ -512,21 +596,12 @@
         @apply opacity-90;
     }
 
-    /* Inicio: hero responsivo (módulo 1 — imágenes) */
-    .cr-inicio-hero {
-        @apply w-full min-w-0 overflow-hidden rounded-2xl border border-graphite/15 bg-snow shadow-sm;
+    /* Inicio: título principal */
+    .cr-inicio-head {
+        @apply w-full min-w-0 px-0.5 pb-1 pt-0.5 text-center sm:px-1 sm:pb-2 lg:pb-3;
     }
-    .cr-inicio-hero-img {
-        @apply block h-auto w-full max-h-[8rem] object-cover object-center sm:max-h-[10rem] md:max-h-[12rem];
-    }
-    .cr-inicio-hero-caption {
-        @apply border-t border-graphite/10 bg-mist/40 px-3 py-2 text-center text-xs text-graphite/80 sm:px-4 sm:text-sm;
-    }
-    .cr-inicio-hero-caption-short {
-        @apply inline md:hidden;
-    }
-    .cr-inicio-hero-caption-long {
-        @apply hidden md:inline;
+    .cr-inicio-title {
+        @apply m-0 text-2xl font-bold leading-tight tracking-tight text-navy sm:text-3xl md:text-4xl lg:text-[2.25rem];
     }
 
     /* Inicio: 1 col móvil → 2 cols tablet/desktop; ancho fluido */
@@ -581,49 +656,45 @@
     .cr-catalog-cat-card.cr-inicio-tile--admin {
         @apply border-graphite/20 bg-mist/30;
     }
-    /* —— Admin: shell y vistas separadas —— */
+    /* —— Admin: mismo patrón que catálogo (atrás fijo arriba-izq + ancho en desktop) —— */
     html.cr-admin-active #cr-outlet {
-        @apply w-full min-w-0 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl;
+        @apply w-full min-w-0 max-w-full;
+    }
+    .cr-admin-page {
+        @apply relative mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col px-1 pb-8 pt-[calc(env(safe-area-inset-top,0px)+3.25rem)] sm:max-w-2xl sm:gap-0 sm:px-3 sm:pb-10 sm:pt-[calc(env(safe-area-inset-top,0px)+3.5rem)] md:max-w-3xl md:px-4 lg:max-w-4xl lg:px-6 lg:pb-12;
     }
     .cr-admin-shell {
-        @apply mx-auto w-full min-w-0 min-h-0 flex-1 flex flex-col px-1 sm:px-0;
+        @apply min-h-0;
     }
     .cr-admin-shell-inner {
-        @apply mx-auto w-full min-w-0 max-w-full flex flex-col gap-5 pb-6 sm:gap-6 sm:max-w-lg;
+        @apply mx-auto flex w-full min-w-0 max-w-full flex-col gap-5 sm:gap-6 lg:gap-8;
     }
     .cr-admin-shell-inner--narrow {
-        @apply max-w-md;
+        @apply sm:max-w-md md:mx-auto;
     }
     .cr-admin-shell-inner--wide {
-        @apply sm:max-w-2xl md:max-w-3xl lg:max-w-4xl;
-    }
-    .cr-admin-shell--login .cr-catalog-back {
-        @apply mb-2 self-start;
+        @apply w-full;
     }
     .cr-admin-topbar {
-        @apply flex w-full min-w-0 flex-col gap-3 border-b border-graphite/10 pb-4;
+        @apply w-full min-w-0 shrink-0 border-b border-graphite/10 pb-4;
     }
     .cr-admin-topbar [data-admin-subnav] {
-        @apply min-w-0 overflow-x-auto;
-    }
-    .cr-admin-topbar .cr-catalog-back,
-    .cr-admin-shell--login .cr-catalog-back {
-        @apply static mb-0 h-11 w-11 shrink-0 self-start;
+        @apply min-w-0;
     }
     .cr-admin-subnav {
-        @apply flex flex-wrap gap-1 rounded-xl border border-graphite/15 bg-mist/30 p-1;
+        @apply flex w-full min-w-0 flex-wrap gap-1 rounded-xl border border-graphite/15 bg-mist/30 p-1 sm:p-1.5 md:flex-nowrap;
     }
     .cr-admin-subnav-link {
-        @apply rounded-lg px-3 py-2 text-sm font-semibold text-graphite/80 no-underline transition hover:bg-snow/80 hover:text-navy;
+        @apply rounded-lg px-3 py-2 text-center text-sm font-semibold text-graphite/80 no-underline transition hover:bg-snow/80 hover:text-navy md:flex-1 md:px-4;
     }
     .cr-admin-subnav-link--active {
         @apply bg-snow text-navy shadow-sm;
     }
     .cr-admin-page-head {
-        @apply border-b border-graphite/10 pb-4;
+        @apply border-b border-graphite/10 pb-4 md:pb-5;
     }
     .cr-admin-page-head .cr-catalog-title {
-        @apply mb-1;
+        @apply mb-1 sm:text-3xl;
     }
     .cr-admin-block {
         @apply flex flex-col gap-3;
@@ -641,7 +712,7 @@
         @apply m-0 -mt-1 text-sm leading-relaxed text-graphite/75;
     }
     .cr-admin-footer {
-        @apply border-t border-graphite/10 pt-4;
+        @apply flex flex-col gap-3 border-t border-graphite/10 pt-4 sm:flex-row sm:items-center sm:justify-end;
     }
     .cr-admin-mock-hint {
         @apply mb-4 rounded-lg border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs leading-snug text-amber-950;
@@ -668,10 +739,10 @@
         @apply rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800;
     }
     .cr-admin-stats {
-        @apply grid grid-cols-2 gap-3;
+        @apply grid max-w-2xl grid-cols-2 gap-3 md:gap-4 lg:max-w-none lg:grid-cols-2;
     }
     .cr-admin-stat-card {
-        @apply rounded-xl border border-graphite/15 bg-mist/20 px-3 py-3 text-center;
+        @apply rounded-xl border border-graphite/15 bg-mist/20 px-3 py-3 text-center md:px-5 md:py-4;
     }
     .cr-admin-stat-k {
         @apply text-[0.65rem] font-bold uppercase tracking-wide text-graphite/55;
@@ -680,10 +751,10 @@
         @apply mt-1 text-2xl font-bold tabular-nums text-navy;
     }
     .cr-admin-tiles {
-        @apply grid gap-3 sm:grid-cols-2;
+        @apply grid gap-3 sm:grid-cols-2 lg:gap-4;
     }
     .cr-admin-tile {
-        @apply flex flex-col gap-1 rounded-xl border border-graphite/15 bg-snow p-4 no-underline shadow-sm transition hover:border-marine/30 hover:shadow-md;
+        @apply flex min-h-[5.5rem] flex-col gap-1 rounded-xl border border-graphite/15 bg-snow p-4 no-underline shadow-sm transition hover:border-marine/30 hover:shadow-md md:min-h-[6rem] md:p-5;
     }
     .cr-admin-tile--primary {
         @apply border-marine/30 bg-gradient-to-br from-snow to-marine/[0.06];
@@ -704,10 +775,51 @@
         @apply flex items-center justify-between gap-2 px-4 py-3 text-sm font-medium text-navy no-underline transition hover:bg-mist/40;
     }
     .cr-admin-form--inline {
-        @apply flex flex-col gap-3 sm:flex-row sm:items-end;
+        @apply flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end;
+    }
+    .cr-admin-form--inline > .cr-app-btn {
+        @apply w-full sm:w-auto sm:min-w-[7.5rem] sm:max-w-[10rem];
     }
     .cr-admin-field--grow {
-        @apply flex-1 min-w-0;
+        @apply min-w-0 flex-1;
+    }
+    /* Filtros equipos: grid estable en móvil y escritorio (evita w-full del CTA en fila flex) */
+    .cr-admin-filtros-equipos {
+        @apply gap-0;
+    }
+    .cr-admin-filtros-equipos-grid {
+        @apply grid w-full min-w-0 gap-3;
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .cr-admin-field--filtro-cat {
+        @apply min-w-0;
+    }
+    .cr-admin-field--filtro-cat .cr-admin-select {
+        @apply w-full;
+    }
+    .cr-admin-filtros-equipos-actions {
+        @apply flex min-w-0 items-end;
+    }
+    .cr-admin-filtros-equipos-actions .cr-app-btn {
+        @apply min-h-12 w-full sm:min-w-[7.5rem] sm:max-w-[10rem] sm:w-auto;
+    }
+    @media (min-width: 640px) {
+        .cr-admin-filtros-equipos-grid {
+            grid-template-columns: minmax(0, 1fr) minmax(9rem, 12rem) auto;
+            align-items: end;
+            column-gap: 0.75rem;
+        }
+    }
+    @media (min-width: 768px) {
+        .cr-admin-filtros-equipos-grid {
+            column-gap: 1rem;
+        }
+        .cr-admin-field--filtro-cat .cr-admin-select {
+            min-width: 10rem;
+        }
+    }
+    .cr-admin-page > .cr-catalog-back {
+        @apply z-[80];
     }
     .cr-admin-input--sm {
         @apply min-h-10 text-sm;
@@ -730,7 +842,10 @@
         @apply hidden;
     }
     .cr-admin-cats-hero {
-        @apply flex gap-4 rounded-2xl border border-marine/20 bg-gradient-to-br from-snow via-snow to-marine/[0.06] p-4 shadow-sm sm:p-5;
+        @apply flex gap-4 rounded-2xl border border-marine/20 bg-gradient-to-br from-snow via-snow to-marine/[0.06] p-4 shadow-sm sm:p-5 md:items-center md:gap-6 md:p-6;
+    }
+    .cr-admin-cats-hero-text .cr-catalog-title {
+        @apply md:text-3xl;
     }
     .cr-admin-cats-hero-icon {
         @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-marine/10 sm:h-14 sm:w-14;
@@ -745,7 +860,7 @@
         @apply mb-0.5;
     }
     .cr-admin-cats-toast {
-        @apply sticky top-[calc(env(safe-area-inset-top,0px)+0.25rem)] z-[60] shadow-md;
+        @apply sticky top-[calc(env(safe-area-inset-top,0px)+3.5rem)] z-[60] shadow-md;
     }
     .cr-admin-cats-toast--ok {
         @apply border-emerald-200/80 bg-emerald-50 text-emerald-950;
@@ -893,33 +1008,6 @@
     .cr-admin-select {
         @apply min-h-10 w-full min-w-[8rem] max-w-full rounded-xl border border-graphite/20 bg-snow px-3 text-sm text-graphite focus:border-accent focus:ring-2 focus:ring-accent/30;
     }
-    .cr-admin-equipos-table-wrap {
-        @apply w-full min-w-0 overflow-x-auto rounded-2xl border border-graphite/15 bg-snow shadow-sm md:overflow-x-auto;
-    }
-    .cr-admin-equipos-table {
-        @apply w-full border-collapse text-left text-sm md:min-w-[32rem];
-    }
-    .cr-admin-equipos-table thead {
-        @apply border-b border-graphite/15 bg-mist/40;
-    }
-    .cr-admin-equipos-table th {
-        @apply px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-graphite/65;
-    }
-    .cr-admin-equipos-table td {
-        @apply border-b border-graphite/10 px-3 py-3 align-middle text-graphite;
-    }
-    .cr-admin-equipos-table tbody tr:last-child td {
-        @apply border-b-0;
-    }
-    .cr-admin-equipo-name {
-        @apply font-semibold text-navy;
-    }
-    .cr-admin-equipo-meta {
-        @apply max-w-[14rem] truncate text-graphite/80;
-    }
-    .cr-admin-equipo-actions {
-        @apply text-right whitespace-nowrap;
-    }
     .cr-admin-pagination {
         @apply mb-3;
     }
@@ -935,59 +1023,66 @@
     .cr-admin-pagination-btns .cr-app-btn {
         @apply w-auto min-w-[6.5rem] px-4 py-2 text-sm;
     }
-    .cr-admin-paginacion-modo {
-        @apply mt-2 rounded-lg border border-graphite/10 bg-mist/30 px-3 py-2 text-xs leading-snug text-graphite/75;
+    /* —— Admin equipos (#/admin/equipos), alineado a categorías —— */
+    .cr-admin-equipos-page .cr-admin-page-head {
+        @apply hidden;
     }
-
-    /* Admin equipos: tarjetas en móvil, tabla desde md */
-    @media (max-width: 767px) {
-        .cr-admin-equipos-table-wrap {
-            overflow-x: visible;
-            border: none;
-            background: transparent;
-            box-shadow: none;
-        }
-        .cr-admin-equipos-table {
-            min-width: 0;
-        }
-        .cr-admin-equipos-table thead {
-            @apply sr-only;
-        }
-        .cr-admin-equipos-table tbody {
-            @apply flex flex-col gap-3;
-        }
-        .cr-admin-equipos-table tr.cr-admin-equipo-row {
-            @apply flex flex-col gap-2 rounded-2xl border border-graphite/15 bg-snow p-4 shadow-sm;
-        }
-        .cr-admin-equipos-table td {
-            @apply block border-0 px-0 py-0 align-top;
-        }
-        .cr-admin-equipos-table td::before {
-            content: attr(data-label);
-            @apply mb-0.5 block text-[0.65rem] font-bold uppercase tracking-wide text-graphite/55;
-        }
-        .cr-admin-equipos-table td.cr-admin-equipo-name::before {
-            content: 'Equipo';
-        }
-        .cr-admin-equipos-table td.cr-admin-equipo-actions::before {
-            content: none;
-        }
-        .cr-admin-equipo-meta {
-            max-width: none;
-            white-space: normal;
-        }
-        .cr-admin-equipo-actions {
-            @apply pt-2 text-left;
-        }
-        .cr-admin-equipo-actions .cr-app-btn {
-            @apply w-full;
-        }
-        .cr-admin-equipos-table td[data-label]::before {
-            content: attr(data-label);
-        }
-        .cr-admin-equipos-table .cr-admin-select {
-            @apply mt-1 w-full;
-        }
+    .cr-admin-equipos-hint {
+        @apply mt-2 rounded-lg border border-graphite/10 bg-mist/40 px-3 py-2 text-xs leading-snug text-graphite/75;
+    }
+    .cr-admin-equipos-filtros-form {
+        @apply sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(9rem,11rem)_auto] sm:items-end;
+    }
+    .cr-admin-equipos-filtros-cat {
+        @apply min-w-0;
+    }
+    .cr-admin-equipos-filtros-cat .cr-admin-select {
+        @apply w-full;
+    }
+    .cr-admin-equipo-list {
+        @apply flex flex-col gap-4 sm:gap-5;
+    }
+    .cr-admin-equipo-card {
+        @apply overflow-hidden rounded-2xl border border-graphite/15 bg-snow shadow-md transition hover:border-marine/25 hover:shadow-lg;
+    }
+    .cr-admin-equipo-card-inner {
+        @apply flex flex-col;
+    }
+    .cr-admin-equipo-card-top {
+        @apply grid gap-3 border-b border-graphite/10 bg-gradient-to-r from-mist/30 to-snow p-4 sm:grid-cols-[auto_1fr] sm:items-start sm:gap-4 sm:p-5;
+    }
+    .cr-admin-equipo-card-info {
+        @apply min-w-0;
+    }
+    .cr-admin-equipo-card-name {
+        @apply m-0 text-base font-semibold text-navy sm:text-lg;
+    }
+    .cr-admin-equipo-card-meta {
+        @apply m-0 mt-0.5 text-sm text-graphite/80;
+    }
+    .cr-admin-equipo-card-teacher {
+        @apply m-0 mt-1 text-xs text-graphite/65;
+    }
+    .cr-admin-equipo-cat-panel {
+        @apply flex flex-col gap-3 p-4 sm:p-5;
+    }
+    .cr-admin-equipo-cat-title {
+        @apply m-0 flex flex-wrap items-center gap-2 text-sm font-bold text-navy;
+    }
+    .cr-admin-equipo-cat-row {
+        @apply flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3;
+    }
+    .cr-admin-equipo-cat-row .cr-admin-select {
+        @apply min-h-11 flex-1;
+    }
+    .cr-admin-equipo-cat-row .cr-admin-icon-btn {
+        @apply w-full shrink-0 sm:w-auto sm:min-w-[7.5rem];
+    }
+    .cr-admin-equipos-pagination {
+        @apply mb-3;
+    }
+    .cr-admin-equipos-pagination + .cr-admin-equipo-list {
+        @apply mt-0;
     }
 }
 
@@ -1071,36 +1166,44 @@ html.cr-registro-fit #cr-outlet {
     overscroll-behavior-y: contain;
 }
 
-/* Checklist: fila clicable; columna Cumple ancha para dedo; scroll horizontal suave */
+/* Checklist: fila clicable; columna Cumple; bordes por fila (evita cortes con texto largo) */
 #reg-checklist-scroll {
     -webkit-overflow-scrolling: touch;
     scroll-padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+#reg-checklist-scroll .cr-catalog-table tbody td {
+    border-bottom-width: 0;
+    vertical-align: top;
+}
+#reg-checklist-scroll .cr-catalog-table tbody tr {
+    border-bottom: 1px solid rgb(55 65 81 / 0.1);
+}
+#reg-checklist-scroll .cr-catalog-table tbody tr:last-child {
+    border-bottom-width: 0;
 }
 #reg-checklist-scroll tbody tr:has(input[type='checkbox']) {
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
 }
-/* Centrado en celda sin romper ins (left: 2em): flex en td; label inline-flex como el ancho intrínseco del demo */
 #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) {
-    display: flex;
-    justify-content: center;
-    gap: 0;
     min-width: 3.25rem;
-    font-size: 0;
-    line-height: 0;
-    align-items: center;
-}
-#reg-checklist-scroll tbody td.align-top:has(> input.cr-reg-check-input) {
-    align-items: flex-start;
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    text-align: center;
+    vertical-align: top;
+    white-space: nowrap;
 }
 #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) input + label {
-    margin-block: 0;
+    margin: 0;
     font-size: 0.75rem;
-    line-height: 1.4;
+    line-height: 1;
+    vertical-align: middle;
 }
 @media (min-width: 640px) {
     #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) {
         min-width: 4.5rem;
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
     }
     #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) input + label {
         font-size: 0.875rem;

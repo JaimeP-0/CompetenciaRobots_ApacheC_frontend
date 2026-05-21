@@ -1,6 +1,12 @@
 /**
- * Iconos Heroicons (www/vendor/heroicons/24/outline).
- * Uso: <span data-cr-icon="users" class="cr-icon"></span>
+ * Iconos Heroicons v2 (outline 24px).
+ *
+ * Fuente npm: node_modules/heroicons/24/outline/
+ * En la app Cordova se sirven copias en www/vendor/heroicons/24/outline/
+ * (npm run icons:sync; también va en npm run prepare:all).
+ *
+ * Uso: <span data-cr-icon="user-group" class="cr-icon"></span>
+ * Luego CRIcons.decorate(root) o decorar al cargar la vista.
  */
 (function (w) {
     'use strict';

@@ -36,6 +36,11 @@
         var modalPostTitulo = section.querySelector('#reg-modal-postregistro-titulo');
         var modalPostMensaje = section.querySelector('#reg-modal-postregistro-mensaje');
         var modalPostAceptar = section.querySelector('#reg-modal-postregistro-aceptar');
+        var modalConfirm = section.querySelector('#reg-modal-confirmar');
+        var modalConfirmTitulo = section.querySelector('#reg-modal-confirmar-titulo');
+        var modalConfirmMensaje = section.querySelector('#reg-modal-confirmar-mensaje');
+        var modalConfirmAceptar = section.querySelector('#reg-modal-confirmar-aceptar');
+        var modalConfirmCancelar = section.querySelector('#reg-modal-confirmar-cancelar');
         var modalDesc = section.querySelector('#reg-modal-descalificar');
         var modalDescMensaje = section.querySelector('#reg-modal-descalificar-mensaje');
         var modalDescAceptar = section.querySelector('#reg-modal-descalificar-aceptar');
@@ -54,6 +59,11 @@
             !modalPostTitulo ||
             !modalPostMensaje ||
             !modalPostAceptar ||
+            !modalConfirm ||
+            !modalConfirmTitulo ||
+            !modalConfirmMensaje ||
+            !modalConfirmAceptar ||
+            !modalConfirmCancelar ||
             !modalDesc ||
             !modalDescMensaje ||
             !modalDescAceptar
@@ -63,8 +73,58 @@
 
         /** Tras cerrar el modal: inicio, o solo re-habilitar Registrar. */
         var modalPostIrAlInicio = false;
+        var modalConfirmOnAceptar = null;
 
-        /* --- Modales (éxito, descalificación, especificación tabla 1) --- */
+        /* --- Modales (aviso, confirmar, descalificación, especificación tabla 1) --- */
+
+        function showAvisoModal(titulo, mensaje) {
+            showPostRegistroModal({
+                titulo: titulo,
+                mensaje: mensaje,
+                irAlInicio: false
+            });
+        }
+
+        function hideConfirmModal() {
+            var ae = document.activeElement;
+            if (ae && modalConfirm.contains(ae) && typeof ae.blur === 'function') {
+                ae.blur();
+            }
+            modalConfirm.classList.add('hidden');
+            modalConfirm.classList.remove('flex');
+            modalConfirm.setAttribute('aria-hidden', 'true');
+            modalConfirmOnAceptar = null;
+        }
+
+        function showConfirmModal(opts) {
+            opts = opts || {};
+            hideSpecModalT1();
+            modalConfirmOnAceptar = typeof opts.onConfirm === 'function' ? opts.onConfirm : null;
+            modalConfirmTitulo.textContent = opts.titulo || '¿Continuar?';
+            modalConfirmMensaje.textContent = opts.mensaje != null ? String(opts.mensaje) : '';
+            modalConfirm.classList.remove('hidden');
+            modalConfirm.classList.add('flex');
+            modalConfirm.setAttribute('aria-hidden', 'false');
+            modalConfirmAceptar.focus();
+        }
+
+        function onModalConfirmAceptar() {
+            var fn = modalConfirmOnAceptar;
+            hideConfirmModal();
+            if (fn) {
+                fn();
+            }
+        }
+
+        function onModalConfirmCancelar() {
+            hideConfirmModal();
+        }
+
+        function onModalConfirmBackdrop(e) {
+            if (e.target === modalConfirm) {
+                onModalConfirmCancelar();
+            }
+        }
 
         function hidePostRegistroModal() {
             var ae = document.activeElement;
@@ -86,16 +146,17 @@
             modalDesc.setAttribute('aria-hidden', 'true');
         }
 
-        function showDescalificarModal() {
+        function nombreEquipoEnInput() {
             var nombreEq = String(input.value || '')
                 .trim()
                 .replace(/\s+/g, ' ');
-            if (!nombreEq) {
-                nombreEq = '(sin nombre)';
-            }
+            return nombreEq || '(sin nombre)';
+        }
+
+        function showDescalificarModal() {
             hideSpecModalT1();
             modalDescMensaje.textContent =
-                'Se descalificó el equipo ' + nombreEq + '.';
+                'Se descalificó el equipo ' + nombreEquipoEnInput() + '.';
             modalDesc.classList.remove('hidden');
             modalDesc.classList.add('flex');
             modalDesc.setAttribute('aria-hidden', 'false');
@@ -147,6 +208,11 @@
             var specM = host1.querySelector('#reg-modal-spec-t1');
             if (specM && !specM.classList.contains('hidden')) {
                 hideSpecModalT1();
+                e.preventDefault();
+                return;
+            }
+            if (!modalConfirm.classList.contains('hidden')) {
+                onModalConfirmCancelar();
                 e.preventDefault();
                 return;
             }
@@ -224,8 +290,7 @@
         /** Clic en la fila (no en el propio checkbox) alterna el check — mejor puntería en móvil. */
         function onChecklistRowClick(e) {
             if (e.target.closest('[data-reg-eliminar]')) {
-                e.preventDefault();
-                showDescalificarModal();
+                onEliminarClick(e);
                 return;
             }
             if (e.target.closest('[data-reg-spec-open]')) {
@@ -278,6 +343,7 @@
 
         function resetChecklistUi() {
             hidePostRegistroModal();
+            hideConfirmModal();
             hideDescalificarModal();
             hideSpecModalT1();
             shell.classList.add('hidden');
@@ -442,65 +508,142 @@
             };
         }
 
-        function onRegistrarClick() {
-            if (btnReg.disabled) {
-                return;
-            }
+        function enviarVerificacion(pass, opts) {
+            opts = opts || {};
             var teamId = getRegEquipoId(section);
             if (teamId == null) {
-                window.alert(
+                showAvisoModal(
+                    'Equipo no identificado',
                     'No se identificó el equipo (id). Elige un equipo de la lista de sugerencias o uno que exista en el registro.'
                 );
                 return;
             }
-            var body = buildPayloadRegistroVerificacion(true);
-            btnReg.disabled = true;
-            var api = w.CRApi;
-            if (api && typeof api.postRegistro === 'function') {
-                api
-                    .postRegistro(body)
-                    .then(function (res) {
-                        var nombreEq = String(input.value || '')
-                            .trim()
-                            .replace(/\s+/g, ' ');
-                        if (!nombreEq) {
-                            nombreEq = 'equipo #' + body.team_id;
-                        }
-                        var soloLocal = res && res.local;
-                        showPostRegistroModal({
-                            titulo: soloLocal ? 'Verificación completada' : 'Registro completado',
-                            mensaje: soloLocal
-                                ? 'Se validó el equipo ' +
-                                  nombreEq +
-                                  ' (solo en el dispositivo; no se envió al servidor).'
-                                : 'Se registró la verificación de ' + nombreEq + ' correctamente.',
-                            irAlInicio: true
-                        });
-                    })
-                    .catch(function (err) {
-                        showPostRegistroModal({
-                            titulo: 'No se pudo registrar',
-                            mensaje: (err && err.message) || 'Intenta de nuevo más tarde.',
-                            irAlInicio: false
-                        });
-                    });
-            } else {
-                showPostRegistroModal({
-                    titulo: 'Sin conexión',
-                    mensaje: 'No está disponible el cliente API (revisa scripts en js/api/).',
-                    irAlInicio: false
-                });
+            var body = buildPayloadRegistroVerificacion(pass);
+            var triggerBtn = opts.triggerBtn;
+            if (triggerBtn) {
+                triggerBtn.disabled = true;
             }
+            if (pass && btnReg) {
+                btnReg.disabled = true;
+            }
+            var api = w.CRApi;
+            if (!api || typeof api.postRegistro !== 'function') {
+                if (typeof opts.onSinApi === 'function') {
+                    opts.onSinApi();
+                } else {
+                    showPostRegistroModal({
+                        titulo: 'Sin conexión',
+                        mensaje: 'No hay conexión con el servidor. Inténtalo más tarde.',
+                        irAlInicio: false
+                    });
+                }
+                if (triggerBtn) {
+                    triggerBtn.disabled = false;
+                }
+                if (pass && btnReg) {
+                    btnReg.disabled = false;
+                }
+                return;
+            }
+            api
+                .postRegistro(body)
+                .then(function (res) {
+                    if (w.CRApi && typeof w.CRApi.clearRegistroCache === 'function') {
+                        w.CRApi.clearRegistroCache();
+                    }
+                    if (typeof opts.onOk === 'function') {
+                        opts.onOk(res, body);
+                    }
+                })
+                .catch(function (err) {
+                    if (typeof opts.onErr === 'function') {
+                        opts.onErr(err);
+                    }
+                    if (triggerBtn) {
+                        triggerBtn.disabled = false;
+                    }
+                    if (pass && btnReg) {
+                        btnReg.disabled = false;
+                    }
+                });
+        }
+
+        function onEliminarClick(e) {
+            e.preventDefault();
+            var nombreEq = nombreEquipoEnInput();
+            var btn = e.target.closest('[data-reg-eliminar]');
+            showConfirmModal({
+                titulo: 'Descalificar equipo',
+                mensaje:
+                    '¿Descalificar al equipo ' +
+                    nombreEq +
+                    '?\n\nEl equipo quedará registrado como no aprobado.',
+                onConfirm: function () {
+                    enviarVerificacion(false, {
+                        triggerBtn: btn,
+                        onOk: function () {
+                            showDescalificarModal();
+                        },
+                        onErr: function (err) {
+                            showAvisoModal(
+                                'No se pudo descalificar',
+                                (err && err.message) || 'No se pudo descalificar al equipo.'
+                            );
+                        },
+                        onSinApi: function () {
+                            showAvisoModal(
+                                'Sin conexión',
+                                'No hay conexión con el servidor. Inténtalo más tarde.'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+
+        function onRegistrarClick() {
+            if (btnReg.disabled) {
+                return;
+            }
+            enviarVerificacion(true, {
+                onOk: function (res, body) {
+                    var nombreEq = String(input.value || '')
+                        .trim()
+                        .replace(/\s+/g, ' ');
+                    if (!nombreEq) {
+                        nombreEq = 'equipo #' + body.team_id;
+                    }
+                    var soloLocal = res && res.local;
+                    showPostRegistroModal({
+                        titulo: soloLocal ? 'Verificación completada' : 'Registro completado',
+                        mensaje: soloLocal
+                            ? 'Se validó el equipo ' + nombreEq + ' en este dispositivo.'
+                            : 'Se registró la verificación de ' + nombreEq + ' correctamente.',
+                        irAlInicio: true
+                    });
+                },
+                onErr: function (err) {
+                    showPostRegistroModal({
+                        titulo: 'No se pudo registrar',
+                        mensaje: (err && err.message) || 'Intenta de nuevo más tarde.',
+                        irAlInicio: false
+                    });
+                }
+            });
         }
 
         function onVerificarClick() {
             var slug = slugCategoriaChecklist(section);
             if (!slug) {
-                window.alert('No hay categoría en los datos del equipo. Completa o elige un equipo con categoría.');
+                showAvisoModal(
+                    'Sin categoría',
+                    'No hay categoría en los datos del equipo. Completa o elige un equipo con categoría.'
+                );
                 return;
             }
             if (REG_CHECKLIST_SLUGS.indexOf(slug) === -1) {
-                window.alert(
+                showAvisoModal(
+                    'Checklist no disponible',
                     'No hay checklist de verificación para esta categoría. Disponibles: ' +
                         REG_CHECKLIST_SLUGS.join(', ') +
                         '.'
@@ -518,7 +661,10 @@
                     bindTabla1Checks();
                 })
                 .catch(function (err) {
-                    window.alert((err && err.message) || 'No se pudo cargar el checklist.');
+                    showAvisoModal(
+                        'Error al cargar',
+                        (err && err.message) || 'No se pudo cargar el checklist.'
+                    );
                 });
         }
 
@@ -556,7 +702,10 @@
                     bindTabla2Checks();
                 })
                 .catch(function (err) {
-                    window.alert((err && err.message) || 'No se pudo cargar la segunda tabla.');
+                    showAvisoModal(
+                        'Error al cargar',
+                        (err && err.message) || 'No se pudo cargar la segunda tabla.'
+                    );
                 });
         }
 
@@ -564,6 +713,9 @@
         shell.addEventListener('click', onChecklistRowClick, false);
         modalPost.addEventListener('click', onModalPostBackdrop, false);
         modalPostAceptar.addEventListener('click', onModalPostAceptar, false);
+        modalConfirm.addEventListener('click', onModalConfirmBackdrop, false);
+        modalConfirmAceptar.addEventListener('click', onModalConfirmAceptar, false);
+        modalConfirmCancelar.addEventListener('click', onModalConfirmCancelar, false);
         modalDesc.addEventListener('click', onModalDescBackdrop, false);
         modalDescAceptar.addEventListener('click', onModalDescAceptar, false);
         document.addEventListener('keydown', onModalPostKeydown, true);
@@ -580,6 +732,9 @@
                 document.removeEventListener('keydown', onModalPostKeydown, true);
                 modalPost.removeEventListener('click', onModalPostBackdrop, false);
                 modalPostAceptar.removeEventListener('click', onModalPostAceptar, false);
+                modalConfirm.removeEventListener('click', onModalConfirmBackdrop, false);
+                modalConfirmAceptar.removeEventListener('click', onModalConfirmAceptar, false);
+                modalConfirmCancelar.removeEventListener('click', onModalConfirmCancelar, false);
                 modalDesc.removeEventListener('click', onModalDescBackdrop, false);
                 modalDescAceptar.removeEventListener('click', onModalDescAceptar, false);
                 shell.removeEventListener('click', onChecklistRowClick, false);

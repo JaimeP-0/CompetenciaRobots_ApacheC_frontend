@@ -55,11 +55,13 @@
         cfg.registroEquiposPath = '/api/registro';
         cfg.categoriasPath = '/api/categorias';
         cfg.registroEnvioPath = '/api/registro/validar';
+        cfg.validacionesPath = '/api/validaciones';
     } else {
         cfg.apiBase = cfg.apiRemoteBase;
         cfg.registroEquiposPath = '/registro';
         cfg.categoriasPath = '/categorias';
         cfg.registroEnvioPath = '/registro/validar';
+        cfg.validacionesPath = '/validaciones';
     }
 
     w.CR_CONFIG = cfg;

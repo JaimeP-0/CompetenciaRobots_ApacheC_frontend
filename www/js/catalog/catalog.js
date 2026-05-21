@@ -13,6 +13,7 @@
         initCategoriaDetalle: V.categoriaDetalle,
         initEquipos: V.equiposLista,
         initEquipoDetalle: V.equipoDetalle,
+        initValidados: V.validados,
         initBuscar: V.buscar
     };
 })(window);

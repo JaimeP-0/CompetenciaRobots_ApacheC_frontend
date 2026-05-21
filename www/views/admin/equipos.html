@@ -1,21 +1,30 @@
-<section id="admin-equipos-root" class="cr-admin-shell" data-cr-modulo="3-equipos-registro" aria-label="Asignar categoría a equipos">
+<section
+    id="admin-equipos-root"
+    class="cr-admin-shell cr-admin-page cr-admin-equipos-page"
+    data-cr-modulo="3-equipos-registro"
+    aria-label="Asignar categoría a equipos"
+>
+    <button type="button" data-route="/admin" class="cr-catalog-back" aria-label="Volver al panel">←</button>
+
     <div class="cr-admin-shell-inner cr-admin-shell-inner--wide">
-        <header class="cr-admin-topbar">
-            <button type="button" data-route="/admin" class="cr-catalog-back" aria-label="Volver al panel">←</button>
+        <nav class="cr-admin-topbar" aria-label="Secciones de administración">
             <div data-admin-subnav></div>
+        </nav>
+
+        <header class="cr-admin-cats-hero">
+            <div class="cr-admin-cats-hero-icon" data-cr-icon="user-group" aria-hidden="true"></div>
+            <div class="cr-admin-cats-hero-text">
+                <h1 class="cr-catalog-title">Equipos</h1>
+            </div>
         </header>
 
-        <header class="cr-admin-page-head">
-            <p class="cr-catalog-kicker">Gestión</p>
-            <h1 class="cr-catalog-title">Equipos y categoría</h1>
-            <p class="cr-catalog-lead">Cada equipo debe tener una categoría para competir y aparecer bien en el catálogo.</p>
-            <p id="admin-equipos-modo" class="cr-admin-paginacion-modo" aria-live="polite"></p>
-        </header>
+        <p id="admin-equipos-msg" class="cr-admin-msg cr-admin-cats-toast hidden" role="status" aria-live="polite"></p>
 
-        <section class="cr-admin-block cr-admin-block--card" aria-labelledby="admin-equipos-filtros-title">
-            <h2 id="admin-equipos-filtros-title" class="cr-admin-block-title">Filtrar</h2>
-            <form id="f-admin-equipos-filtro" class="cr-admin-form cr-admin-form--inline" action="#" method="get">
-                <div class="cr-admin-field cr-admin-field--grow">
+        <section class="cr-admin-cats-add cr-admin-equipos-filtros" aria-labelledby="admin-equipos-filtros-title">
+            <h2 id="admin-equipos-filtros-title" class="sr-only">Filtrar equipos</h2>
+            <form id="f-admin-equipos-filtro" class="cr-admin-cats-add-form cr-admin-equipos-filtros-form" action="#" method="get">
+                <span class="cr-admin-cats-add-icon" data-cr-icon="magnifying-glass" aria-hidden="true"></span>
+                <div class="cr-admin-cats-add-field">
                     <label class="cr-admin-label" for="admin-equipos-buscar">Buscar</label>
                     <input
                         id="admin-equipos-buscar"
@@ -25,28 +34,29 @@
                         autocomplete="off"
                     />
                 </div>
-                <div class="cr-admin-field">
+                <div class="cr-admin-equipos-filtros-cat">
                     <label class="cr-admin-label" for="admin-equipos-filtro-cat">Categoría</label>
                     <select id="admin-equipos-filtro-cat" class="cr-admin-select">
                         <option value="">Todas</option>
                     </select>
                 </div>
-                <button type="submit" class="cr-app-btn cr-app-btn--outline shrink-0">Aplicar</button>
+                <button type="submit" class="cr-app-btn cr-app-btn--primary cr-admin-cats-add-btn">Aplicar</button>
             </form>
         </section>
 
-        <p id="admin-equipos-msg" class="cr-admin-msg hidden" role="status" aria-live="polite"></p>
-
-        <section class="cr-admin-block" aria-labelledby="admin-equipos-lista-title">
-            <h2 id="admin-equipos-lista-title" class="cr-admin-block-title">Listado de equipos</h2>
-
-            <div id="admin-equipos-pagination" class="cr-admin-pagination hidden" aria-label="Paginación de equipos"></div>
-
-            <div id="admin-equipos-list" class="cr-admin-equipos-list" aria-busy="true">
-                <p class="cr-catalog-msg">Cargando equipos…</p>
+        <section class="cr-admin-cats-list-section" aria-labelledby="admin-equipos-lista-title">
+            <div class="cr-admin-cats-list-head">
+                <h2 id="admin-equipos-lista-title" class="cr-admin-cats-list-title">Equipos registrados</h2>
+                <span id="admin-equipos-count" class="cr-admin-cats-count" aria-live="polite">…</span>
             </div>
 
-            <div id="admin-equipos-pagination-foot" class="cr-admin-pagination hidden" aria-label="Paginación de equipos"></div>
+            <div id="admin-equipos-pagination" class="cr-admin-equipos-pagination hidden" aria-label="Paginación de equipos"></div>
+
+            <div id="admin-equipos-list" class="cr-admin-equipo-list" aria-busy="true">
+                <p class="cr-admin-cats-loading">Cargando equipos…</p>
+            </div>
+
+            <div id="admin-equipos-pagination-foot" class="cr-admin-equipos-pagination hidden" aria-label="Paginación de equipos"></div>
         </section>
     </div>
 </section>
