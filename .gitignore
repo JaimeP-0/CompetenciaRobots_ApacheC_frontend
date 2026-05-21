@@ -24,8 +24,12 @@ node_modules/
 /plugins/
 /platforms/
 
-# Credenciales backend (usar config.example.php)
-backend/php/config.php
+# Backend de prueba / despliegue (no subir)
+/backend/
+
+# Documentación de práctica (local)
+DOCUMENTO-PRACTICA.md
+MODULOS-PRACTICA.md
 
 # Entorno local
 .env
