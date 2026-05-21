@@ -1,0 +1,22 @@
+<section id="cr-buscar-root" class="cr-catalog-page" aria-label="Buscar equipo">
+    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+
+    <h1 class="sr-only">Buscar equipo</h1>
+    <div class="flex flex-col gap-2">
+        <label class="sr-only" for="cr-buscar-input">Término de búsqueda</label>
+        <div class="cr-catalog-search-wrap">
+            <input
+                id="cr-buscar-input"
+                type="search"
+                autocomplete="off"
+                enterkeyhint="search"
+                placeholder="Ej. Mini Titan, UTNC, Martínez…"
+                class="cr-catalog-search-input"
+            />
+            <button id="cr-buscar-btn" type="button" class="cr-catalog-search-btn">Buscar</button>
+        </div>
+        <p class="text-center text-xs text-graphite/60 sm:text-left">También puedes pulsar Intro en el campo de búsqueda.</p>
+    </div>
+
+    <div id="cr-buscar-results" class="min-w-0"></div>
+</section>

@@ -1,0 +1,61 @@
+<section id="admin-panel-root" class="cr-admin-shell" aria-label="Panel de administración">
+    <div class="cr-admin-shell-inner">
+        <header class="cr-admin-topbar">
+            <button type="button" data-route="/" class="cr-catalog-back" aria-label="Salir al inicio público">←</button>
+            <div data-admin-subnav></div>
+        </header>
+
+        <header class="cr-admin-page-head">
+            <p class="cr-catalog-kicker">Administración</p>
+            <h1 class="cr-catalog-title">Panel</h1>
+            <p id="admin-saludo" class="cr-catalog-lead">Cargando sesión…</p>
+        </header>
+
+        <section class="cr-admin-block" aria-label="Resumen">
+            <h2 class="cr-admin-block-title">Resumen</h2>
+            <div class="cr-admin-stats">
+                <article class="cr-admin-stat-card">
+                    <p class="cr-admin-stat-k">Equipos</p>
+                    <p id="admin-stat-equipos" class="cr-admin-stat-v">…</p>
+                </article>
+                <article class="cr-admin-stat-card">
+                    <p class="cr-admin-stat-k">Categorías</p>
+                    <p id="admin-stat-categorias" class="cr-admin-stat-v">…</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="cr-admin-block cr-admin-block--card" aria-labelledby="admin-gestion-title">
+            <h2 id="admin-gestion-title" class="cr-admin-block-title">Gestión de datos</h2>
+            <p class="cr-admin-block-desc">Edita categorías, reglas y la categoría de cada equipo.</p>
+            <div class="cr-admin-tiles">
+                <a href="#/admin/categorias" class="cr-admin-tile cr-admin-tile--primary" data-route="/admin/categorias">
+                    <span class="cr-admin-tile-title">Categorías y reglas</span>
+                    <span class="cr-admin-tile-desc">Crear categorías y su reglamento</span>
+                    <span class="cr-admin-tile-arrow" aria-hidden="true">→</span>
+                </a>
+                <a href="#/admin/equipos" class="cr-admin-tile" data-route="/admin/equipos">
+                    <span class="cr-admin-tile-title">Equipos</span>
+                    <span class="cr-admin-tile-desc">Asignar categoría por equipo</span>
+                    <span class="cr-admin-tile-arrow" aria-hidden="true">→</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="cr-admin-block cr-admin-block--card cr-admin-block--muted" aria-labelledby="admin-consulta-title">
+            <h2 id="admin-consulta-title" class="cr-admin-block-title">Vista pública</h2>
+            <p class="cr-admin-block-desc">Comprueba cómo lo ven participantes y jueces.</p>
+            <ul class="cr-admin-link-list">
+                <li><a href="#/categorias" data-route="/categorias" class="cr-admin-link-row">Categorías y reglamento <span aria-hidden="true">→</span></a></li>
+                <li><a href="#/equipos" data-route="/equipos" class="cr-admin-link-row">Listado de equipos <span aria-hidden="true">→</span></a></li>
+                <li><a href="#/registro" data-route="/registro" class="cr-admin-link-row">Registrar verificación <span aria-hidden="true">→</span></a></li>
+            </ul>
+        </section>
+
+        <footer class="cr-admin-footer">
+            <button type="button" id="btn-admin-logout" class="cr-app-btn cr-app-btn--outline">
+                Cerrar sesión
+            </button>
+        </footer>
+    </div>
+</section>

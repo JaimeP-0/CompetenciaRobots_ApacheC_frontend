@@ -1,0 +1,51 @@
+{
+  "name": "com.cr.competenciarobots",
+  "displayName": "Competencia de Robots",
+  "version": "1.0.0",
+  "description": "A sample Apache Cordova application that responds to the deviceready event.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run prepare:all",
+    "build:css": "tailwindcss -i ./www/css/src/input.css -o ./www/css/app.css --minify",
+    "icons:sync": "node scripts/sync-heroicons.cjs",
+    "prepare:browser": "npx cordova prepare browser",
+    "prepare:android": "npx cordova prepare android",
+    "prepare:all": "npm run icons:sync && npm run build:css && npm run prepare:browser && npm run prepare:android",
+    "build:android": "npm run prepare:all && npx cordova build android",
+    "build:android:clean": "npx cordova clean android && npm run prepare:all && npx cordova build android",
+    "watch:css": "tailwindcss -i ./www/css/src/input.css -o ./www/css/app.css --watch",
+    "watch:prepare": "chokidar \"www\" -c \"npm run prepare:all\" -d 2000 --initial",
+    "dev": "concurrently -k -n css,sync -c cyan,magenta \"npm run watch:css\" \"npm run watch:prepare\"",
+    "serve": "node scripts/dev-server.cjs",
+    "browser": "npm run prepare:browser && node scripts/dev-server.cjs --open",
+    "android:install-logcat": "node scripts/android-install-logcat.cjs"
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Apache Cordova Team",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "chokidar-cli": "^3.0.0",
+    "concurrently": "^9.1.2",
+    "express": "^4.21.2",
+    "http-proxy": "^1.18.1",
+    "cordova-android": "^13.0.0",
+    "cordova-browser": "^7.0.0",
+    "cordova-plugin-statusbar": "^4.0.0",
+    "heroicons": "^2.2.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  },
+  "cordova": {
+    "platforms": [
+      "browser",
+      "android"
+    ],
+    "plugins": {
+      "cordova-plugin-statusbar": {}
+    }
+  }
+}

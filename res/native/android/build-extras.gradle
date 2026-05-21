@@ -1,0 +1,27 @@
+// Copiado por hooks/after_prepare → platforms/android/app/build-extras.gradle
+// Renombra app-debug.apk / app-release.apk a proyecto_robot-*.apk (AGP 8+ no permite mutar outputFileName en afterEvaluate).
+
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
+afterEvaluate {
+    ['Debug', 'Release'].each { String buildCap ->
+        def taskName = "assemble${buildCap}"
+        def t = tasks.findByName(taskName)
+        if (t == null) {
+            return
+        }
+        t.doLast {
+            def bt = buildCap.toLowerCase()
+            def dir = file("${project.buildDir}/outputs/apk/${bt}")
+            def from = new File(dir, "app-${bt}.apk")
+            def to = new File(dir, "proyecto_robot-${bt}.apk")
+            if (from.exists()) {
+                if (to.exists()) {
+                    to.delete()
+                }
+                Files.move(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
+        }
+    }
+}

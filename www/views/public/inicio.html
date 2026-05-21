@@ -1,0 +1,74 @@
+<section
+    id="cr-inicio-root"
+    class="cr-catalog-page cr-catalog-page--inicio"
+    data-cr-modulo="1-catalogo"
+    aria-label="Competencia de Robots"
+>
+    <h1 class="sr-only">Competencia de Robots</h1>
+
+    <figure class="cr-inicio-hero">
+        <picture>
+            <source media="(min-width: 1024px)" srcset="img/hero-competencia.svg" />
+            <source media="(min-width: 640px)" srcset="img/hero-competencia.svg" />
+            <img
+                src="img/hero-competencia.svg"
+                alt="Banner Competencia de Robots UTNC"
+                class="cr-inicio-hero-img"
+                width="800"
+                height="320"
+                decoding="async"
+            />
+        </picture>
+        <figcaption class="cr-inicio-hero-caption">
+            <span class="cr-inicio-hero-caption-long">Consulta categorías, equipos y reglamento</span>
+            <span class="cr-inicio-hero-caption-short">Catálogo y registro</span>
+        </figcaption>
+    </figure>
+
+    <nav class="cr-inicio-nav" aria-label="Acciones principales">
+        <button
+            type="button"
+            class="cr-catalog-cat-card cr-inicio-tile--primary"
+            data-route="/registro"
+        >
+            <span class="cr-inicio-tile-icon" data-cr-icon="clipboard-document-check"></span>
+            <span class="cr-inicio-tile-text">
+                <span class="cr-catalog-cat-card-title">Registrar competidor</span>
+                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Verificación de jueces</span>
+            </span>
+            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="cr-catalog-cat-card" data-route="/categorias">
+            <span class="cr-inicio-tile-icon" data-cr-icon="squares-2x2"></span>
+            <span class="cr-inicio-tile-text">
+                <span class="cr-catalog-cat-card-title">Categorías</span>
+                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Reglamento por categoría</span>
+            </span>
+            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="cr-catalog-cat-card" data-route="/equipos">
+            <span class="cr-inicio-tile-icon" data-cr-icon="user-group"></span>
+            <span class="cr-inicio-tile-text">
+                <span class="cr-catalog-cat-card-title">Equipos</span>
+                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Listado completo</span>
+            </span>
+            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="cr-catalog-cat-card" data-route="/buscar">
+            <span class="cr-inicio-tile-icon" data-cr-icon="magnifying-glass"></span>
+            <span class="cr-inicio-tile-text">
+                <span class="cr-catalog-cat-card-title">Buscar equipos</span>
+                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Nombre, escuela o integrante</span>
+            </span>
+            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="cr-catalog-cat-card cr-inicio-tile--admin" data-route="/admin/login">
+            <span class="cr-inicio-tile-icon" data-cr-icon="lock-closed"></span>
+            <span class="cr-inicio-tile-text">
+                <span class="cr-catalog-cat-card-title">Administración</span>
+                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Usuario y contraseña</span>
+            </span>
+            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
+        </button>
+    </nav>
+</section>

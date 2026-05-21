@@ -1,0 +1,28 @@
+<section
+    id="cr-cat-detalle-root"
+    class="cr-catalog-page"
+    aria-label="Detalle de categoría"
+>
+    <button type="button" data-route="/categorias" class="cr-catalog-back" aria-label="Volver a categorías">←</button>
+
+    <div class="cr-catalog-card-block">
+        <div class="cr-catalog-card-block-h">
+            <h2 id="cr-cat-detalle-titulo" class="cr-catalog-card-block-h-title cr-catalog-card-block-h-title--dynamic">Cargando…</h2>
+        </div>
+        <div id="cr-cat-detalle-reglas" class="cr-catalog-card-block-body min-w-0"></div>
+    </div>
+
+    <div class="flex flex-col gap-3 sm:flex-row">
+        <button
+            id="cr-cat-detalle-equipos-btn"
+            type="button"
+            class="cr-app-btn cr-app-btn--primary min-h-12 flex-1 text-sm sm:text-base"
+            data-route="/equipos"
+        >
+            Ver equipos inscritos
+        </button>
+        <button type="button" class="cr-app-btn cr-app-btn--outline min-h-12 flex-1 text-sm sm:text-base" data-route="/categorias">
+            Otra categoría
+        </button>
+    </div>
+</section>

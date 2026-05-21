@@ -1,0 +1,1185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    /* Evita zoom raro en iOS; escala raíz según ancho para que rem (Tailwind) no se vea “mini” en escritorio. */
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        font-size: clamp(15px, 1.1vw + 13px, 18px);
+        overflow-x: hidden;
+    }
+    body {
+        overflow-x: hidden;
+        min-width: 0;
+    }
+    #cr-outlet {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+@layer components {
+    .cr-card {
+        @apply rounded-2xl bg-snow shadow-xl border border-mist overflow-hidden;
+    }
+    .cr-card-head {
+        @apply bg-navy px-4 py-3 sm:px-6 sm:py-4;
+    }
+    .cr-card-title {
+        @apply text-lg sm:text-xl font-semibold text-snow tracking-tight;
+    }
+    .cr-card-body {
+        @apply p-4 sm:p-6 lg:p-8;
+    }
+    .cr-label {
+        @apply block text-sm font-medium text-graphite mb-1;
+    }
+    .cr-input {
+        @apply w-full rounded-lg border border-graphite/25 bg-snow px-3 py-2.5 text-graphite text-sm shadow-sm focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition;
+    }
+    /* Desplegable reconocible (chevron propio; evita que parezca un campo de texto) */
+    select.cr-input {
+        @apply cursor-pointer pr-10;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%235c6470'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.65rem center;
+        background-size: 1rem 1rem;
+    }
+    .cr-textarea {
+        @apply w-full rounded-lg border border-graphite/25 bg-snow px-3 py-2.5 text-graphite text-sm shadow-sm focus:border-accent focus:ring-2 focus:ring-accent/30 outline-none transition resize-y;
+    }
+    /* Misma familia visual que acciones importantes (borde lima); uso en formularios / tarjetas */
+    .cr-btn-primary {
+        @apply inline-flex items-center justify-center rounded-lg border-2 border-[#C6D93D] bg-[#F5F5F5] px-4 py-2.5 text-sm font-normal text-[#1B8C7A] shadow-sm transition outline-none hover:bg-[#EDEDED] hover:border-[#B8C932] focus-visible:ring-2 focus-visible:ring-[#C6D93D]/45 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f5f7fb] disabled:cursor-not-allowed;
+    }
+    .cr-btn-primary:disabled,
+    .cr-btn-primary[disabled] {
+        @apply cursor-not-allowed border border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A] shadow-none opacity-100;
+    }
+    .cr-btn-primary:disabled:hover,
+    .cr-btn-primary[disabled]:hover {
+        @apply border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A];
+    }
+    .cr-btn-secondary {
+        @apply inline-flex items-center justify-center rounded-lg border border-graphite/25 bg-snow px-4 py-2.5 text-sm font-semibold text-graphite hover:bg-mist focus:outline-none focus:ring-2 focus:ring-accent/30 transition;
+    }
+    /* CTAs y modales: referencia “Trayectorias” — fondo gris claro, texto teal, borde lima */
+    .cr-app-btn {
+        @apply relative inline-flex w-full max-w-full items-center justify-center rounded-lg px-4 py-3 text-center text-base font-normal leading-snug tracking-normal shadow-sm transition select-none outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f5f7fb] active:translate-y-px sm:px-6 sm:py-3.5;
+    }
+    /* Habilitados: borde lima (primary y outline comparten aspecto) */
+    .cr-app-btn--primary,
+    .cr-app-btn--outline {
+        @apply border-2 border-[#C6D93D] bg-[#F5F5F5] text-[#1B8C7A] hover:bg-[#EDEDED] hover:border-[#B8C932] focus-visible:ring-[#C6D93D]/50;
+    }
+    /* Deshabilitados: sin lima (gris), mismo criterio para primary u outline */
+    .cr-app-btn--primary:disabled,
+    .cr-app-btn--primary[disabled],
+    .cr-app-btn--outline:disabled,
+    .cr-app-btn--outline[disabled] {
+        @apply cursor-not-allowed border border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A] shadow-none opacity-100;
+    }
+    .cr-app-btn--primary:disabled:hover,
+    .cr-app-btn--primary[disabled]:hover,
+    .cr-app-btn--outline:disabled:hover,
+    .cr-app-btn--outline[disabled]:hover {
+        @apply border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A];
+    }
+    .cr-app-btn--primary:disabled:active,
+    .cr-app-btn--primary[disabled]:active,
+    .cr-app-btn--outline:disabled:active,
+    .cr-app-btn--outline[disabled]:active {
+        transform: none;
+    }
+    .cr-app-btn--primary:disabled:focus-visible,
+    .cr-app-btn--primary[disabled]:focus-visible,
+    .cr-app-btn--outline:disabled:focus-visible,
+    .cr-app-btn--outline[disabled]:focus-visible {
+        @apply border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A] ring-2 ring-[#1B8C7A]/25 ring-offset-2 ring-offset-[#f5f7fb];
+    }
+    /* Categorías: bloques por familia de categoría */
+    .cr-comp-grupo {
+        @apply rounded-2xl border border-graphite/15 bg-snow/95 p-4 shadow-sm sm:p-5;
+    }
+    .cr-comp-grupo-titulo {
+        @apply mb-3 border-b border-black/15 pb-2 text-left text-xs font-bold uppercase tracking-[0.12em] text-black sm:mb-4 sm:text-sm;
+    }
+    .cr-comp-grupo-botones {
+        @apply flex flex-col gap-2.5 sm:gap-3;
+    }
+    /* Solo en sumo (2 columnas en pantallas anchas); no mezclar con .cr-comp-grupo-botones en el mismo nodo */
+    .cr-comp-grupo-botones--grid {
+        @apply grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3;
+    }
+    .cr-link {
+        @apply font-semibold text-accent hover:text-blue-700 hover:underline;
+    }
+    .cr-feedback {
+        @apply mt-4 hidden rounded-lg border border-graphite/15 bg-mist/60 p-3 sm:p-4 text-sm;
+    }
+    .cr-feedback-pre {
+        @apply text-xs text-graphite overflow-auto max-h-72 whitespace-pre-wrap font-mono leading-relaxed;
+    }
+    /* Sub-barra tipo navbar dentro del cuerpo de la tarjeta */
+    .cr-card-body.cr-card-body-inner {
+        @apply p-0 flex flex-col min-h-0;
+    }
+    .cr-card-intro {
+        @apply px-4 sm:px-6 pt-4 sm:pt-5 pb-3 text-sm text-graphite/85;
+    }
+    .cr-subnav-wrap {
+        @apply w-full shrink-0 border-y border-navy/10 bg-gradient-to-b from-navy/[0.07] to-mist/40 shadow-inner overflow-hidden;
+    }
+    /* Barra a todo el ancho de la tarjeta; pestañas reparten el espacio (responsive) */
+    .cr-subnav {
+        @apply w-full min-w-0 flex flex-nowrap items-stretch;
+    }
+    .cr-subnav-item {
+        @apply relative flex-1 min-w-0 basis-0 border-0 bg-transparent cursor-pointer inline-flex items-center justify-center text-center px-2 sm:px-3 py-3 min-h-[2.75rem] sm:min-h-[3rem] text-xs sm:text-sm font-medium text-graphite/90 leading-snug rounded-none sm:rounded-t-md border-b-2 border-transparent -mb-px transition-colors duration-150 hover:text-navy hover:bg-snow/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent/35;
+    }
+    .cr-subnav-item.is-active {
+        @apply text-navy bg-snow border-b-accent z-[1] shadow-[inset_0_1px_0_0_rgba(255,255,255,0.65)];
+    }
+    .cr-panels {
+        @apply relative px-4 sm:px-6 py-5 sm:py-6 flex-1;
+    }
+    .cr-panels-load {
+        @apply absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-white/90 backdrop-blur-sm text-graphite;
+    }
+    .cr-panels-load.hidden {
+        display: none;
+    }
+    .cr-panels-load-spinner {
+        @apply h-9 w-9 shrink-0 rounded-full border-2 border-mist border-t-accent animate-spin;
+    }
+    .cr-panel {
+        @apply max-w-2xl space-y-3 animate-[cr-panel-in_0.22s_ease-out];
+    }
+    .cr-panel.hidden {
+        display: none;
+    }
+    .cr-lazy-hint {
+        @apply text-xs text-graphite/75;
+    }
+    .cr-lazy-status {
+        @apply text-xs text-graphite;
+    }
+
+    /* —— Catálogo (consulta: categorías, reglas, equipos, búsqueda) —— */
+    .cr-catalog-page {
+        @apply relative mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col gap-5 px-1 pb-10 pt-[calc(env(safe-area-inset-top,0px)+3rem)] sm:max-w-2xl sm:gap-6 sm:px-3 sm:pb-12 sm:pt-[calc(env(safe-area-inset-top,0px)+3.25rem)] md:max-w-3xl md:px-4 lg:max-w-4xl;
+    }
+    .cr-catalog-page--wide {
+        @apply max-w-4xl;
+    }
+    /** Registro competidor: menos aire arriba (solo botón atrás), encadena altura con el outlet */
+    .cr-catalog-page.cr-catalog-page--registro {
+        @apply gap-3 pb-3 pt-[calc(env(safe-area-inset-top,0px)+2.75rem)] sm:gap-4 sm:pb-4 sm:pt-[calc(env(safe-area-inset-top,0px)+2.9rem)] lg:max-w-4xl lg:px-6;
+    }
+    .cr-catalog-back {
+        @apply fixed z-[70] flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-graphite/15 bg-snow p-0 text-xl font-normal leading-none text-navy shadow-md transition [-webkit-tap-highlight-color:transparent] hover:border-marine/40 hover:bg-mist/70 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/35;
+        left: max(0.35rem, env(safe-area-inset-left, 0px));
+        top: max(0.35rem, env(safe-area-inset-top, 0px));
+    }
+    .cr-catalog-hero {
+        @apply pt-1 text-center sm:text-left;
+    }
+    .cr-catalog-hero--bar {
+        @apply relative overflow-hidden rounded-2xl border border-graphite/15 bg-gradient-to-br from-snow via-snow to-mist/50 px-4 py-5 text-center shadow-sm sm:px-6 sm:py-6 sm:text-left;
+    }
+    .cr-catalog-hero--bar::after {
+        content: '';
+        @apply pointer-events-none absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-marine to-navy/40;
+    }
+    .cr-catalog-kicker {
+        @apply mb-1 text-[0.7rem] font-bold uppercase tracking-[0.14em] text-marine sm:text-xs;
+    }
+    .cr-catalog-title {
+        @apply text-[clamp(1.25rem,1rem+1.2vw,1.75rem)] font-bold leading-tight tracking-tight text-navy;
+    }
+    .cr-catalog-lead {
+        @apply mt-2 max-w-prose text-sm leading-relaxed text-graphite/80 sm:mx-0 sm:mt-2;
+    }
+    .cr-catalog-actions {
+        @apply flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:justify-center;
+    }
+    .cr-catalog-actions .cr-app-btn {
+        @apply w-full sm:w-auto sm:min-w-[12rem];
+    }
+    .cr-catalog-cat-grid {
+        @apply grid grid-cols-1 gap-3 sm:grid-cols-2;
+    }
+    .cr-catalog-cat-card {
+        @apply relative flex min-h-[4.25rem] flex-col justify-center gap-0.5 rounded-2xl border border-graphite/15 bg-snow px-4 py-4 pr-10 text-left shadow-sm transition hover:border-marine/30 hover:shadow-md focus-within:ring-2 focus-within:ring-accent/30;
+    }
+    .cr-catalog-cat-card--icon {
+        @apply grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3 pr-3 sm:gap-4 sm:pr-4;
+    }
+    .cr-catalog-cat-card-icon {
+        @apply row-span-2 flex h-9 w-9 items-center justify-center rounded-lg bg-mist/50 sm:h-10 sm:w-10;
+    }
+    .cr-catalog-cat-card--icon .cr-catalog-cat-card-title {
+        @apply col-start-2;
+    }
+    .cr-catalog-cat-card--icon .cr-catalog-meta--sm {
+        @apply col-start-2 hidden text-xs sm:block;
+    }
+    .cr-catalog-cat-card--icon .cr-catalog-cat-card-arrow {
+        @apply col-start-3 row-span-2;
+    }
+    .cr-catalog-cat-card-title {
+        @apply text-base font-semibold text-navy transition-colors;
+    }
+    .cr-catalog-cat-card:hover .cr-catalog-cat-card-title {
+        @apply text-marine;
+    }
+    .cr-catalog-cat-card-meta {
+        @apply text-xs text-graphite/70;
+    }
+    .cr-catalog-cat-card-arrow {
+        @apply pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-graphite/35 transition-colors;
+    }
+    .cr-catalog-cat-card:hover .cr-catalog-cat-card-arrow {
+        @apply text-marine/80;
+    }
+    /* Tarjetas con grid/flex: la flecha no va absolute (evita solapamiento en móvil) */
+    .cr-catalog-cat-card--icon .cr-catalog-cat-card-arrow,
+    .cr-inicio-nav .cr-catalog-cat-card .cr-catalog-cat-card-arrow {
+        @apply static right-auto top-auto ml-auto shrink-0 translate-y-0 self-center justify-self-end text-base;
+    }
+    .cr-catalog-card-block {
+        @apply overflow-hidden rounded-2xl border border-graphite/15 bg-snow shadow-sm;
+    }
+    .cr-catalog-card-block-h {
+        @apply border-b border-graphite/10 bg-mist/50 px-4 py-3 sm:px-5;
+    }
+    .cr-catalog-card-block-h-title {
+        @apply text-sm font-semibold uppercase tracking-wide text-navy;
+    }
+    .cr-catalog-card-block-h-title--dynamic {
+        @apply text-base font-bold normal-case tracking-tight text-navy sm:text-lg;
+    }
+    .cr-catalog-card-block-body {
+        @apply px-4 py-4 sm:px-5 sm:py-5;
+    }
+    .cr-catalog-card-block-body--equipo {
+        @apply min-w-0 max-w-full overflow-x-hidden;
+    }
+    .cr-catalog-rule-list {
+        @apply flex flex-col gap-3;
+    }
+    .cr-catalog-rule {
+        @apply flex gap-3 rounded-xl border border-graphite/10 bg-mist/25 px-3 py-3 sm:gap-4 sm:px-4;
+    }
+    .cr-catalog-rule-num {
+        @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-bold text-snow;
+    }
+    .cr-catalog-rule-text {
+        @apply min-w-0 flex-1 text-sm leading-relaxed text-graphite sm:text-base;
+    }
+    .cr-catalog-team-list {
+        @apply flex flex-col gap-2 sm:grid sm:grid-cols-2 sm:gap-x-3 sm:gap-y-2;
+    }
+    .cr-catalog-team-card {
+        @apply rounded-2xl border border-graphite/15 bg-snow p-4 shadow-sm transition hover:border-marine/25 hover:shadow-md;
+    }
+    .cr-catalog-team-card--compact {
+        @apply rounded-lg px-2.5 py-2 shadow-sm transition hover:shadow-md sm:px-3 sm:py-2;
+    }
+    .cr-catalog-team-card-top {
+        @apply flex min-w-0 items-center justify-between gap-2;
+    }
+    .cr-catalog-team-name {
+        @apply text-base font-semibold text-navy underline-offset-2 hover:text-marine hover:underline;
+    }
+    .cr-catalog-team-name--compact {
+        @apply min-w-0 flex-1 truncate text-sm font-semibold leading-snug;
+    }
+    .cr-catalog-team-tag {
+        @apply inline-flex shrink-0 items-center rounded-full border border-graphite/15 bg-mist/50 px-2.5 py-0.5 text-xs font-medium text-graphite;
+    }
+    .cr-catalog-team-tag--sm {
+        @apply px-2 py-0 text-[0.65rem] leading-none;
+    }
+    .cr-catalog-team-line {
+        @apply mt-1 min-w-0 text-xs leading-snug text-graphite/85;
+    }
+    .cr-catalog-team-line--school {
+        @apply flex items-center justify-between gap-2;
+    }
+    .cr-catalog-team-line--dense {
+        @apply mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5;
+    }
+    .cr-catalog-team-chip {
+        @apply shrink-0 rounded border border-graphite/10 bg-mist/50 px-1.5 py-0.5 text-[0.65rem] font-medium text-graphite/90;
+    }
+    .cr-catalog-team-inline-k {
+        @apply shrink-0 text-[0.6rem] font-bold uppercase tracking-wide text-graphite/45;
+    }
+    .cr-catalog-team-inline {
+        @apply min-w-0 text-graphite;
+    }
+    .cr-catalog-team-dot {
+        @apply shrink-0 text-graphite/35;
+    }
+    .cr-catalog-team-meta {
+        @apply mt-2 grid gap-3 sm:grid-cols-2;
+    }
+    .cr-catalog-team-meta dt {
+        @apply text-[0.65rem] font-bold uppercase tracking-wide text-graphite/55;
+    }
+    .cr-catalog-team-meta dd {
+        @apply text-sm font-medium text-graphite;
+    }
+    .cr-catalog-search-wrap {
+        @apply flex flex-col gap-3 overflow-hidden rounded-2xl border-2 border-graphite/15 bg-snow shadow-sm transition focus-within:border-accent/40 focus-within:ring-2 focus-within:ring-accent/25 sm:flex-row sm:items-stretch;
+    }
+    .cr-catalog-search-input {
+        @apply min-h-12 w-full flex-1 border-0 bg-transparent px-4 text-base text-graphite outline-none ring-0 placeholder:text-graphite/45;
+    }
+    .cr-catalog-search-btn {
+        @apply shrink-0 rounded-none border-0 border-t border-graphite/10 bg-gradient-to-b from-mist/30 to-mist/60 px-6 text-sm font-semibold text-navy sm:border-l sm:border-t-0 sm:py-0;
+    }
+    .cr-catalog-hit-list {
+        @apply flex flex-col gap-2;
+    }
+    .cr-catalog-hit {
+        @apply block rounded-2xl border border-graphite/15 bg-snow px-4 py-3 shadow-sm transition hover:border-marine/30 hover:bg-mist/30;
+    }
+    .cr-catalog-hit--compact {
+        @apply rounded-lg px-3 py-2 shadow-sm;
+    }
+    .cr-catalog-hit-title {
+        @apply font-semibold text-navy;
+    }
+    .cr-catalog-hit-sub {
+        @apply mt-0.5 text-xs text-graphite/70;
+    }
+    .cr-catalog-dl {
+        @apply grid gap-4 sm:grid-cols-2;
+    }
+    .cr-catalog-dl > div {
+        @apply min-w-0;
+    }
+    .cr-catalog-dt {
+        @apply text-[0.65rem] font-bold uppercase tracking-[0.1em] text-graphite/55;
+    }
+    .cr-catalog-dd {
+        @apply mt-0.5 min-w-0 max-w-full break-words text-sm font-medium text-graphite sm:text-base;
+    }
+    .cr-catalog-section-title {
+        @apply mt-8 border-t border-graphite/10 pt-5 text-base font-bold text-navy;
+    }
+    /* Integrantes (ficha equipo): lista apilada, sin scroll horizontal en móvil */
+    .cr-catalog-member-list {
+        @apply m-0 mt-2 list-none space-y-2 p-0;
+    }
+    .cr-catalog-member-card {
+        @apply max-w-full min-w-0 rounded-xl border border-graphite/15 bg-mist/25 px-3 py-2.5 sm:px-4 sm:py-3;
+    }
+    .cr-catalog-member-head {
+        @apply flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3;
+    }
+    .cr-catalog-member-name {
+        @apply min-w-0 flex-1 text-sm font-semibold leading-snug text-graphite sm:text-base;
+        overflow-wrap: anywhere;
+    }
+    .cr-catalog-member-role {
+        @apply shrink-0 self-start sm:self-center;
+    }
+    .cr-catalog-member-email {
+        @apply mt-2 min-w-0 break-all text-xs leading-relaxed text-graphite/75;
+    }
+    .cr-catalog-member-email-k {
+        @apply mr-1 font-semibold text-graphite/50;
+    }
+    .cr-catalog-table-wrap {
+        @apply overflow-x-auto rounded-xl border border-graphite/10;
+    }
+    .cr-catalog-table {
+        @apply w-full min-w-[18rem] border-collapse text-left text-sm;
+    }
+    .cr-catalog-table th {
+        @apply border-b border-graphite/15 bg-mist/40 px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-graphite/75;
+    }
+    .cr-catalog-table td {
+        @apply border-b border-graphite/10 px-3 py-2.5 text-graphite;
+    }
+    .cr-catalog-table tr:last-child td {
+        @apply border-b-0;
+    }
+    .cr-catalog-badge {
+        @apply inline-flex rounded-md bg-mist px-2 py-0.5 text-xs font-semibold text-marine ring-1 ring-marine/25;
+    }
+    .cr-catalog-msg {
+        @apply rounded-xl border border-graphite/15 bg-mist/30 px-4 py-6 text-center text-sm text-graphite/80;
+    }
+    .cr-catalog-msg--error {
+        @apply border-red-200/80 bg-red-50/90 text-red-800;
+    }
+    .cr-catalog-skel {
+        @apply animate-pulse rounded-xl bg-mist/60;
+    }
+    .cr-catalog-skel-line {
+        @apply h-4 rounded-md bg-mist/80;
+    }
+
+    /* Checklist: solo caja (span). Tamaño en rem (no 1em de la tabla) para que la palomita quede dentro del cuadro. */
+    #reg-checklist-scroll,
+    #reg-checklist-scroll * {
+        box-sizing: border-box;
+    }
+    #reg-checklist-scroll .cr-reg-check-label {
+        user-select: none;
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input {
+        height: 0;
+        width: 0;
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input + label {
+        position: relative;
+        display: inline-flex;
+        margin: 0.6em 0;
+        align-items: center;
+        color: #9e9e9e;
+        transition: color 250ms cubic-bezier(0.4, 0, 0.23, 1);
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input + label > span {
+        position: relative;
+        display: flex;
+        flex: 0 0 auto;
+        justify-content: center;
+        align-items: center;
+        margin-right: 0;
+        width: 1.375rem;
+        height: 1.375rem;
+        background: transparent;
+        border: 2px solid #9e9e9e;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: border-color 250ms cubic-bezier(0.4, 0, 0.23, 1), border-width 250ms cubic-bezier(0.4, 0, 0.23, 1),
+            background-color 250ms cubic-bezier(0.4, 0, 0.23, 1);
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input + label:hover,
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input:focus + label {
+        color: #fff;
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input:not(:checked) + label:hover > span,
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input:not(:checked):focus + label > span {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input:checked + label > span {
+        background-color: #34d399;
+        border: 5px solid #34d399;
+        animation: shrink-bounce 200ms cubic-bezier(0.4, 0, 0.23, 1);
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input:checked + label > span::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        box-sizing: border-box;
+        width: 6px;
+        height: 11px;
+        color: #fff;
+        border-style: solid;
+        border-color: currentColor;
+        border-width: 0 3px 3px 0;
+        transform: translate(-55%, -62%) rotate(45deg);
+        transform-origin: center center;
+        opacity: 0;
+        animation: cr-reg-palomita-in 0.2s cubic-bezier(0.4, 0, 0.23, 1) 0.12s forwards;
+    }
+    #reg-checklist-scroll input[type='checkbox'].cr-reg-check-input:focus-visible + label > span {
+        @apply ring-2 ring-emerald-400/55 ring-offset-2 ring-offset-[#f5f7fb];
+    }
+
+    .cr-icon {
+        @apply inline-block h-6 w-6 shrink-0 text-navy;
+    }
+    .cr-icon--btn {
+        @apply mr-1.5 h-5 w-5;
+    }
+    .cr-icon--btn-only {
+        @apply m-0 h-5 w-5;
+    }
+    .cr-app-btn .cr-icon {
+        @apply opacity-90;
+    }
+
+    /* Inicio: hero responsivo (módulo 1 — imágenes) */
+    .cr-inicio-hero {
+        @apply w-full min-w-0 overflow-hidden rounded-2xl border border-graphite/15 bg-snow shadow-sm;
+    }
+    .cr-inicio-hero-img {
+        @apply block h-auto w-full max-h-[8rem] object-cover object-center sm:max-h-[10rem] md:max-h-[12rem];
+    }
+    .cr-inicio-hero-caption {
+        @apply border-t border-graphite/10 bg-mist/40 px-3 py-2 text-center text-xs text-graphite/80 sm:px-4 sm:text-sm;
+    }
+    .cr-inicio-hero-caption-short {
+        @apply inline md:hidden;
+    }
+    .cr-inicio-hero-caption-long {
+        @apply hidden md:inline;
+    }
+
+    /* Inicio: 1 col móvil → 2 cols tablet/desktop; ancho fluido */
+    .cr-catalog-page.cr-catalog-page--inicio {
+        @apply relative mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col gap-4 px-0 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-1 sm:max-w-xl sm:gap-5 sm:px-2 sm:pb-8 sm:pt-3 md:max-w-2xl md:px-3 lg:max-w-4xl lg:gap-6 lg:px-4 lg:pb-12 lg:pt-6;
+    }
+    .cr-inicio-nav {
+        @apply grid w-full min-w-0 grid-cols-1 gap-3 sm:gap-3.5 lg:grid-cols-2 lg:gap-4;
+        grid-template-columns: minmax(0, 1fr);
+    }
+    @media (min-width: 1024px) {
+        .cr-inicio-nav {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    .cr-inicio-nav .cr-inicio-tile--primary {
+        @apply lg:col-span-2;
+    }
+    .cr-inicio-nav .cr-catalog-cat-card {
+        @apply box-border flex min-h-[3.5rem] w-full min-w-0 max-w-full cursor-pointer flex-row items-center gap-2.5 overflow-hidden py-3.5 pl-3 pr-2.5 text-left text-[0.9375rem] [-webkit-tap-highlight-color:transparent] sm:min-h-[3.75rem] sm:gap-3 sm:pl-4 sm:pr-3 sm:text-base lg:min-h-[4rem] lg:gap-4 lg:py-4 lg:pr-4;
+        font: inherit;
+    }
+    .cr-inicio-tile-icon {
+        @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-mist/60 sm:h-11 sm:w-11;
+    }
+    .cr-inicio-tile-icon .cr-icon {
+        @apply h-6 w-6 sm:h-7 sm:w-7;
+    }
+    .cr-inicio-tile-text {
+        @apply flex min-w-0 flex-1 flex-col justify-center gap-0.5 overflow-hidden;
+    }
+    .cr-inicio-tile-text .cr-catalog-cat-card-title {
+        @apply break-words text-[0.9375rem] font-semibold leading-snug text-navy sm:text-base lg:text-[1.05rem];
+        overflow-wrap: anywhere;
+    }
+    .cr-inicio-tile-text .cr-catalog-cat-card-meta {
+        @apply break-words text-xs leading-snug text-graphite/70;
+        overflow-wrap: anywhere;
+    }
+    .cr-inicio-meta-hide {
+        @apply hidden lg:block;
+    }
+    .cr-inicio-nav .cr-catalog-cat-card-arrow {
+        @apply ml-1 shrink-0 text-sm sm:text-base;
+    }
+    .cr-catalog-cat-card.cr-inicio-tile--primary {
+        @apply border-marine/35 bg-gradient-to-br from-snow via-snow to-marine/[0.07] shadow-md;
+    }
+    .cr-catalog-cat-card.cr-inicio-tile--primary .cr-catalog-cat-card-title {
+        @apply text-marine;
+    }
+    .cr-catalog-cat-card.cr-inicio-tile--admin {
+        @apply border-graphite/20 bg-mist/30;
+    }
+    /* —— Admin: shell y vistas separadas —— */
+    html.cr-admin-active #cr-outlet {
+        @apply w-full min-w-0 max-w-full sm:max-w-2xl md:max-w-3xl lg:max-w-4xl;
+    }
+    .cr-admin-shell {
+        @apply mx-auto w-full min-w-0 min-h-0 flex-1 flex flex-col px-1 sm:px-0;
+    }
+    .cr-admin-shell-inner {
+        @apply mx-auto w-full min-w-0 max-w-full flex flex-col gap-5 pb-6 sm:gap-6 sm:max-w-lg;
+    }
+    .cr-admin-shell-inner--narrow {
+        @apply max-w-md;
+    }
+    .cr-admin-shell-inner--wide {
+        @apply sm:max-w-2xl md:max-w-3xl lg:max-w-4xl;
+    }
+    .cr-admin-shell--login .cr-catalog-back {
+        @apply mb-2 self-start;
+    }
+    .cr-admin-topbar {
+        @apply flex w-full min-w-0 flex-col gap-3 border-b border-graphite/10 pb-4;
+    }
+    .cr-admin-topbar [data-admin-subnav] {
+        @apply min-w-0 overflow-x-auto;
+    }
+    .cr-admin-topbar .cr-catalog-back,
+    .cr-admin-shell--login .cr-catalog-back {
+        @apply static mb-0 h-11 w-11 shrink-0 self-start;
+    }
+    .cr-admin-subnav {
+        @apply flex flex-wrap gap-1 rounded-xl border border-graphite/15 bg-mist/30 p-1;
+    }
+    .cr-admin-subnav-link {
+        @apply rounded-lg px-3 py-2 text-sm font-semibold text-graphite/80 no-underline transition hover:bg-snow/80 hover:text-navy;
+    }
+    .cr-admin-subnav-link--active {
+        @apply bg-snow text-navy shadow-sm;
+    }
+    .cr-admin-page-head {
+        @apply border-b border-graphite/10 pb-4;
+    }
+    .cr-admin-page-head .cr-catalog-title {
+        @apply mb-1;
+    }
+    .cr-admin-block {
+        @apply flex flex-col gap-3;
+    }
+    .cr-admin-block--card {
+        @apply rounded-2xl border border-graphite/15 bg-snow p-4 shadow-sm sm:p-5;
+    }
+    .cr-admin-block--muted {
+        @apply border-graphite/10 bg-mist/25;
+    }
+    .cr-admin-block-title {
+        @apply m-0 text-sm font-bold uppercase tracking-wide text-navy;
+    }
+    .cr-admin-block-desc {
+        @apply m-0 -mt-1 text-sm leading-relaxed text-graphite/75;
+    }
+    .cr-admin-footer {
+        @apply border-t border-graphite/10 pt-4;
+    }
+    .cr-admin-mock-hint {
+        @apply mb-4 rounded-lg border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs leading-snug text-amber-950;
+    }
+    .cr-admin-mock-hint strong {
+        @apply font-semibold text-navy;
+    }
+    .cr-admin-form {
+        @apply flex flex-col gap-4;
+    }
+    .cr-admin-block--card .cr-admin-form {
+        @apply gap-3;
+    }
+    .cr-admin-field {
+        @apply flex flex-col gap-1.5;
+    }
+    .cr-admin-label {
+        @apply text-xs font-bold uppercase tracking-wide text-graphite/70;
+    }
+    .cr-admin-input {
+        @apply min-h-12 w-full rounded-xl border border-graphite/20 bg-snow px-3 text-base text-graphite outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/30;
+    }
+    .cr-admin-error {
+        @apply rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800;
+    }
+    .cr-admin-stats {
+        @apply grid grid-cols-2 gap-3;
+    }
+    .cr-admin-stat-card {
+        @apply rounded-xl border border-graphite/15 bg-mist/20 px-3 py-3 text-center;
+    }
+    .cr-admin-stat-k {
+        @apply text-[0.65rem] font-bold uppercase tracking-wide text-graphite/55;
+    }
+    .cr-admin-stat-v {
+        @apply mt-1 text-2xl font-bold tabular-nums text-navy;
+    }
+    .cr-admin-tiles {
+        @apply grid gap-3 sm:grid-cols-2;
+    }
+    .cr-admin-tile {
+        @apply flex flex-col gap-1 rounded-xl border border-graphite/15 bg-snow p-4 no-underline shadow-sm transition hover:border-marine/30 hover:shadow-md;
+    }
+    .cr-admin-tile--primary {
+        @apply border-marine/30 bg-gradient-to-br from-snow to-marine/[0.06];
+    }
+    .cr-admin-tile-title {
+        @apply font-semibold text-navy;
+    }
+    .cr-admin-tile-desc {
+        @apply text-xs leading-snug text-graphite/70;
+    }
+    .cr-admin-tile-arrow {
+        @apply mt-1 text-sm font-bold text-marine;
+    }
+    .cr-admin-link-list {
+        @apply m-0 flex list-none flex-col gap-0 divide-y divide-graphite/10 rounded-xl border border-graphite/15 bg-snow p-0 overflow-hidden;
+    }
+    .cr-admin-link-row {
+        @apply flex items-center justify-between gap-2 px-4 py-3 text-sm font-medium text-navy no-underline transition hover:bg-mist/40;
+    }
+    .cr-admin-form--inline {
+        @apply flex flex-col gap-3 sm:flex-row sm:items-end;
+    }
+    .cr-admin-field--grow {
+        @apply flex-1 min-w-0;
+    }
+    .cr-admin-input--sm {
+        @apply min-h-10 text-sm;
+    }
+    .cr-admin-msg {
+        @apply rounded-lg border border-marine/25 bg-mist/40 px-3 py-2 text-sm text-graphite;
+    }
+    .cr-admin-msg--error {
+        @apply border-red-200 bg-red-50 text-red-800;
+    }
+    .cr-admin-subtitle {
+        @apply m-0 mb-3 text-xs font-bold uppercase tracking-wide text-graphite/60;
+    }
+    .cr-admin-btn-icon {
+        @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-graphite/20 bg-mist/50 text-lg font-bold text-navy hover:bg-mist;
+    }
+
+    /* —— Admin categorías (#/admin/categorias) —— */
+    .cr-admin-cats-page .cr-admin-page-head {
+        @apply hidden;
+    }
+    .cr-admin-cats-hero {
+        @apply flex gap-4 rounded-2xl border border-marine/20 bg-gradient-to-br from-snow via-snow to-marine/[0.06] p-4 shadow-sm sm:p-5;
+    }
+    .cr-admin-cats-hero-icon {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-marine/10 sm:h-14 sm:w-14;
+    }
+    .cr-admin-cats-hero-icon .cr-icon {
+        @apply h-7 w-7 text-marine sm:h-8 sm:w-8;
+    }
+    .cr-admin-cats-hero-text {
+        @apply min-w-0 flex-1;
+    }
+    .cr-admin-cats-hero-text .cr-catalog-title {
+        @apply mb-0.5;
+    }
+    .cr-admin-cats-toast {
+        @apply sticky top-[calc(env(safe-area-inset-top,0px)+0.25rem)] z-[60] shadow-md;
+    }
+    .cr-admin-cats-toast--ok {
+        @apply border-emerald-200/80 bg-emerald-50 text-emerald-950;
+    }
+    .cr-admin-cats-add {
+        @apply rounded-2xl border-2 border-dashed border-[#C6D93D]/70 bg-snow/90 p-4 shadow-sm sm:p-5;
+    }
+    .cr-admin-cats-add-form {
+        @apply flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:gap-4;
+    }
+    .cr-admin-cats-add-icon {
+        @apply hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-marine/10 sm:flex;
+    }
+    .cr-admin-cats-add-icon .cr-icon {
+        @apply h-6 w-6 text-marine;
+    }
+    .cr-admin-cats-add-field {
+        @apply min-w-0 flex-1;
+    }
+    .cr-admin-cats-add-btn {
+        @apply w-full shrink-0 sm:w-auto sm:min-w-[7.5rem];
+    }
+    .cr-admin-cats-list-section {
+        @apply flex flex-col gap-4;
+    }
+    .cr-admin-cats-list-head {
+        @apply flex flex-wrap items-center justify-between gap-2 border-b border-graphite/10 pb-3;
+    }
+    .cr-admin-cats-list-title {
+        @apply m-0 text-sm font-bold uppercase tracking-wide text-navy;
+    }
+    .cr-admin-cats-count {
+        @apply rounded-full bg-mist/80 px-3 py-1 text-xs font-semibold tabular-nums text-graphite;
+    }
+    .cr-admin-cat-list {
+        @apply flex flex-col gap-4 sm:gap-5;
+    }
+    .cr-admin-cats-loading {
+        @apply rounded-xl border border-graphite/10 bg-mist/30 px-4 py-8 text-center text-sm text-graphite/70;
+    }
+    .cr-admin-cats-empty {
+        @apply flex flex-col items-center gap-2 rounded-2xl border border-dashed border-graphite/20 bg-mist/20 px-6 py-10 text-center;
+    }
+    .cr-admin-cats-empty--error {
+        @apply border-red-200/60 bg-red-50/80;
+    }
+    .cr-admin-cats-empty-icon {
+        @apply flex h-14 w-14 items-center justify-center rounded-2xl bg-mist/60;
+    }
+    .cr-admin-cats-empty-icon .cr-icon {
+        @apply h-8 w-8 text-graphite/40;
+    }
+    .cr-admin-cats-empty-title {
+        @apply m-0 text-base font-semibold text-navy;
+    }
+    .cr-admin-cats-empty-desc {
+        @apply m-0 max-w-sm text-sm text-graphite/75;
+    }
+    .cr-admin-cat-card {
+        @apply overflow-hidden rounded-2xl border border-graphite/15 bg-snow shadow-md transition hover:border-marine/25 hover:shadow-lg;
+    }
+    .cr-admin-cat-card-inner {
+        @apply flex flex-col;
+    }
+    .cr-admin-cat-card-top {
+        @apply grid gap-3 border-b border-graphite/10 bg-gradient-to-r from-mist/30 to-snow p-4 sm:grid-cols-[auto_1fr_auto] sm:items-end sm:gap-4 sm:p-5;
+    }
+    .cr-admin-cat-card-id {
+        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-bold text-snow sm:h-9 sm:w-9;
+    }
+    .cr-admin-cat-card-name-wrap {
+        @apply min-w-0;
+    }
+    .cr-admin-cat-card-name-wrap .cr-admin-label {
+        @apply mb-1;
+    }
+    .cr-admin-cat-card-name-wrap .cr-admin-cat-name {
+        @apply text-base font-semibold sm:text-lg;
+    }
+    .cr-admin-cat-card-toolbar {
+        @apply flex flex-wrap gap-2 sm:justify-end;
+    }
+    .cr-admin-icon-btn {
+        @apply inline-flex min-h-10 min-w-0 items-center justify-center gap-1.5 rounded-xl border border-graphite/20 bg-snow px-3 py-2 text-sm font-semibold text-navy shadow-sm transition hover:border-marine/30 hover:bg-mist/50 active:scale-[0.98];
+    }
+    .cr-admin-icon-btn--danger {
+        @apply border-red-200/80 text-red-800 hover:border-red-300 hover:bg-red-50;
+    }
+    .cr-admin-icon-btn .cr-icon--btn-only {
+        @apply m-0 h-5 w-5;
+    }
+    .cr-admin-icon-btn-label--hide-sm {
+        @apply sr-only sm:not-sr-only sm:inline;
+    }
+    .cr-admin-cat-rules-panel {
+        @apply flex flex-col gap-3 p-4 sm:p-5;
+    }
+    .cr-admin-cat-rules-title {
+        @apply m-0 flex flex-wrap items-center gap-2 text-sm font-bold text-navy;
+    }
+    .cr-admin-cat-rules-title-icon {
+        @apply inline-flex h-8 w-8 items-center justify-center rounded-lg bg-mist/60;
+    }
+    .cr-admin-cat-rules-title-icon .cr-icon {
+        @apply h-4 w-4;
+    }
+    .cr-admin-cat-rules-badge {
+        @apply ml-auto rounded-full bg-mist px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-graphite/70;
+    }
+    .cr-admin-cats-empty-rules {
+        @apply m-0 rounded-lg border border-dashed border-graphite/15 bg-mist/15 px-3 py-4 text-center text-sm text-graphite/65;
+    }
+    .cr-admin-rule-list {
+        @apply m-0 flex list-none flex-col gap-2.5 p-0;
+    }
+    .cr-admin-rule-row {
+        @apply flex min-w-0 flex-col gap-2 rounded-xl border border-graphite/15 bg-mist/20 p-3 sm:flex-row sm:items-center sm:gap-3;
+    }
+    .cr-admin-rule-num {
+        @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-bold text-snow sm:h-9 sm:w-9;
+    }
+    .cr-admin-regla-text {
+        @apply min-w-0 flex-1;
+    }
+    .cr-admin-rule-actions {
+        @apply flex shrink-0 gap-2 sm:ml-auto;
+    }
+    .cr-admin-rule-actions .cr-admin-icon-btn {
+        @apply min-h-9 min-w-[2.75rem] px-2.5;
+    }
+    .cr-admin-rule-add {
+        @apply flex flex-col gap-2 rounded-xl border border-graphite/15 bg-snow p-3 sm:flex-row sm:items-stretch sm:gap-3;
+    }
+    .cr-admin-rule-add .cr-admin-input {
+        @apply min-h-11 flex-1;
+    }
+    .cr-admin-rule-add-btn {
+        @apply inline-flex w-full shrink-0 items-center justify-center gap-1 sm:w-auto sm:min-w-[6.5rem];
+    }
+    @media (min-width: 640px) {
+        .cr-admin-cat-card-toolbar .cr-admin-icon-btn-label {
+            @apply inline;
+        }
+    }
+    .cr-admin-select {
+        @apply min-h-10 w-full min-w-[8rem] max-w-full rounded-xl border border-graphite/20 bg-snow px-3 text-sm text-graphite focus:border-accent focus:ring-2 focus:ring-accent/30;
+    }
+    .cr-admin-equipos-table-wrap {
+        @apply w-full min-w-0 overflow-x-auto rounded-2xl border border-graphite/15 bg-snow shadow-sm md:overflow-x-auto;
+    }
+    .cr-admin-equipos-table {
+        @apply w-full border-collapse text-left text-sm md:min-w-[32rem];
+    }
+    .cr-admin-equipos-table thead {
+        @apply border-b border-graphite/15 bg-mist/40;
+    }
+    .cr-admin-equipos-table th {
+        @apply px-3 py-2.5 text-xs font-bold uppercase tracking-wide text-graphite/65;
+    }
+    .cr-admin-equipos-table td {
+        @apply border-b border-graphite/10 px-3 py-3 align-middle text-graphite;
+    }
+    .cr-admin-equipos-table tbody tr:last-child td {
+        @apply border-b-0;
+    }
+    .cr-admin-equipo-name {
+        @apply font-semibold text-navy;
+    }
+    .cr-admin-equipo-meta {
+        @apply max-w-[14rem] truncate text-graphite/80;
+    }
+    .cr-admin-equipo-actions {
+        @apply text-right whitespace-nowrap;
+    }
+    .cr-admin-pagination {
+        @apply mb-3;
+    }
+    .cr-admin-pagination-inner {
+        @apply flex flex-col gap-2 rounded-xl border border-graphite/15 bg-mist/25 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between;
+    }
+    .cr-admin-pagination-info {
+        @apply m-0 text-sm text-graphite/80;
+    }
+    .cr-admin-pagination-btns {
+        @apply flex shrink-0 gap-2;
+    }
+    .cr-admin-pagination-btns .cr-app-btn {
+        @apply w-auto min-w-[6.5rem] px-4 py-2 text-sm;
+    }
+    .cr-admin-paginacion-modo {
+        @apply mt-2 rounded-lg border border-graphite/10 bg-mist/30 px-3 py-2 text-xs leading-snug text-graphite/75;
+    }
+
+    /* Admin equipos: tarjetas en móvil, tabla desde md */
+    @media (max-width: 767px) {
+        .cr-admin-equipos-table-wrap {
+            overflow-x: visible;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+        }
+        .cr-admin-equipos-table {
+            min-width: 0;
+        }
+        .cr-admin-equipos-table thead {
+            @apply sr-only;
+        }
+        .cr-admin-equipos-table tbody {
+            @apply flex flex-col gap-3;
+        }
+        .cr-admin-equipos-table tr.cr-admin-equipo-row {
+            @apply flex flex-col gap-2 rounded-2xl border border-graphite/15 bg-snow p-4 shadow-sm;
+        }
+        .cr-admin-equipos-table td {
+            @apply block border-0 px-0 py-0 align-top;
+        }
+        .cr-admin-equipos-table td::before {
+            content: attr(data-label);
+            @apply mb-0.5 block text-[0.65rem] font-bold uppercase tracking-wide text-graphite/55;
+        }
+        .cr-admin-equipos-table td.cr-admin-equipo-name::before {
+            content: 'Equipo';
+        }
+        .cr-admin-equipos-table td.cr-admin-equipo-actions::before {
+            content: none;
+        }
+        .cr-admin-equipo-meta {
+            max-width: none;
+            white-space: normal;
+        }
+        .cr-admin-equipo-actions {
+            @apply pt-2 text-left;
+        }
+        .cr-admin-equipo-actions .cr-app-btn {
+            @apply w-full;
+        }
+        .cr-admin-equipos-table td[data-label]::before {
+            content: attr(data-label);
+        }
+        .cr-admin-equipos-table .cr-admin-select {
+            @apply mt-1 w-full;
+        }
+    }
+}
+
+@keyframes shrink-bounce {
+    0% {
+        transform: scale(1);
+    }
+    33% {
+        transform: scale(0.85);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes cr-reg-palomita-in {
+    from {
+        opacity: 0;
+        transform: translate(-55%, -62%) rotate(45deg) scale(0.65);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-55%, -62%) rotate(45deg) scale(1);
+    }
+}
+
+@keyframes cr-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cordova deviceready */
+#deviceready.ready .event.listening {
+    display: none !important;
+}
+#deviceready.ready .event.received {
+    display: inline-block !important;
+}
+@keyframes cr-fade {
+    from {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.45;
+    }
+    to {
+        opacity: 1;
+    }
+}
+#deviceready:not(.ready) {
+    animation: cr-fade 2.8s ease-in-out infinite;
+}
+#deviceready.ready {
+    animation: none;
+}
+
+/* Registro: altura útil sin doble scroll; el outlet hace scroll vertical (móvil: llegar a Verificar / checklist) */
+html.cr-registro-fit {
+    height: 100%;
+    max-height: 100dvh;
+}
+html.cr-registro-fit body {
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+}
+html.cr-registro-fit #cr-outlet {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+}
+
+/* Checklist: fila clicable; columna Cumple ancha para dedo; scroll horizontal suave */
+#reg-checklist-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+#reg-checklist-scroll tbody tr:has(input[type='checkbox']) {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+/* Centrado en celda sin romper ins (left: 2em): flex en td; label inline-flex como el ancho intrínseco del demo */
+#reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    min-width: 3.25rem;
+    font-size: 0;
+    line-height: 0;
+    align-items: center;
+}
+#reg-checklist-scroll tbody td.align-top:has(> input.cr-reg-check-input) {
+    align-items: flex-start;
+}
+#reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) input + label {
+    margin-block: 0;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+@media (min-width: 640px) {
+    #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) {
+        min-width: 4.5rem;
+    }
+    #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) input + label {
+        font-size: 0.875rem;
+    }
+}
+
+/* Pie checklist (Siguiente/Registrar + Eliminar): mismo renglón, sin desbordar, safe-area */
+#reg-checklist-shell #reg-siguiente-fila,
+#reg-checklist-shell #reg-registrar-fila {
+    padding-left: max(0.5rem, env(safe-area-inset-left, 0px));
+    padding-right: max(0.5rem, env(safe-area-inset-right, 0px));
+}
+#reg-checklist-shell .cr-reg-checklist-footer-inner {
+    box-sizing: border-box;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    gap: 0.5rem;
+    width: 100%;
+    min-width: 0;
+    max-width: min(100%, 22rem);
+    margin-inline: auto;
+}
+@media (min-width: 400px) {
+    #reg-checklist-shell .cr-reg-checklist-footer-inner {
+        max-width: min(100%, 28rem);
+    }
+}
+@media (min-width: 640px) {
+    #reg-checklist-shell .cr-reg-checklist-footer-inner {
+        gap: 0.75rem;
+        max-width: min(100%, 36rem);
+    }
+}
+@media (min-width: 1024px) {
+    #reg-checklist-shell .cr-reg-checklist-footer-inner {
+        max-width: min(100%, 42rem);
+    }
+}
+#reg-checklist-shell .cr-reg-checklist-footer-inner > .cr-reg-checklist-footer-primary {
+    flex: 1 1 0%;
+    min-width: 0;
+    width: auto !important;
+    max-width: 100%;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    font-size: 0.8125rem;
+}
+@media (min-width: 640px) {
+    #reg-checklist-shell .cr-reg-checklist-footer-inner > .cr-reg-checklist-footer-primary {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
+        font-size: 1rem;
+    }
+}
+@media (min-width: 768px) {
+    #reg-checklist-shell .cr-reg-checklist-footer-inner > .cr-reg-checklist-footer-primary {
+        font-size: 1.125rem;
+    }
+}
+#reg-checklist-shell .cr-reg-checklist-footer-inner > .cr-reg-checklist-footer-danger {
+    flex: 0 0 auto;
+    width: auto !important;
+    max-width: 100%;
+    white-space: nowrap;
+    padding-left: 0.65rem;
+    padding-right: 0.65rem;
+    font-size: 0.8125rem;
+}
+@media (min-width: 640px) {
+    #reg-checklist-shell .cr-reg-checklist-footer-inner > .cr-reg-checklist-footer-danger {
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-size: 1rem;
+    }
+}
+@media (min-width: 768px) {
+    #reg-checklist-shell .cr-reg-checklist-footer-inner > .cr-reg-checklist-footer-danger {
+        font-size: 1.125rem;
+    }
+}
+

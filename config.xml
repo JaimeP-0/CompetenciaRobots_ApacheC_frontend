@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget
+    id="com.cr.competenciarobots"
+    version="1.0.0"
+    xmlns="http://www.w3.org/ns/widgets"
+    xmlns:cdv="http://cordova.apache.org/ns/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+>
+    <name short="CR">Competencia de Robots</name>
+    <description>
+        A sample Apache Cordova application that responds to the deviceready event.
+    </description>
+    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
+        Apache Cordova Team
+    </author>
+    <content src="index.html" />
+    <hook type="after_prepare" src="hooks/after_prepare/android_chrome.js" />
+    <hook type="after_prepare" src="hooks/after_prepare/browser-api-proxy.js" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+
+    <!-- cordova-plugin-statusbar: la barra de estado no tapa el WebView (clics y fixed quedan debajo). -->
+    <preference name="StatusBarOverlaysWebView" value="false" />
+    <preference name="StatusBarBackgroundColor" value="#f5f7fb" />
+    <preference name="StatusBarStyle" value="default" />
+
+    <platform name="android">
+        <!-- Tras splash: tema que evita edge-to-edge forzado (notch / status bar). -->
+        <preference name="AndroidPostSplashScreenTheme" value="@style/Theme.CR.Main" />
+        <resource-file src="res/native/android/cr_main_theme.xml" target="app/src/main/res/values/cr_main_theme.xml" />
+
+        <!-- API mínima compatible con WebView moderno (cordova-android 13). -->
+        <!-- compile/target 35: Gradle busca build-tools 35.x (p. ej. 35.0.0); con solo 34.x instalado falla el build. -->
+        <preference name="android-minSdkVersion" value="24" />
+        <preference name="android-targetSdkVersion" value="35" />
+        <preference name="android-compileSdkVersion" value="35" />
+        <!-- Obligatorio si solo tienes build-tools 35+ : el detector de Cordova pide 34.x y falla. -->
+        <preference name="android-buildToolsVersion" value="35.0.0" />
+
+        <!-- INTERNET ya lo añade cordova-android; aquí permisos útiles para la app (API, estado de red, enlaces). -->
+        <config-file parent="/manifest" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+            <uses-permission android:name="android.permission.VIBRATE" />
+        </config-file>
+
+        <!-- Si el backend es solo HTTP (sin TLS), en Android 9+ hace falta política de red o HTTPS; en producción usa https://. -->
+        <resource-file
+            src="res/native/android/network_security_config.xml"
+            target="app/src/main/res/xml/network_security_config.xml"
+        />
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:networkSecurityConfig="@xml/network_security_config" />
+        </edit-config>
+
+        <allow-intent href="market:*" />
+
+        <!-- Launcher: mismo arte que www/img/icon.png (copiado a mipmaps en prepare). -->
+        <icon density="ldpi" src="www/img/icon.png" />
+        <icon density="mdpi" src="www/img/icon.png" />
+        <icon density="hdpi" src="www/img/icon.png" />
+        <icon density="xhdpi" src="www/img/icon.png" />
+        <icon density="xxhdpi" src="www/img/icon.png" />
+        <icon density="xxxhdpi" src="www/img/icon.png" />
+    </platform>
+    <platform name="browser">
+        <icon src="www/img/icon.png" width="192" height="192" />
+        <icon src="www/img/icon.png" width="512" height="512" />
+    </platform>
+</widget>

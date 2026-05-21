@@ -1,0 +1,51 @@
+<section
+    id="admin-login-root"
+    class="cr-admin-shell cr-admin-shell--login"
+    aria-label="Inicio de sesión administración"
+>
+    <div class="cr-admin-shell-inner cr-admin-shell-inner--narrow">
+        <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio público">←</button>
+
+        <header class="cr-admin-page-head">
+            <p class="cr-catalog-kicker">Competencia de Robots</p>
+            <h1 class="cr-catalog-title">Administración</h1>
+            <p class="cr-catalog-lead">Acceso restringido para personal autorizado.</p>
+        </header>
+
+        <section class="cr-admin-block cr-admin-block--card" aria-labelledby="admin-login-heading">
+            <h2 id="admin-login-heading" class="cr-admin-block-title">Iniciar sesión</h2>
+            <p class="cr-admin-mock-hint">Temporal (solo mock): usuario <strong>admin</strong>, contraseña <strong>admin</strong>.</p>
+
+            <form id="f-admin-login" class="cr-admin-form" action="#" method="post" autocomplete="on" novalidate>
+                <div class="cr-admin-field">
+                    <label class="cr-admin-label" for="admin-usuario">Usuario</label>
+                    <input
+                        id="admin-usuario"
+                        name="usuario"
+                        type="text"
+                        class="cr-admin-input"
+                        autocomplete="username"
+                        autocapitalize="off"
+                        spellcheck="false"
+                        required
+                    />
+                </div>
+                <div class="cr-admin-field">
+                    <label class="cr-admin-label" for="admin-password">Contraseña</label>
+                    <input
+                        id="admin-password"
+                        name="password"
+                        type="password"
+                        class="cr-admin-input"
+                        autocomplete="current-password"
+                        required
+                    />
+                </div>
+                <p id="admin-login-error" class="cr-admin-error hidden" role="alert" aria-live="assertive"></p>
+                <button id="btn-admin-login" type="submit" class="cr-app-btn cr-app-btn--primary w-full">
+                    Entrar
+                </button>
+            </form>
+        </section>
+    </div>
+</section>

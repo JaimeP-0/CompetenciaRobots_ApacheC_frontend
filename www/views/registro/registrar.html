@@ -1,0 +1,236 @@
+<section
+    id="registrar-root"
+    data-cr-modulo="3-equipos-registro"
+    aria-label="Registrar competidor"
+    class="cr-catalog-page cr-catalog-page--registro flex min-h-0 flex-1 flex-col overflow-x-hidden"
+>
+    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+
+    <form
+        id="f-registro-equipo"
+        class="relative flex min-h-0 w-full min-w-0 flex-1 flex-col gap-2 overflow-x-hidden sm:gap-3"
+        action="#"
+        method="get"
+        aria-busy="true"
+    >
+        <div
+            id="reg-loading-boot"
+            class="flex shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-graphite/15 bg-snow/95 px-4 py-6 text-center sm:gap-3 sm:py-7"
+            aria-live="polite"
+            aria-busy="true"
+        >
+            <span
+                class="h-9 w-9 shrink-0 rounded-full border-2 border-mist border-t-accent animate-spin"
+                aria-hidden="true"
+            ></span>
+            <p class="text-sm font-medium text-graphite sm:text-base">Cargando…</p>
+        </div>
+
+        <div class="cr-catalog-card-block shrink-0">
+            <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
+                <div class="relative w-full">
+                    <input
+                        id="nombre-equipo"
+                        name="nombreEquipo"
+                        type="text"
+                        autocomplete="off"
+                        autocapitalize="words"
+                        spellcheck="false"
+                        aria-autocomplete="list"
+                        aria-controls="equipo-sugerencias"
+                        aria-expanded="false"
+                        placeholder=" "
+                        class="peer h-12 w-full rounded-xl border border-graphite/20 bg-snow px-2.5 pb-2 pt-[1.35rem] text-sm leading-normal tracking-normal text-graphite shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-transparent focus:border-accent focus:ring-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:border-graphite/20 disabled:bg-mist/50 disabled:text-graphite/75 sm:h-14 sm:px-3 sm:pb-2.5 sm:pt-6 sm:text-base"
+                    />
+                    <label
+                        for="nombre-equipo"
+                        class="pointer-events-none absolute left-2.5 origin-[0] text-graphite transition-all duration-200 ease-out top-1/2 -translate-y-1/2 text-sm peer-focus:top-1.5 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-semibold peer-focus:leading-none peer-focus:text-navy peer-[&:not(:placeholder-shown)]:top-1.5 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-[11px] peer-[&:not(:placeholder-shown)]:font-semibold peer-[&:not(:placeholder-shown)]:leading-none peer-[&:not(:placeholder-shown)]:text-navy peer-disabled:text-graphite/55 sm:left-3 sm:peer-focus:top-2 sm:peer-focus:text-xs sm:peer-[&:not(:placeholder-shown)]:top-2 sm:peer-[&:not(:placeholder-shown)]:text-xs sm:text-base"
+                    >
+                        Nombre del equipo
+                    </label>
+                    <ul
+                        id="equipo-sugerencias"
+                        class="fixed z-[200] mt-0 hidden max-h-36 min-w-[10rem] overflow-auto rounded-xl border border-graphite/15 bg-snow py-0.5 text-xs shadow-lg sm:text-sm"
+                        role="listbox"
+                        aria-label="Sugerencias de equipos"
+                    ></ul>
+                </div>
+            </div>
+        </div>
+
+        <div
+            id="reg-detalle-loading"
+            class="hidden flex shrink-0 items-center gap-2 rounded-xl border border-graphite/10 bg-mist/25 px-3 py-2 text-left text-graphite sm:gap-3 sm:px-4 sm:py-2.5"
+            aria-live="polite"
+            aria-busy="false"
+        >
+            <span
+                class="h-5 w-5 shrink-0 rounded-full border-2 border-mist border-t-accent animate-spin sm:h-6 sm:w-6"
+                aria-hidden="true"
+            ></span>
+            <span id="reg-detalle-loading-msg" class="min-w-0 text-xs font-medium text-graphite sm:text-sm">Cargando…</span>
+        </div>
+
+        <div id="reg-detalle-panel" class="hidden shrink-0 space-y-3">
+            <div class="cr-catalog-card-block">
+                <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
+                    <dl class="cr-catalog-dl">
+                        <div>
+                            <dt class="cr-catalog-dt">Escuela</dt>
+                            <dd id="reg-dato-escuela" class="cr-catalog-dd select-none" tabindex="-1">—</dd>
+                        </div>
+                        <div>
+                            <dt class="cr-catalog-dt">Capitán</dt>
+                            <dd id="reg-dato-capitan" class="cr-catalog-dd select-none" tabindex="-1">—</dd>
+                        </div>
+                        <div>
+                            <dt class="cr-catalog-dt">Asesor</dt>
+                            <dd id="reg-dato-asesor" class="cr-catalog-dd select-none" tabindex="-1">—</dd>
+                        </div>
+                        <div>
+                            <dt class="cr-catalog-dt">Categoría</dt>
+                            <dd id="reg-dato-categoria" class="cr-catalog-dd select-none" tabindex="-1">—</dd>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <dt class="cr-catalog-dt">Integrantes</dt>
+                            <dd
+                                id="reg-dato-integrantes"
+                                class="cr-catalog-dd select-none whitespace-pre-wrap"
+                                tabindex="-1"
+                            >
+                                —
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+            <div class="cr-catalog-actions flex w-full min-w-0 justify-center">
+                <button
+                    type="button"
+                    id="btn-reg-verificar"
+                    class="cr-app-btn cr-app-btn--primary min-h-11 max-w-xl text-sm sm:min-h-12 sm:max-w-2xl sm:text-base"
+                >
+                    Verificar
+                </button>
+            </div>
+        </div>
+
+        <div id="reg-checklist-shell" class="hidden flex min-h-0 flex-1 flex-col overflow-x-hidden">
+            <div
+                id="reg-checklist-scroll"
+                class="min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]"
+            >
+                <div class="space-y-3 pb-2 sm:space-y-4 sm:pb-3">
+                    <div id="reg-checklist-1-host"></div>
+                    <div id="reg-checklist-2-host" class="hidden"></div>
+                </div>
+            </div>
+            <div
+                id="reg-siguiente-fila"
+                class="flex w-full min-w-0 shrink-0 justify-center border-t border-graphite/10 bg-mist/20 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] sm:pt-2.5"
+            >
+                <div class="cr-reg-checklist-footer-inner" role="group" aria-label="Acciones del checklist">
+                    <button
+                        type="button"
+                        id="btn-reg-checklist-siguiente"
+                        disabled
+                        class="cr-app-btn cr-app-btn--primary cr-reg-checklist-footer-primary min-h-11 sm:min-h-14"
+                    >
+                        Siguiente
+                    </button>
+                    <button
+                        type="button"
+                        class="cr-app-btn cr-app-btn--outline cr-reg-checklist-footer-danger min-h-11 border-red-300 text-red-700 hover:bg-red-50 sm:min-h-14"
+                        data-reg-eliminar
+                        aria-label="Eliminar: descalificar al equipo"
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+            <div
+                id="reg-registrar-fila"
+                class="hidden flex w-full min-w-0 shrink-0 justify-center border-t border-graphite/10 bg-mist/20 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] sm:pt-2.5"
+            >
+                <div class="cr-reg-checklist-footer-inner" role="group" aria-label="Acciones de registro">
+                    <button
+                        type="button"
+                        id="btn-reg-registrar"
+                        disabled
+                        class="cr-app-btn cr-app-btn--primary cr-reg-checklist-footer-primary min-h-11 sm:min-h-14"
+                    >
+                        Registrar
+                    </button>
+                    <button
+                        type="button"
+                        class="cr-app-btn cr-app-btn--outline cr-reg-checklist-footer-danger min-h-11 border-red-300 text-red-700 hover:bg-red-50 sm:min-h-14"
+                        data-reg-eliminar
+                        aria-label="Eliminar: descalificar al equipo"
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div
+        id="reg-modal-descalificar"
+        class="fixed inset-0 z-[102] hidden items-center justify-center bg-graphite/55 p-4 backdrop-blur-sm sm:p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reg-modal-descalificar-titulo"
+        aria-hidden="true"
+    >
+        <div
+            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl"
+            role="document"
+        >
+            <p class="cr-catalog-kicker mb-1">Aviso</p>
+            <h2 id="reg-modal-descalificar-titulo" class="text-lg font-bold leading-tight text-navy sm:text-2xl">Equipo descalificado</h2>
+            <p
+                id="reg-modal-descalificar-mensaje"
+                class="mt-3 whitespace-pre-line text-sm leading-relaxed text-graphite sm:mt-4 sm:text-base md:text-lg"
+            ></p>
+            <div class="mt-6 flex justify-end sm:mt-8">
+                <button
+                    type="button"
+                    id="reg-modal-descalificar-aceptar"
+                    class="cr-app-btn cr-app-btn--primary min-h-11 min-w-[7.5rem] max-w-full text-sm sm:min-h-14 sm:text-base"
+                >
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div
+        id="reg-modal-postregistro"
+        class="fixed inset-0 z-[100] hidden items-center justify-center bg-graphite/55 p-4 backdrop-blur-sm sm:p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reg-modal-postregistro-titulo"
+        aria-hidden="true"
+    >
+        <div
+            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl"
+            role="document"
+        >
+            <p class="cr-catalog-kicker mb-1">Registro</p>
+            <h2 id="reg-modal-postregistro-titulo" class="text-lg font-bold leading-tight text-navy sm:text-2xl">Registro completado</h2>
+            <p
+                id="reg-modal-postregistro-mensaje"
+                class="mt-3 whitespace-pre-line text-sm leading-relaxed text-graphite sm:mt-4 sm:text-base md:text-lg"
+            ></p>
+            <div class="mt-6 flex justify-end sm:mt-8">
+                <button
+                    type="button"
+                    id="reg-modal-postregistro-aceptar"
+                    class="cr-app-btn cr-app-btn--primary min-h-11 min-w-[7.5rem] max-w-full text-sm sm:min-h-14 sm:text-base"
+                >
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+</section>

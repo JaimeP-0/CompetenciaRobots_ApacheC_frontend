@@ -1,0 +1,52 @@
+<section id="admin-equipos-root" class="cr-admin-shell" data-cr-modulo="3-equipos-registro" aria-label="Asignar categoría a equipos">
+    <div class="cr-admin-shell-inner cr-admin-shell-inner--wide">
+        <header class="cr-admin-topbar">
+            <button type="button" data-route="/admin" class="cr-catalog-back" aria-label="Volver al panel">←</button>
+            <div data-admin-subnav></div>
+        </header>
+
+        <header class="cr-admin-page-head">
+            <p class="cr-catalog-kicker">Gestión</p>
+            <h1 class="cr-catalog-title">Equipos y categoría</h1>
+            <p class="cr-catalog-lead">Cada equipo debe tener una categoría para competir y aparecer bien en el catálogo.</p>
+            <p id="admin-equipos-modo" class="cr-admin-paginacion-modo" aria-live="polite"></p>
+        </header>
+
+        <section class="cr-admin-block cr-admin-block--card" aria-labelledby="admin-equipos-filtros-title">
+            <h2 id="admin-equipos-filtros-title" class="cr-admin-block-title">Filtrar</h2>
+            <form id="f-admin-equipos-filtro" class="cr-admin-form cr-admin-form--inline" action="#" method="get">
+                <div class="cr-admin-field cr-admin-field--grow">
+                    <label class="cr-admin-label" for="admin-equipos-buscar">Buscar</label>
+                    <input
+                        id="admin-equipos-buscar"
+                        type="search"
+                        class="cr-admin-input"
+                        placeholder="Nombre, escuela o tutor…"
+                        autocomplete="off"
+                    />
+                </div>
+                <div class="cr-admin-field">
+                    <label class="cr-admin-label" for="admin-equipos-filtro-cat">Categoría</label>
+                    <select id="admin-equipos-filtro-cat" class="cr-admin-select">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <button type="submit" class="cr-app-btn cr-app-btn--outline shrink-0">Aplicar</button>
+            </form>
+        </section>
+
+        <p id="admin-equipos-msg" class="cr-admin-msg hidden" role="status" aria-live="polite"></p>
+
+        <section class="cr-admin-block" aria-labelledby="admin-equipos-lista-title">
+            <h2 id="admin-equipos-lista-title" class="cr-admin-block-title">Listado de equipos</h2>
+
+            <div id="admin-equipos-pagination" class="cr-admin-pagination hidden" aria-label="Paginación de equipos"></div>
+
+            <div id="admin-equipos-list" class="cr-admin-equipos-list" aria-busy="true">
+                <p class="cr-catalog-msg">Cargando equipos…</p>
+            </div>
+
+            <div id="admin-equipos-pagination-foot" class="cr-admin-pagination hidden" aria-label="Paginación de equipos"></div>
+        </section>
+    </div>
+</section>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" role="img" aria-label="Competencia de robots">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1B8C7A"/>
+      <stop offset="100%" style="stop-color:#0f4d6e"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="320" fill="url(#bg)" rx="24"/>
+  <circle cx="140" cy="160" r="48" fill="#C6D93D" opacity="0.9"/>
+  <rect x="220" y="120" width="120" height="80" rx="12" fill="#fff" opacity="0.15"/>
+  <rect x="360" y="100" width="160" height="120" rx="16" fill="#fff" opacity="0.2"/>
+  <text x="400" y="175" text-anchor="middle" fill="#fff" font-family="system-ui,sans-serif" font-size="28" font-weight="700">Competencia de Robots</text>
+  <text x="400" y="210" text-anchor="middle" fill="#C6D93D" font-family="system-ui,sans-serif" font-size="14">UTNC</text>
+</svg>
