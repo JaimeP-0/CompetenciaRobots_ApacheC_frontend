@@ -27,9 +27,9 @@ node_modules/
 # Backend de prueba / despliegue (no subir)
 /backend/
 
-# Documentación de práctica (local)
-DOCUMENTO-PRACTICA.md
-MODULOS-PRACTICA.md
+# Documentación (local)
+*.md
+capturas/
 
 # Cursor IDE (local)
 .cursor/
