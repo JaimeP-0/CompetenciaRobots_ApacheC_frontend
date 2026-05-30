@@ -95,7 +95,7 @@
                     hideList();
                     input.blur();
                     U.setRegDetalleLoading(root, true);
-                    U.withRegistroMinLoading(fetchDetalleEquipoPorNombre(text))
+                    U.withRegistroMinLoading(fetchDetalleEquipoPorNombre(text, root))
                         .then(function (d) {
                             if (d) {
                                 aplicarDetalleEquipo(root, d);
@@ -142,7 +142,7 @@
                 return;
             }
             var mySeq = ++seq;
-            Equipos.fetchSugerencias(q)
+            Equipos.fetchSugerencias(q, root)
                 .then(function (items) {
                     if (mySeq !== seq) {
                         return;

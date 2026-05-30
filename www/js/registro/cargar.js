@@ -6,6 +6,7 @@
 
     var SCRIPTS = [
         'js/registro/equipo-datos.js',
+        'js/registro/categoria-registro.js',
         'js/registro/autocomplete-equipo.js',
         'js/registro/checklists-config.js',
         'js/registro/pantalla-registrar.js',

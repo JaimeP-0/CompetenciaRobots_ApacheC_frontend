@@ -47,6 +47,27 @@
             msgEl.classList.toggle('cr-admin-cats-toast--ok', !isError);
         }
 
+        function renderReglaTypeSelect(value, className, idAttr) {
+            var current = String(value || 'restriction').toLowerCase();
+            if (current !== 'characteristic') {
+                current = 'restriction';
+            }
+            return (
+                '<select class="cr-admin-select cr-admin-regla-type ' +
+                esc(className || '') +
+                '"' +
+                (idAttr ? ' id="' + esc(idAttr) + '"' : '') +
+                ' aria-label="Tipo de regla">' +
+                '<option value="characteristic"' +
+                (current === 'characteristic' ? ' selected' : '') +
+                '>Característica</option>' +
+                '<option value="restriction"' +
+                (current === 'restriction' ? ' selected' : '') +
+                '>Restricción</option>' +
+                '</select>'
+            );
+        }
+
         function renderRules(cat) {
             var rules = cat.rules || [];
             if (!rules.length) {
@@ -67,6 +88,7 @@
                             '<span class="cr-admin-rule-num" aria-hidden="true">' +
                             (idx + 1) +
                             '</span>' +
+                            renderReglaTypeSelect(r.type, 'cr-admin-regla-type-row') +
                             '<input type="text" class="cr-admin-input cr-admin-regla-text" value="' +
                             esc(r.description) +
                             '" aria-label="Regla ' +
@@ -133,7 +155,8 @@
                 '<form class="cr-admin-rule-add cr-admin-add-regla" data-cat-id="' +
                 esc(cat.id) +
                 '" action="#">' +
-                '<input type="text" class="cr-admin-input" placeholder="Nueva regla del reglamento…" required aria-label="Texto de nueva regla" />' +
+                renderReglaTypeSelect('restriction', 'cr-admin-regla-type-new') +
+                '<input type="text" class="cr-admin-input cr-admin-regla-text" placeholder="Nueva regla del reglamento…" required aria-label="Texto de nueva regla" />' +
                 '<button type="submit" class="cr-app-btn cr-app-btn--primary cr-admin-rule-add-btn">' +
                 '<span data-cr-icon="plus" data-cr-icon-class="cr-icon--btn"></span>' +
                 '<span>Regla</span></button></form></section></div></article>'
@@ -217,7 +240,13 @@
                     return;
                 }
                 var txt = li.querySelector('.cr-admin-regla-text');
-                Almacen.updateRegla(li.getAttribute('data-cat-id'), li.getAttribute('data-regla-id'), txt.value)
+                var typeSel = li.querySelector('.cr-admin-regla-type-row');
+                Almacen.updateRegla(
+                    li.getAttribute('data-cat-id'),
+                    li.getAttribute('data-regla-id'),
+                    txt.value,
+                    typeSel ? typeSel.value : 'restriction'
+                )
                     .then(function () {
                         showMsg('Regla guardada.');
                     })
@@ -249,7 +278,12 @@
             }
             e.preventDefault();
             var input = reglaForm.querySelector('input[type="text"]');
-            Almacen.addRegla(reglaForm.getAttribute('data-cat-id'), input.value)
+            var typeSel = reglaForm.querySelector('.cr-admin-regla-type-new');
+            Almacen.addRegla(
+                reglaForm.getAttribute('data-cat-id'),
+                input.value,
+                typeSel ? typeSel.value : 'restriction'
+            )
                 .then(function () {
                     showMsg('Regla agregada.');
                     render();

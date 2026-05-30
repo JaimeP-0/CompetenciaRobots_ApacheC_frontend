@@ -14,6 +14,6 @@
         initEquipos: V.equiposLista,
         initEquipoDetalle: V.equipoDetalle,
         initValidados: V.validados,
-        initBuscar: V.buscar
+        initMatch: V.match
     };
 })(window);

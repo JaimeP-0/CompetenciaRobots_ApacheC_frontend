@@ -1,7 +1,8 @@
 'use strict';
 
 /**
- * Servidor de desarrollo con proxy /api → backend (evita CORS en el navegador).
+ * Servidor de desarrollo: proxy de rutas API (/categorias, /equipos, …) → backend.
+ * Mismas rutas que en producción, sin prefijo /api (evita CORS en el navegador).
  *
  * Uso recomendado (equivale a cordova run browser + API):
  *   npm run browser   →  prepare browser + este servidor + cordova.js/plugins
@@ -18,10 +19,11 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const httpProxy = require('http-proxy');
+const { isApiRoute, API_ROUTE_PREFIXES } = require('./api-proxy-paths.cjs');
 
 const PORT = Number(process.env.PORT || 8000);
 const API_TARGET = (
-    process.env.CR_API_TARGET || 'https://dimgrey-ibex-191607.hostingersite.com/api'
+    process.env.CR_API_TARGET || 'http://100.124.252.101:8080'
 ).replace(/\/$/, '');
 const projectRoot = path.join(__dirname, '..');
 const browserWww = path.join(projectRoot, 'platforms', 'browser', 'www');
@@ -116,8 +118,7 @@ function sendFile(filePath, res) {
 }
 
 const server = http.createServer(function (req, res) {
-    if (req.url && req.url.indexOf('/api/') === 0) {
-        req.url = req.url.replace(/^\/api/, '') || '/';
+    if (req.url && isApiRoute(req.url)) {
         proxy.web(req, res);
         return;
     }
@@ -129,7 +130,7 @@ server.listen(PORT, function () {
     console.log('');
     console.log('CR dev server: ' + url);
     console.log('  www:   ' + WWW);
-    console.log('  proxy: /api/* -> ' + API_TARGET + '/*');
+    console.log('  proxy: ' + API_ROUTE_PREFIXES.join(', ') + ' → ' + API_TARGET);
     console.log('');
     console.log('No uses "cordova run browser" para probar el API; usa "npm run browser".');
     console.log('Android (cordova run android) llama al backend directo, sin este proxy.');

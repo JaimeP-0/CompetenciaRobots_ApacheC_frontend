@@ -13,6 +13,53 @@
     var handleRegistroRemoteApi = Remoto.handleGet;
     var mockHandle = MockH.handle;
 
+    function parseJsonBody(res, pathOnly) {
+        if (res.status === 204) {
+            return Promise.resolve(null);
+        }
+        return res.text().then(function (t) {
+            var s = String(t || '').trim();
+            if (!s) {
+                return null;
+            }
+            try {
+                return JSON.parse(s);
+            } catch (parseErr) {
+                throw new Error('Respuesta JSON inválida en ' + pathOnly);
+            }
+        });
+    }
+
+    function fetchJson(url, init, pathOnly, retried304) {
+        init = init || {};
+        init.cache = 'no-store';
+        return fetch(url, init).then(function (res) {
+            if (res.status === 304) {
+                return res.text().then(function (t) {
+                    var s = String(t || '').trim();
+                    if (s) {
+                        try {
+                            return JSON.parse(s);
+                        } catch (parseErr304) {
+                            /* reintento abajo */
+                        }
+                    }
+                    if (retried304) {
+                        return null;
+                    }
+                    var bust = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cr=' + Date.now();
+                    return fetchJson(bust, init, pathOnly, true);
+                });
+            }
+            if (!res.ok) {
+                return res.text().then(function (t) {
+                    throw new Error(res.status + ' ' + t);
+                });
+            }
+            return parseJsonBody(res, pathOnly);
+        });
+    }
+
     function request(method, path, opts) {
         opts = opts || {};
         var query = opts.query;
@@ -35,18 +82,21 @@
             }
         }
 
-        return fetch(url, {
-            method: method,
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: body != null && method !== 'GET' ? JSON.stringify(body) : undefined
-        }).then(function (res) {
-            if (!res.ok) {
-                return res.text().then(function (t) {
-                    throw new Error(res.status + ' ' + t);
-                });
-            }
-            return res.json();
-        });
+        var headers =
+            method === 'GET' || method === 'HEAD'
+                ? { Accept: 'application/json' }
+                : { 'Content-Type': 'application/json', Accept: 'application/json' };
+
+        return fetchJson(
+            url,
+            {
+                method: method,
+                headers: headers,
+                body: body != null && method !== 'GET' ? JSON.stringify(body) : undefined
+            },
+            pathOnly,
+            false
+        );
     }
 
     w.CRApiRequest = { request: request };

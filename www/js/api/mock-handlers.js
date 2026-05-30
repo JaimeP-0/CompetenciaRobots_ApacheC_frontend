@@ -42,7 +42,7 @@
             var filterCat = q.categoryId != null && q.categoryId !== '' ? Number(q.categoryId, 10) : null;
             var teams = CATALOG_TEAMS.filter(function (t) {
                 if (filterCat == null || isNaN(filterCat)) {
-                    return true;
+                    return false;
                 }
                 return t.category_id === filterCat;
             }).map(function (t) {
@@ -171,6 +171,14 @@
             return mockDelay(
                 50,
                 Mock.mockRegistroTeamsList ? Mock.mockRegistroTeamsList(q) : { items: [], total: 0 }
+            );
+        }
+        var mRegEquipos = path.match(/^\/registro\/(\d+)\/equipos$/);
+        if (method === 'GET' && mRegEquipos) {
+            var regCatQuery = Object.assign({}, q, { category_id: mRegEquipos[1] });
+            return mockDelay(
+                50,
+                Mock.mockRegistroTeamsList ? Mock.mockRegistroTeamsList(regCatQuery) : { items: [], total: 0 }
             );
         }
         if (method === 'GET' && (path === '/validaciones' || path === '/api/validaciones')) {

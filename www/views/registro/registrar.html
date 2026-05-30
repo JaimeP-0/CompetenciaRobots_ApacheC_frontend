@@ -28,6 +28,25 @@
 
         <div class="cr-catalog-card-block shrink-0">
             <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
+                <label for="reg-filtro-categoria" class="cr-catalog-dt mb-1.5 block">Categoría</label>
+                <select
+                    id="reg-filtro-categoria"
+                    class="cr-admin-select cr-reg-filtro-categoria h-12 w-full rounded-xl text-sm sm:h-14 sm:text-base"
+                    required
+                    aria-label="Selecciona la categoría del equipo"
+                >
+                    <option value="">— Elige categoría —</option>
+                </select>
+            </div>
+        </div>
+
+        <div
+            id="reg-equipo-block"
+            class="reg-equipo-block reg-equipo-block--disabled shrink-0"
+            aria-disabled="true"
+        >
+        <div class="cr-catalog-card-block">
+            <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
                 <div class="relative w-full">
                     <input
                         id="nombre-equipo"
@@ -40,6 +59,8 @@
                         aria-controls="equipo-sugerencias"
                         aria-expanded="false"
                         placeholder=" "
+                        disabled
+                        aria-disabled="true"
                         class="peer h-12 w-full rounded-xl border border-graphite/20 bg-snow px-2.5 pb-2 pt-[1.35rem] text-sm leading-normal tracking-normal text-graphite shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-transparent focus:border-accent focus:ring-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:border-graphite/20 disabled:bg-mist/50 disabled:text-graphite/75 sm:h-14 sm:px-3 sm:pb-2.5 sm:pt-6 sm:text-base"
                     />
                     <label
@@ -56,6 +77,7 @@
                     ></ul>
                 </div>
             </div>
+        </div>
         </div>
 
         <div
@@ -90,6 +112,10 @@
                         <div>
                             <dt class="cr-catalog-dt">Categoría</dt>
                             <dd id="reg-dato-categoria" class="cr-catalog-dd select-none" tabindex="-1">—</dd>
+                        </div>
+                        <div>
+                            <dt class="cr-catalog-dt">Estado del robot</dt>
+                            <dd id="reg-dato-robot-estado" class="cr-catalog-dd select-none" tabindex="-1">—</dd>
                         </div>
                         <div class="sm:col-span-2">
                             <dt class="cr-catalog-dt">Integrantes</dt>

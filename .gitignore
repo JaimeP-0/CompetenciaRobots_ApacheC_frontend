@@ -27,12 +27,8 @@ node_modules/
 # Backend de prueba / despliegue (no subir)
 /backend/
 
-# Documentación (local)
-*.md
+# Documentación y archivos locales (carpeta fuera del repo; ver local/LEEME.txt en proyecto Cursor)
 capturas/
-
-# Cursor IDE (local)
-.cursor/
 
 # Entorno local
 .env

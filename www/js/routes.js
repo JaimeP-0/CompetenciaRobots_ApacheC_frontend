@@ -22,7 +22,7 @@
             '/categorias': 'public/categorias',
             '/equipos': 'public/equipos',
             '/validados': 'public/validados',
-            '/buscar': 'public/buscar',
+            '/match': 'public/match',
             '/admin': 'admin/panel',
             '/admin/login': 'admin/login',
             '/admin/categorias': 'admin/categorias',
@@ -34,6 +34,7 @@
             '/tablero-normal': '/',
             '/tablero-ultra': '/',
             '/competencias': '/categorias',
+            '/buscar': '/equipos',
             '/registro/completado': '/'
         },
 
@@ -68,7 +69,7 @@
             'public/equipos': 'initEquipos',
             'public/equipo-detalle': 'initEquipoDetalle',
             'public/validados': 'initValidados',
-            'public/buscar': 'initBuscar'
+            'public/match': 'initMatch'
         }
     };
 })(window);

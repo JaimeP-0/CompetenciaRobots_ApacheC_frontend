@@ -77,7 +77,7 @@ module.exports.run = function (args) {
 
             const rootUrl = new url.URL('http://localhost:' + server.port + '/').href;
 
-            console.log('startPage = ' + startPage + ' (SPA + API proxy /api → ' + apiProxy.API_TARGET + ')');
+            console.log('startPage = ' + startPage + ' (SPA + API proxy → ' + apiProxy.API_TARGET + ')');
             console.log('Static file server running @ ' + rootUrl + '\nCTRL + C to shut down');
             return server.launchBrowser({ target: args.target, url: rootUrl });
         })

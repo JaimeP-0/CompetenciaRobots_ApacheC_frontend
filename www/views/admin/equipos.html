@@ -14,16 +14,63 @@
         <header class="cr-admin-cats-hero">
             <div class="cr-admin-cats-hero-icon" data-cr-icon="user-group" aria-hidden="true"></div>
             <div class="cr-admin-cats-hero-text">
-                <h1 class="cr-catalog-title">Equipos</h1>
+                <p class="cr-catalog-kicker">Gestión</p>
+                <h1 class="cr-catalog-title">Equipos y miembros</h1>
             </div>
         </header>
 
         <p id="admin-equipos-msg" class="cr-admin-msg cr-admin-cats-toast hidden" role="status" aria-live="polite"></p>
 
+        <section class="cr-admin-cats-add cr-admin-equipos-nuevo" aria-labelledby="admin-nuevo-equipo-title">
+            <h2 id="admin-nuevo-equipo-title" class="cr-admin-cats-list-title">Nuevo equipo</h2>
+            <form id="f-admin-nuevo-equipo" class="cr-admin-equipos-nuevo-form" action="#" method="post">
+                <div class="cr-admin-equipos-nuevo-grid">
+                    <div class="cr-admin-equipos-nuevo-field">
+                        <label class="cr-admin-label" for="admin-nuevo-equipo-nombre">Nombre del equipo</label>
+                        <input
+                            id="admin-nuevo-equipo-nombre"
+                            type="text"
+                            class="cr-admin-input"
+                            placeholder="Ej. RoboTitans"
+                            required
+                        />
+                    </div>
+                    <div class="cr-admin-equipos-nuevo-field">
+                        <label class="cr-admin-label" for="admin-nuevo-equipo-escuela">Escuela</label>
+                        <input id="admin-nuevo-equipo-escuela" type="text" class="cr-admin-input" placeholder="Opcional" />
+                    </div>
+                    <div class="cr-admin-equipos-nuevo-field">
+                        <label class="cr-admin-label" for="admin-nuevo-equipo-grado">Grado / grupo</label>
+                        <input id="admin-nuevo-equipo-grado" type="text" class="cr-admin-input" placeholder="Opcional" />
+                    </div>
+                    <div class="cr-admin-equipos-nuevo-field">
+                        <label class="cr-admin-label" for="admin-nuevo-equipo-tutor">Tutor</label>
+                        <input id="admin-nuevo-equipo-tutor" type="text" class="cr-admin-input" placeholder="Opcional" />
+                    </div>
+                    <div class="cr-admin-equipos-nuevo-field">
+                        <label class="cr-admin-label" for="admin-nuevo-equipo-cat">Categoría</label>
+                        <select id="admin-nuevo-equipo-cat" class="cr-admin-select">
+                            <option value="">— Sin categoría —</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="cr-app-btn cr-app-btn--primary cr-admin-equipos-nuevo-btn">
+                    Agregar equipo
+                </button>
+            </form>
+        </section>
+
         <section class="cr-admin-cats-add cr-admin-equipos-filtros" aria-labelledby="admin-equipos-filtros-title">
-            <h2 id="admin-equipos-filtros-title" class="sr-only">Filtrar equipos</h2>
+            <h2 id="admin-equipos-filtros-title" class="cr-admin-cats-list-title">Buscar equipos</h2>
+            <p class="cr-admin-equipos-filtros-hint">Elige una categoría y luego busca dentro de ella.</p>
             <form id="f-admin-equipos-filtro" class="cr-admin-cats-add-form cr-admin-equipos-filtros-form" action="#" method="get">
                 <span class="cr-admin-cats-add-icon" data-cr-icon="magnifying-glass" aria-hidden="true"></span>
+                <div class="cr-admin-equipos-filtros-cat">
+                    <label class="cr-admin-label" for="admin-equipos-filtro-cat">Categoría</label>
+                    <select id="admin-equipos-filtro-cat" class="cr-admin-select" required>
+                        <option value="">Elige una categoría…</option>
+                    </select>
+                </div>
                 <div class="cr-admin-cats-add-field">
                     <label class="cr-admin-label" for="admin-equipos-buscar">Buscar</label>
                     <input
@@ -32,15 +79,12 @@
                         class="cr-admin-input"
                         placeholder="Nombre, escuela o tutor…"
                         autocomplete="off"
+                        disabled
                     />
                 </div>
-                <div class="cr-admin-equipos-filtros-cat">
-                    <label class="cr-admin-label" for="admin-equipos-filtro-cat">Categoría</label>
-                    <select id="admin-equipos-filtro-cat" class="cr-admin-select">
-                        <option value="">Todas</option>
-                    </select>
-                </div>
-                <button type="submit" class="cr-app-btn cr-app-btn--primary cr-admin-cats-add-btn">Aplicar</button>
+                <button type="submit" id="admin-equipos-filtro-btn" class="cr-app-btn cr-app-btn--primary cr-admin-cats-add-btn" disabled>
+                    Buscar
+                </button>
             </form>
         </section>
 
@@ -52,8 +96,12 @@
 
             <div id="admin-equipos-pagination" class="cr-admin-equipos-pagination hidden" aria-label="Paginación de equipos"></div>
 
-            <div id="admin-equipos-list" class="cr-admin-equipo-list" aria-busy="true">
-                <p class="cr-admin-cats-loading">Cargando equipos…</p>
+            <div id="admin-equipos-list" class="cr-admin-equipo-list" aria-busy="false">
+                <div class="cr-admin-cats-empty">
+                    <span class="cr-admin-cats-empty-icon" data-cr-icon="tag" aria-hidden="true"></span>
+                    <p class="cr-admin-cats-empty-title">Elige una categoría</p>
+                    <p class="cr-admin-cats-empty-desc">Selecciona una categoría arriba y pulsa Buscar para ver sus equipos.</p>
+                </div>
             </div>
 
             <div id="admin-equipos-pagination-foot" class="cr-admin-equipos-pagination hidden" aria-label="Paginación de equipos"></div>

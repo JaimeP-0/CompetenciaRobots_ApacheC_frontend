@@ -69,7 +69,14 @@
             id: c.id,
             name: c.name,
             rules: (c.rules || []).map(function (r) {
-                return { id: r.id, description: r.description };
+                var item = { id: r.id, description: r.description };
+                if (r.type != null) {
+                    item.type = r.type;
+                }
+                if (r.category_id != null) {
+                    item.category_id = r.category_id;
+                }
+                return item;
             })
         };
     }
@@ -258,15 +265,23 @@
         });
     }
 
-    function addRegla(categoriaId, description) {
+    function normalizeReglaType(type) {
+        var t = String(type || '')
+            .trim()
+            .toLowerCase();
+        return t === 'characteristic' || t === 'restriction' ? t : null;
+    }
+
+    function addRegla(categoriaId, description, type) {
         if (useRemoto()) {
-            return remoto().addRegla(categoriaId, description);
+            return remoto().addRegla(categoriaId, description, type);
         }
         var cid = Number(categoriaId, 10);
         var text = String(description || '').trim();
         if (!text) {
             return Promise.reject(new Error('Escribe el texto de la regla.'));
         }
+        var ruleType = normalizeReglaType(type) || 'restriction';
         return ensureSeeded().then(function (db) {
             var cat = db.categorias.find(function (c) {
                 return Number(c.id, 10) === cid;
@@ -277,16 +292,16 @@
             if (!cat.rules) {
                 cat.rules = [];
             }
-            var regla = { id: db.nextReglaId++, description: text };
+            var regla = { id: db.nextReglaId++, description: text, type: ruleType };
             cat.rules.push(regla);
             save(db);
             return regla;
         });
     }
 
-    function updateRegla(categoriaId, reglaId, description) {
+    function updateRegla(categoriaId, reglaId, description, type) {
         if (useRemoto()) {
-            return remoto().updateRegla(categoriaId, reglaId, description);
+            return remoto().updateRegla(categoriaId, reglaId, description, type);
         }
         var cid = Number(categoriaId, 10);
         var rid = Number(reglaId, 10);
@@ -294,6 +309,7 @@
         if (!text) {
             return Promise.reject(new Error('La regla no puede estar vacía.'));
         }
+        var ruleType = normalizeReglaType(type);
         return ensureSeeded().then(function (db) {
             var cat = db.categorias.find(function (c) {
                 return Number(c.id, 10) === cid;
@@ -308,6 +324,9 @@
                 return Promise.reject(new Error('Regla no encontrada.'));
             }
             regla.description = text;
+            if (ruleType) {
+                regla.type = ruleType;
+            }
             save(db);
             return regla;
         });
@@ -348,6 +367,33 @@
         });
     }
 
+    function addEquipo(payload) {
+        if (useRemoto()) {
+            return remoto().addEquipo(payload);
+        }
+        return Promise.reject(
+            new Error('Crear equipos requiere base de datos (adminDatosLocales desactivado).')
+        );
+    }
+
+    function addMiembro(teamId, payload) {
+        if (useRemoto()) {
+            return remoto().addMiembro(teamId, payload);
+        }
+        return Promise.reject(
+            new Error('Agregar miembros requiere base de datos (adminDatosLocales desactivado).')
+        );
+    }
+
+    function deleteMiembro(teamId, memberId) {
+        if (useRemoto()) {
+            return remoto().deleteMiembro(teamId, memberId);
+        }
+        return Promise.reject(
+            new Error('Eliminar miembros requiere base de datos (adminDatosLocales desactivado).')
+        );
+    }
+
     function resetAlmacen() {
         if (useRemoto()) {
             return Promise.reject(
@@ -376,6 +422,9 @@
         updateRegla: updateRegla,
         deleteRegla: deleteRegla,
         setEquipoCategoria: setEquipoCategoria,
+        addEquipo: addEquipo,
+        addMiembro: addMiembro,
+        deleteMiembro: deleteMiembro,
         resetAlmacen: resetAlmacen
     };
 })(window);

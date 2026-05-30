@@ -181,6 +181,15 @@
     .cr-catalog-page.cr-catalog-page--registro {
         @apply gap-3 pb-3 pt-[calc(env(safe-area-inset-top,0px)+2.75rem)] sm:gap-4 sm:pb-4 sm:pt-[calc(env(safe-area-inset-top,0px)+2.9rem)] lg:max-w-4xl lg:px-6;
     }
+    .reg-equipo-block--disabled {
+        @apply pointer-events-none opacity-55;
+    }
+    .reg-equipo-block:not(.reg-equipo-block--disabled) {
+        @apply pointer-events-auto opacity-100;
+    }
+    .cr-reg-filtro-categoria {
+        @apply max-w-full;
+    }
     .cr-catalog-back {
         @apply fixed z-[70] flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border border-graphite/15 bg-snow p-0 text-xl font-normal leading-none text-navy shadow-md transition [-webkit-tap-highlight-color:transparent] hover:border-marine/40 hover:bg-mist/70 active:scale-[0.97] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/35;
         left: max(0.35rem, env(safe-area-inset-left, 0px));
@@ -504,6 +513,164 @@
     }
     .cr-validados-empty-cta {
         @apply mt-1 w-full max-w-xs no-underline sm:w-auto;
+    }
+    .cr-validados-rules {
+        @apply mt-2 border-t border-graphite/10 pt-2;
+    }
+    .cr-validados-rules summary {
+        @apply cursor-pointer list-none text-xs font-semibold text-marine marker:content-none [&::-webkit-details-marker]:hidden;
+    }
+    .cr-validados-rules-list {
+        @apply mt-2 space-y-1.5 border-l-2 border-emerald-500/25 pl-3 text-xs leading-snug text-graphite;
+    }
+
+    /* —— Match (#/match) —— */
+    .cr-match-page {
+        @apply gap-4 sm:gap-5;
+    }
+    .cr-match-hero {
+        @apply flex w-full min-w-0 gap-4 rounded-2xl border border-marine/20 bg-gradient-to-br from-snow via-snow to-marine/[0.06] p-4 shadow-sm sm:items-center sm:gap-5 sm:p-5 md:p-6;
+    }
+    .cr-match-hero-icon {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-marine/15 sm:h-14 sm:w-14;
+    }
+    .cr-match-hero-icon .cr-icon {
+        @apply h-7 w-7 text-marine sm:h-8 sm:w-8;
+    }
+    .cr-match-hero-text {
+        @apply min-w-0 flex-1;
+    }
+    .cr-match-setup-card {
+        @apply w-full min-w-0 space-y-4 rounded-2xl border border-graphite/15 bg-snow/95 p-4 shadow-sm sm:p-5;
+    }
+    .cr-match-setup-grid {
+        @apply grid w-full min-w-0 gap-3 sm:grid-cols-2 sm:gap-4;
+    }
+    .cr-match-field {
+        @apply min-w-0;
+    }
+    .cr-match-mode-hint {
+        @apply m-0 text-xs leading-relaxed text-graphite/75 sm:text-sm;
+    }
+    .cr-match-iniciar-btn {
+        @apply w-full sm:w-auto;
+    }
+    .cr-match-status {
+        @apply m-0 rounded-xl border border-marine/20 bg-marine/5 px-3 py-2 text-sm font-medium text-marine;
+    }
+    .cr-match-status--error {
+        @apply border-red-200/80 bg-red-50/90 text-red-800;
+    }
+    .cr-match-results {
+        @apply min-w-0;
+    }
+    .cr-match-results-grid {
+        @apply grid min-w-0 gap-3 sm:gap-4;
+    }
+    .cr-match-loading {
+        @apply text-sm text-graphite/75;
+    }
+    .cr-match-card {
+        @apply min-w-0;
+    }
+    .cr-match-card-head {
+        @apply mb-2 flex flex-wrap items-center justify-between gap-2;
+    }
+    .cr-match-card-title {
+        @apply m-0 text-base font-bold text-navy sm:text-lg;
+    }
+    .cr-match-card-badge {
+        @apply shrink-0 rounded-full bg-marine/10 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-marine sm:text-xs;
+    }
+    .cr-match-card-badge--pair {
+        @apply bg-accent/15 text-accent;
+    }
+    .cr-match-card-desc {
+        @apply m-0 mb-2 text-sm text-graphite/80;
+    }
+    .cr-match-card-line {
+        @apply m-0 mb-2 flex flex-wrap items-center gap-2;
+    }
+    .cr-match-card-desc-inline {
+        @apply text-xs text-graphite/70 sm:text-sm;
+    }
+    .cr-match-vs {
+        @apply m-0 flex flex-wrap items-center gap-2 text-sm font-medium text-graphite;
+    }
+    .cr-match-vs-team {
+        @apply min-w-0 rounded-lg bg-mist/40 px-2 py-1;
+    }
+    .cr-match-vs-sep {
+        @apply shrink-0 text-xs font-bold uppercase tracking-wide text-graphite/50;
+    }
+    .cr-match-queue-list {
+        @apply m-0 list-none space-y-1.5 p-0;
+    }
+    .cr-match-queue-item {
+        @apply flex min-w-0 items-center gap-2 rounded-lg border border-graphite/10 bg-mist/25 px-2.5 py-1.5 text-sm;
+    }
+    .cr-match-queue-pos {
+        @apply flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-marine/15 text-xs font-bold text-marine;
+    }
+    .cr-match-queue-name {
+        @apply min-w-0 truncate font-medium text-graphite;
+    }
+    .cr-match-empty {
+        @apply flex flex-col items-center rounded-2xl border border-dashed border-graphite/20 bg-snow/80 px-4 py-8 text-center sm:py-10;
+    }
+    .cr-match-empty--error {
+        @apply border-red-200/50 bg-red-50/40;
+    }
+    .cr-match-empty-icon {
+        @apply mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-mist/60;
+    }
+    .cr-match-empty-icon .cr-icon {
+        @apply h-7 w-7 text-graphite/60;
+    }
+    .cr-match-empty--error .cr-match-empty-icon .cr-icon {
+        @apply text-red-600/80;
+    }
+    .cr-match-empty-title {
+        @apply m-0 mb-1 text-lg font-semibold text-navy;
+    }
+    .cr-match-empty-desc {
+        @apply m-0 max-w-md text-sm leading-relaxed text-graphite/75;
+    }
+    .cr-match-list-section {
+        @apply min-w-0 space-y-3;
+    }
+    .cr-match-list-head {
+        @apply flex flex-col gap-2 px-0.5 sm:flex-row sm:items-center sm:justify-between;
+    }
+    .cr-match-list-head-actions {
+        @apply flex flex-wrap items-center gap-2 sm:gap-3;
+    }
+    .cr-match-list-filter {
+        @apply min-w-[10rem] max-w-full text-sm;
+    }
+    .cr-match-list-title {
+        @apply m-0 text-base font-bold text-navy sm:text-lg;
+    }
+    .cr-match-list-count {
+        @apply m-0 text-xs text-graphite/70 sm:text-sm;
+    }
+    .cr-match-result-done {
+        @apply mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-sm font-medium text-emerald-900;
+    }
+    .cr-match-result-label {
+        @apply font-semibold uppercase tracking-wide text-[0.65rem] text-emerald-800/80;
+    }
+    .cr-match-result-form {
+        @apply mt-3 border-t border-graphite/10 pt-3;
+    }
+    .cr-match-result-form-label {
+        @apply mb-1.5 block;
+    }
+    .cr-match-result-form-row {
+        @apply flex flex-col gap-2 sm:flex-row sm:items-center;
+    }
+    .cr-match-winner-select {
+        @apply min-w-0 flex-1;
     }
 
     .cr-catalog-skel {
@@ -977,25 +1144,37 @@
         @apply m-0 flex list-none flex-col gap-2.5 p-0;
     }
     .cr-admin-rule-row {
-        @apply flex min-w-0 flex-col gap-2 rounded-xl border border-graphite/15 bg-mist/20 p-3 sm:flex-row sm:items-center sm:gap-3;
+        @apply grid min-w-0 grid-cols-1 gap-2 rounded-xl border border-graphite/15 bg-mist/20 p-3;
+        @apply sm:grid-cols-[auto_10.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3;
     }
     .cr-admin-rule-num {
         @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-bold text-snow sm:h-9 sm:w-9;
     }
+    .cr-admin-regla-type {
+        @apply w-full shrink-0 sm:w-[10.5rem] sm:max-w-none;
+    }
     .cr-admin-regla-text {
-        @apply min-w-0 flex-1;
+        @apply min-w-0 w-full;
+    }
+    .cr-admin-rule-row .cr-admin-regla-text {
+        @apply sm:min-w-0;
     }
     .cr-admin-rule-actions {
-        @apply flex shrink-0 gap-2 sm:ml-auto;
+        @apply flex shrink-0 gap-2 sm:justify-end;
     }
     .cr-admin-rule-actions .cr-admin-icon-btn {
         @apply min-h-9 min-w-[2.75rem] px-2.5;
     }
     .cr-admin-rule-add {
-        @apply flex flex-col gap-2 rounded-xl border border-graphite/15 bg-snow p-3 sm:flex-row sm:items-stretch sm:gap-3;
+        @apply grid grid-cols-1 gap-2 rounded-xl border border-graphite/15 bg-snow p-3;
+        @apply sm:grid-cols-[10.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3;
     }
-    .cr-admin-rule-add .cr-admin-input {
-        @apply min-h-11 flex-1;
+    .cr-admin-rule-add .cr-admin-regla-type {
+        @apply w-full sm:w-[10.5rem];
+    }
+    .cr-admin-rule-add .cr-admin-input,
+    .cr-admin-rule-add .cr-admin-regla-text {
+        @apply min-h-11 min-w-0 w-full;
     }
     .cr-admin-rule-add-btn {
         @apply inline-flex w-full shrink-0 items-center justify-center gap-1 sm:w-auto sm:min-w-[6.5rem];
@@ -1006,7 +1185,10 @@
         }
     }
     .cr-admin-select {
-        @apply min-h-10 w-full min-w-[8rem] max-w-full rounded-xl border border-graphite/20 bg-snow px-3 text-sm text-graphite focus:border-accent focus:ring-2 focus:ring-accent/30;
+        @apply min-h-10 rounded-xl border border-graphite/20 bg-snow px-3 text-sm text-graphite focus:border-accent focus:ring-2 focus:ring-accent/30;
+    }
+    .cr-admin-select:not(.cr-admin-regla-type) {
+        @apply w-full min-w-[8rem] max-w-full;
     }
     .cr-admin-pagination {
         @apply mb-3;
@@ -1031,7 +1213,10 @@
         @apply mt-2 rounded-lg border border-graphite/10 bg-mist/40 px-3 py-2 text-xs leading-snug text-graphite/75;
     }
     .cr-admin-equipos-filtros-form {
-        @apply sm:grid sm:grid-cols-[auto_minmax(0,1fr)_minmax(9rem,11rem)_auto] sm:items-end;
+        @apply sm:grid sm:grid-cols-[minmax(9rem,11rem)_minmax(0,1fr)_auto] sm:items-end;
+    }
+    .cr-admin-equipos-filtros-hint {
+        @apply mb-3 text-sm text-graphite/75;
     }
     .cr-admin-equipos-filtros-cat {
         @apply min-w-0;
@@ -1083,6 +1268,60 @@
     }
     .cr-admin-equipos-pagination + .cr-admin-equipo-list {
         @apply mt-0;
+    }
+    .cr-admin-equipos-nuevo {
+        @apply mb-5;
+    }
+    .cr-admin-equipos-nuevo-form {
+        @apply mt-3 flex flex-col gap-4;
+    }
+    .cr-admin-equipos-nuevo-grid {
+        @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-3;
+    }
+    .cr-admin-equipos-nuevo-field {
+        @apply min-w-0;
+    }
+    .cr-admin-equipos-nuevo-btn {
+        @apply w-full sm:w-auto sm:self-start;
+    }
+    .cr-admin-equipo-members-panel {
+        @apply flex flex-col gap-3 border-t border-graphite/10 bg-mist/20 p-4 sm:p-5;
+    }
+    .cr-admin-equipo-members-title {
+        @apply m-0 flex flex-wrap items-center gap-2 text-sm font-bold text-navy;
+    }
+    .cr-admin-equipo-member-list {
+        @apply m-0 flex list-none flex-col gap-2 p-0;
+    }
+    .cr-admin-equipo-member-row {
+        @apply flex min-w-0 flex-col gap-2 rounded-xl border border-graphite/10 bg-snow px-3 py-2 sm:flex-row sm:items-center sm:justify-between;
+    }
+    .cr-admin-equipo-member-info {
+        @apply min-w-0;
+    }
+    .cr-admin-equipo-member-name {
+        @apply m-0 text-sm font-semibold text-navy;
+    }
+    .cr-admin-equipo-member-email {
+        @apply m-0 text-xs text-graphite/70;
+    }
+    .cr-admin-equipo-member-badge {
+        @apply ml-1 inline-block rounded-full bg-marine/10 px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-marine;
+    }
+    .cr-admin-equipo-members-empty {
+        @apply m-0 text-sm text-graphite/65;
+    }
+    .cr-admin-equipo-add-member {
+        @apply flex flex-col gap-2 rounded-xl border border-dashed border-graphite/20 bg-snow/80 p-3 sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto_auto] sm:items-end sm:gap-2;
+    }
+    .cr-admin-equipo-add-member .cr-admin-input {
+        @apply min-h-10;
+    }
+    .cr-admin-equipo-add-member-leader {
+        @apply flex items-center gap-2 text-xs text-graphite/80 sm:pb-2;
+    }
+    .cr-admin-equipo-add-member-btn {
+        @apply w-full sm:w-auto;
     }
 }
 

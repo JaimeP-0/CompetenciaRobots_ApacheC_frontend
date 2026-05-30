@@ -62,12 +62,12 @@
                     var boot = section.querySelector('#reg-loading-boot');
                     var form = section.querySelector('#f-registro-equipo');
                     var warmup =
-                        w.CRApi && typeof w.CRApi.fetchRegistroTeamsPendientes === 'function'
-                            ? w.CRApi.fetchRegistroTeamsPendientes().catch(function () {
+                        w.CRApi && typeof w.CRApi.fetchCategorias === 'function'
+                            ? w.CRApi.fetchCategorias().catch(function () {
                                   return [];
                               })
-                            : Promise.resolve();
-                    return w.CRUtil.withRegistroMinLoading(warmup).then(function () {
+                            : Promise.resolve([]);
+                    return w.CRUtil.withRegistroMinLoading(warmup).then(function (cats) {
                         if (boot) {
                             boot.classList.add('hidden');
                             boot.setAttribute('aria-hidden', 'true');
@@ -77,6 +77,20 @@
                             form.setAttribute('aria-busy', 'false');
                         }
                         var detalleHook = { fn: null };
+                        var catCleanup = null;
+                        if (Reg.initCategoriaRegistro) {
+                            catCleanup = Reg.initCategoriaRegistro(outlet, {
+                                categorias: cats,
+                                onCategoriaChange: function () {
+                                    if (w.CRUtil && typeof w.CRUtil.bumpDetalleFetchGen === 'function') {
+                                        w.CRUtil.bumpDetalleFetchGen();
+                                    }
+                                    if (typeof detalleHook.fn === 'function') {
+                                        detalleHook.fn(null);
+                                    }
+                                }
+                            });
+                        }
                         var regPack = Reg.initFlow(outlet);
                         var ac = Reg.initEquipoAutocomplete(outlet, {
                             onDetalleChange: function (det) {
@@ -90,6 +104,9 @@
                         w._crEquipoAcCleanup = function () {
                             ac();
                             regPack.cleanup();
+                            if (typeof catCleanup === 'function') {
+                                catCleanup();
+                            }
                             detalleHook.fn = null;
                         };
                     });

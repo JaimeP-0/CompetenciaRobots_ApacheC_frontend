@@ -47,7 +47,7 @@
         return 'Categoría ' + id;
     }
 
-    function normalizeCatalogRules(rules) {
+    function normalizeCatalogRules(rules, fallbackCategoryId) {
         if (!Array.isArray(rules)) {
             return [];
         }
@@ -59,7 +59,12 @@
             if (typeof r === 'string') {
                 var s = r.trim();
                 if (s) {
-                    out.push({ description: s });
+                    var strItem = { description: s };
+                    var fb = Number(fallbackCategoryId, 10);
+                    if (!isNaN(fb)) {
+                        strItem.category_id = fb;
+                    }
+                    out.push(strItem);
                 }
                 return;
             }
@@ -69,6 +74,19 @@
                 var rid = Number(r.id, 10);
                 if (!isNaN(rid)) {
                     item.id = rid;
+                }
+                var ruleType = String(r.type != null ? r.type : '')
+                    .trim()
+                    .toLowerCase();
+                if (ruleType === 'characteristic' || ruleType === 'restriction') {
+                    item.type = ruleType;
+                }
+                var cid = Number(r.category_id, 10);
+                if (isNaN(cid) && fallbackCategoryId != null) {
+                    cid = Number(fallbackCategoryId, 10);
+                }
+                if (!isNaN(cid)) {
+                    item.category_id = cid;
                 }
                 out.push(item);
             }
@@ -95,6 +113,40 @@
         });
     }
 
+    function fetchReglasForCategory(catId) {
+        var path = (app.categoriasPath || '/categorias') + '/' + encodeURIComponent(String(catId)) + '/reglas';
+        var url = buildUrl(path, {});
+        return fetch(url, { headers: { Accept: 'application/json' } })
+            .then(function (res) {
+                if (!res.ok) {
+                    return [];
+                }
+                return res.json();
+            })
+            .then(function (data) {
+                return normalizeCatalogRules(parseCategoriasPayload(data), catId);
+            })
+            .catch(function () {
+                return [];
+            });
+    }
+
+    function attachRulesToCategories(list) {
+        if (!list.length) {
+            return Promise.resolve(list);
+        }
+        return Promise.all(
+            list.map(function (c) {
+                if (c.rules && c.rules.length) {
+                    return c;
+                }
+                return fetchReglasForCategory(c.id).then(function (rules) {
+                    return Object.assign({}, c, { rules: rules });
+                });
+            })
+        );
+    }
+
     function fetchCategorias(force) {
         if (!force && categoriasCache) {
             return Promise.resolve(categoriasCache);
@@ -117,11 +169,15 @@
             })
             .then(function (data) {
                 var raw = parseCategoriasPayload(data);
-                categoriasCache = raw
+                var base = raw
                     .map(normalizeCategory)
                     .filter(function (c) {
                         return c.name;
                     });
+                return attachRulesToCategories(base);
+            })
+            .then(function (categoriasCacheResult) {
+                categoriasCache = categoriasCacheResult;
                 if (w.CRAdminAlmacen && w.CRAdminAlmacen.isEnabled()) {
                     categoriasCache = w.CRAdminAlmacen.getCategoriasParaApp(categoriasCache);
                 }
@@ -144,6 +200,8 @@
     w.CRApiCategorias = {
         labelById: categoryLabelById,
         fetch: fetchCategorias,
+        fetchRulesForCategory: fetchReglasForCategory,
+        normalizeRules: normalizeCatalogRules,
         clearCache: function () {
             categoriasCache = null;
             categoriasById = {};

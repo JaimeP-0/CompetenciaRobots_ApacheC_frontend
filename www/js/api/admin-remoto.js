@@ -1,12 +1,14 @@
 /**
  * CRUD admin contra backend PHP (MySQL).
- * Rutas: /categorias, /categorias/{id}/reglas, PATCH /registro/{id}
+ * GET: /categorias, /categorias/{id}/reglas, /categorias/{id}/equipos, /equipos/{id}/miembros
+ * POST: /categorias, /reglas, /equipos, /miembros
  */
 (function (w) {
     'use strict';
 
     var app = w.CR_APP || w.CR_CONFIG;
     var Http = w.CRApiHttp;
+    var Cats = w.CRApiCategorias;
     if (!app || !Http) {
         throw new Error('Carga config.js y http-build-url.js antes de admin-remoto.js');
     }
@@ -31,12 +33,17 @@
     function request(method, path, body) {
         var url = buildUrl(path, {});
         if (app.debugApi) {
-            console.log('[CR admin]', method, url);
+            console.log('[CR admin]', method, url, body || '');
+        }
+        var headers = { Accept: 'application/json' };
+        var hasBody = body != null && method !== 'GET' && method !== 'HEAD';
+        if (hasBody) {
+            headers['Content-Type'] = 'application/json';
         }
         return fetch(url, {
             method: method,
-            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-            body: body != null && method !== 'GET' ? JSON.stringify(body) : undefined
+            headers: headers,
+            body: hasBody ? JSON.stringify(body) : undefined
         }).then(parseJson);
     }
 
@@ -62,13 +69,35 @@
         return [];
     }
 
+    var REG_RULE_TYPES = ['characteristic', 'restriction'];
+
+    function normalizeReglaType(type) {
+        var t = String(type || '')
+            .trim()
+            .toLowerCase();
+        return REG_RULE_TYPES.indexOf(t) !== -1 ? t : null;
+    }
+
+    function cloneRegla(r) {
+        var item = { id: r.id, description: r.description };
+        var ruleType = normalizeReglaType(r.type);
+        if (ruleType) {
+            item.type = ruleType;
+        }
+        if (r.category_id != null) {
+            var cid = Number(r.category_id, 10);
+            if (!isNaN(cid)) {
+                item.category_id = cid;
+            }
+        }
+        return item;
+    }
+
     function cloneCategoria(c) {
         return {
             id: c.id,
             name: c.name,
-            rules: (c.rules || []).map(function (r) {
-                return { id: r.id, description: r.description };
-            })
+            rules: (c.rules || []).map(cloneRegla)
         };
     }
 
@@ -76,14 +105,54 @@
         return app.categoriasPath || '/categorias';
     }
 
-    function registroPath(teamId) {
-        var base = app.registroEquiposPath || '/registro';
-        return base + '/' + encodeURIComponent(String(teamId));
+    function equiposPath() {
+        return app.equiposPath || '/equipos';
+    }
+
+    function reglasPath() {
+        return app.reglasPath || '/reglas';
+    }
+
+    function miembrosPath() {
+        return app.miembrosPath || '/miembros';
+    }
+
+    function equipoPath(teamId) {
+        return equiposPath() + '/' + encodeURIComponent(String(teamId));
+    }
+
+    function fetchReglasForCategory(catId) {
+        if (Cats && typeof Cats.fetchRulesForCategory === 'function') {
+            return Cats.fetchRulesForCategory(catId);
+        }
+        return request('GET', catsPath() + '/' + encodeURIComponent(String(catId)) + '/reglas')
+            .then(function (data) {
+                var list = parseCategoriasList(data);
+                return list.map(function (r) {
+                    return cloneRegla(
+                        Object.assign({}, r, {
+                            category_id: r.category_id != null ? r.category_id : catId
+                        })
+                    );
+                });
+            })
+            .catch(function () {
+                return [];
+            });
     }
 
     function getCategorias() {
         return request('GET', catsPath()).then(function (data) {
-            return parseCategoriasList(data).map(cloneCategoria);
+            var base = parseCategoriasList(data).map(function (c) {
+                return { id: c.id, name: c.name, rules: [] };
+            });
+            return Promise.all(
+                base.map(function (c) {
+                    return fetchReglasForCategory(c.id).then(function (rules) {
+                        return cloneCategoria({ id: c.id, name: c.name, rules: rules });
+                    });
+                })
+            );
         });
     }
 
@@ -127,23 +196,37 @@
         });
     }
 
-    function addRegla(categoriaId, description) {
+    function addRegla(categoriaId, description, type) {
         var text = String(description || '').trim();
         if (!text) {
             return Promise.reject(new Error('Escribe el texto de la regla.'));
         }
-        var path =
-            catsPath() + '/' + encodeURIComponent(String(categoriaId)) + '/reglas';
-        return request('POST', path, { description: text }).then(function (regla) {
+        var ruleType = normalizeReglaType(type);
+        if (!ruleType) {
+            return Promise.reject(
+                new Error('El tipo de regla debe ser "characteristic" o "restriction".')
+            );
+        }
+        return request('POST', reglasPath(), {
+            description: text,
+            category_id: Number(categoriaId, 10),
+            type: ruleType
+        }).then(function (regla) {
             clearCaches();
             return regla;
         });
     }
 
-    function updateRegla(categoriaId, reglaId, description) {
+    function updateRegla(categoriaId, reglaId, description, type) {
         var text = String(description || '').trim();
         if (!text) {
             return Promise.reject(new Error('La regla no puede estar vacía.'));
+        }
+        var ruleType = normalizeReglaType(type);
+        if (!ruleType) {
+            return Promise.reject(
+                new Error('El tipo de regla debe ser "characteristic" o "restriction".')
+            );
         }
         var path =
             catsPath() +
@@ -151,7 +234,7 @@
             encodeURIComponent(String(categoriaId)) +
             '/reglas/' +
             encodeURIComponent(String(reglaId));
-        return request('PUT', path, { description: text }).then(function (regla) {
+        return request('PUT', path, { description: text, type: ruleType }).then(function (regla) {
             clearCaches();
             return regla;
         });
@@ -171,9 +254,57 @@
 
     function setEquipoCategoria(teamId, categoryId) {
         var body = {
-            category_id: categoryId == null || categoryId === '' ? null : Number(categoryId, 10)
+            category_id:
+                categoryId == null || categoryId === ''
+                    ? null
+                    : String(categoryId)
         };
-        return request('PATCH', registroPath(teamId), body).then(function () {
+        return request('PATCH', equipoPath(teamId), body).then(function () {
+            clearCaches();
+        });
+    }
+
+    function addEquipo(payload) {
+        var name = String((payload && payload.name) || '').trim();
+        if (!name) {
+            return Promise.reject(new Error('Escribe el nombre del equipo.'));
+        }
+        var body = {
+            name: name,
+            school: String((payload && payload.school) || '').trim(),
+            grade: String((payload && payload.grade) || '').trim(),
+            teacher: String((payload && payload.teacher) || '').trim()
+        };
+        if (payload && payload.category_id != null && payload.category_id !== '') {
+            body.category_id = Number(payload.category_id, 10);
+        }
+        return request('POST', equiposPath(), body).then(function (created) {
+            clearCaches();
+            return created;
+        });
+    }
+
+    function addMiembro(teamId, payload) {
+        var name = String((payload && payload.name) || '').trim();
+        if (!name) {
+            return Promise.reject(new Error('Escribe el nombre del miembro.'));
+        }
+        var body = {
+            name: name,
+            email: String((payload && payload.email) || '').trim(),
+            is_leader: !!(payload && payload.is_leader),
+            team_id: Number(teamId, 10)
+        };
+        return request('POST', miembrosPath(), body).then(function (created) {
+            clearCaches();
+            return created;
+        });
+    }
+
+    function deleteMiembro(teamId, memberId) {
+        var path =
+            equipoPath(teamId) + '/miembros/' + encodeURIComponent(String(memberId));
+        return request('DELETE', path).then(function () {
             clearCaches();
         });
     }
@@ -188,6 +319,9 @@
         updateRegla: updateRegla,
         deleteRegla: deleteRegla,
         setEquipoCategoria: setEquipoCategoria,
+        addEquipo: addEquipo,
+        addMiembro: addMiembro,
+        deleteMiembro: deleteMiembro,
         clearCaches: clearCaches
     };
 })(window);

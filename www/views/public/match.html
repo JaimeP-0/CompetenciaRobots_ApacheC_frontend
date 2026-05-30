@@ -1,0 +1,59 @@
+<section
+    id="cr-match-root"
+    class="cr-catalog-page cr-catalog-page--wide cr-match-page"
+    data-cr-modulo="1-catalogo"
+    aria-label="Iniciar partidas"
+>
+    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+
+    <header class="cr-match-hero">
+        <div class="cr-match-hero-icon" data-cr-icon="trophy" aria-hidden="true"></div>
+        <div class="cr-match-hero-text">
+            <h1 class="cr-catalog-title">Match</h1>
+            <p id="cr-match-sub" class="text-sm leading-snug text-graphite/80 sm:text-base">
+                Inicia la cola de partidas con equipos que tengan robot válido.
+            </p>
+        </div>
+    </header>
+
+    <section class="cr-match-setup-card" aria-label="Configuración de partida">
+        <div class="cr-match-setup-grid">
+            <div class="cr-match-field">
+                <label class="cr-admin-label" for="cr-match-cat">Categoría</label>
+                <select id="cr-match-cat" class="cr-admin-select" required>
+                    <option value="">— Elige categoría —</option>
+                </select>
+            </div>
+            <div class="cr-match-field">
+                <label class="cr-admin-label" for="cr-match-mode">Modo</label>
+                <select id="cr-match-mode" class="cr-admin-select">
+                    <option value="">Automático (según categoría)</option>
+                    <option value="pairwise">Parejas (1 vs 1)</option>
+                    <option value="shared">Concurso (todos en cola)</option>
+                </select>
+            </div>
+        </div>
+        <p id="cr-match-mode-hint" class="cr-match-mode-hint" aria-live="polite"></p>
+        <button type="button" id="cr-match-iniciar" class="cr-app-btn cr-app-btn--primary cr-match-iniciar-btn" disabled>
+            Iniciar cola
+        </button>
+    </section>
+
+    <p id="cr-match-status" class="cr-match-status hidden" aria-live="polite"></p>
+
+    <section class="cr-match-list-section" aria-label="Partidas">
+        <div class="cr-match-list-head">
+            <h2 class="cr-match-list-title">Partidas actuales</h2>
+            <div class="cr-match-list-head-actions">
+                <label class="sr-only" for="cr-match-list-filter">Filtrar por categoría</label>
+                <select id="cr-match-list-filter" class="cr-admin-select cr-match-list-filter" aria-label="Filtrar partidas">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <p id="cr-match-list-count" class="cr-match-list-count"></p>
+            </div>
+        </div>
+        <div id="cr-match-list" class="cr-match-results" aria-live="polite">
+            <p class="cr-match-loading">Cargando partidas…</p>
+        </div>
+    </section>
+</section>
