@@ -21,19 +21,6 @@
         });
     }
 
-    function fetchChecklistFragment(slugCategoria, tablaNum) {
-        var slug = String(slugCategoria || '').trim();
-        var n = Number(tablaNum) || 1;
-        return fetch(viewsBase() + 'checklists/' + slug + '-tabla-' + n + '.html', { cache: 'no-cache' }).then(
-            function (res) {
-                if (!res.ok) {
-                    throw new Error('No se pudo cargar el checklist');
-                }
-                return res.text();
-            }
-        );
-    }
-
     function showError(outlet, err) {
         if (!outlet) {
             return;
@@ -47,7 +34,6 @@
     w.CRViews = {
         viewsBase: viewsBase,
         load: fetchView,
-        fetchChecklistFragment: fetchChecklistFragment,
         showError: showError
     };
 })(window);

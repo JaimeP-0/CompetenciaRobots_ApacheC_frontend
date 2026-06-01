@@ -1,0 +1,92 @@
+<section
+    id="cr-brackets-root"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide cr-brackets-page"
+    data-cr-modulo="1-catalogo"
+    aria-label="Brackets sumo"
+>
+    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
+
+    <header class="cr-page-hero">
+        <div class="cr-page-hero-icon" data-cr-icon="trophy" aria-hidden="true"></div>
+        <div class="cr-page-hero-text">
+            <p class="cr-page-kicker">Competencia</p>
+            <h1 class="cr-page-title">Brackets Sumo</h1>
+            <p class="cr-page-lead">
+                Solo compiten los equipos vivos. Al perder, el equipo pasa a la lista de eliminados y no vuelve a
+                entrar.
+            </p>
+        </div>
+    </header>
+
+    <section class="cr-match-setup-card" aria-label="Configuración del bracket">
+        <div class="cr-brackets-setup-grid">
+            <div class="cr-brackets-field">
+                <label class="cr-admin-label" for="cr-brackets-cat">Categoría sumo</label>
+                <select id="cr-brackets-cat" class="cr-admin-select" required>
+                    <option value="">— Elige categoría —</option>
+                </select>
+            </div>
+        </div>
+        <div class="cr-brackets-tabs" role="tablist" aria-label="Vista del torneo">
+            <button
+                type="button"
+                id="cr-brackets-tab-winner"
+                class="cr-brackets-tab cr-brackets-tab--active"
+                role="tab"
+                aria-selected="true"
+            >
+                En competencia
+            </button>
+            <button
+                type="button"
+                id="cr-brackets-tab-loser"
+                class="cr-brackets-tab"
+                role="tab"
+                aria-selected="false"
+            >
+                Eliminados
+            </button>
+        </div>
+        <div class="cr-brackets-setup-actions">
+            <button type="button" id="cr-brackets-generar" class="cr-app-btn cr-app-btn--primary" disabled>
+                Iniciar cola
+            </button>
+            <button type="button" id="cr-brackets-refresh" class="cr-app-btn cr-app-btn--secondary" disabled>
+                Actualizar
+            </button>
+        </div>
+        <p id="cr-brackets-meta" class="cr-brackets-meta" aria-live="polite"></p>
+    </section>
+
+    <p id="cr-brackets-status" class="cr-brackets-status hidden" aria-live="polite"></p>
+
+    <section id="cr-brackets-board-wrap" class="cr-brackets-board-wrap hidden" aria-label="Cuadro en competencia">
+        <div id="cr-brackets-champion" class="cr-brackets-champion hidden" aria-live="polite"></div>
+        <div class="cr-brackets-columns">
+            <div class="cr-brackets-column">
+                <h2 class="cr-brackets-column-title">Ronda actual</h2>
+                <div id="cr-brackets-col-current" class="cr-brackets-column-matches"></div>
+            </div>
+            <div class="cr-brackets-column cr-brackets-column--next">
+                <h2 class="cr-brackets-column-title">Siguiente ronda</h2>
+                <div id="cr-brackets-col-next" class="cr-brackets-column-matches"></div>
+            </div>
+        </div>
+        <div id="cr-brackets-round-footer" class="cr-brackets-round-footer hidden">
+            <p id="cr-brackets-round-done-msg" class="cr-brackets-round-done-msg hidden"></p>
+            <button type="button" id="cr-brackets-next-round" class="cr-app-btn cr-app-btn--primary">
+                Iniciar siguiente ronda
+            </button>
+        </div>
+    </section>
+
+    <section id="cr-brackets-loser-panel" class="cr-brackets-loser-panel hidden" aria-label="Lista de eliminados"></section>
+
+    <div id="cr-brackets-empty" class="cr-brackets-empty">
+        <span class="cr-brackets-empty-icon" data-cr-icon="trophy" aria-hidden="true"></span>
+        <h2 class="cr-brackets-empty-title">Sin partidas activas</h2>
+        <p class="cr-brackets-empty-desc">
+            Elige una categoría sumo y pulsa «Iniciar cola» para emparejar equipos vivos.
+        </p>
+    </div>
+</section>

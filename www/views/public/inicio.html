@@ -5,61 +5,56 @@
     aria-label="Competencia de Robots"
 >
     <header class="cr-inicio-head">
+        <p class="cr-inicio-kicker">Universidad Tecnológica del Norte de Coahuila</p>
         <h1 class="cr-inicio-title">Competencia de Robots</h1>
+        <p class="cr-inicio-lead">Registro, consulta y competencia en un solo lugar.</p>
     </header>
 
     <nav class="cr-inicio-nav" aria-label="Acciones principales">
-        <button
-            type="button"
-            class="cr-catalog-cat-card cr-inicio-tile--primary"
-            data-route="/registro"
-        >
-            <span class="cr-inicio-tile-icon" data-cr-icon="clipboard-document-check"></span>
-            <span class="cr-inicio-tile-text">
-                <span class="cr-catalog-cat-card-title">Registrar Robots</span>
-                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Verificación de robots</span>
+        <button type="button" class="cr-inicio-hero-card" data-route="/registro">
+            <span class="cr-inicio-hero-icon" data-cr-icon="clipboard-document-check" aria-hidden="true"></span>
+            <span class="cr-inicio-hero-text">
+                <span class="cr-inicio-hero-title">Registrar robots</span>
+                <span class="cr-inicio-hero-meta">Verificación en pista · jueces</span>
             </span>
-            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
+            <span class="cr-inicio-hero-arrow" aria-hidden="true">→</span>
         </button>
-        <button type="button" class="cr-catalog-cat-card" data-route="/categorias">
-            <span class="cr-inicio-tile-icon" data-cr-icon="squares-2x2"></span>
-            <span class="cr-inicio-tile-text">
-                <span class="cr-catalog-cat-card-title">Categorías</span>
-                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Reglamento por categoría</span>
-            </span>
-            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
-        </button>
-        <button type="button" class="cr-catalog-cat-card" data-route="/equipos">
-            <span class="cr-inicio-tile-icon" data-cr-icon="user-group"></span>
-            <span class="cr-inicio-tile-text">
-                <span class="cr-catalog-cat-card-title">Equipos</span>
-                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Listado completo</span>
-            </span>
-            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
-        </button>
-        <button type="button" class="cr-catalog-cat-card" data-route="/validados">
-            <span class="cr-inicio-tile-icon" data-cr-icon="check-circle"></span>
-            <span class="cr-inicio-tile-text">
-                <span class="cr-catalog-cat-card-title">Equipos validados</span>
-                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Verificación completada</span>
-            </span>
-            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
-        </button>
-        <button type="button" class="cr-catalog-cat-card" data-route="/match">
-            <span class="cr-inicio-tile-icon" data-cr-icon="trophy"></span>
-            <span class="cr-inicio-tile-text">
-                <span class="cr-catalog-cat-card-title">Match</span>
-                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Combates y emparejamientos</span>
-            </span>
-            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
-        </button>
-        <button type="button" class="cr-catalog-cat-card cr-inicio-tile--admin" data-route="/admin/login">
-            <span class="cr-inicio-tile-icon" data-cr-icon="lock-closed"></span>
-            <span class="cr-inicio-tile-text">
-                <span class="cr-catalog-cat-card-title">Administración</span>
-                <span class="cr-catalog-cat-card-meta cr-inicio-meta-hide">Administración de competencia</span>
-            </span>
-            <span class="cr-catalog-cat-card-arrow" aria-hidden="true">→</span>
-        </button>
+
+        <section class="cr-inicio-section" aria-label="Consultar">
+            <h2 class="cr-inicio-section-title">Consultar</h2>
+            <div class="cr-inicio-grid">
+                <button type="button" class="cr-inicio-mini-card" data-route="/categorias">
+                    <span class="cr-inicio-mini-icon" data-cr-icon="squares-2x2" aria-hidden="true"></span>
+                    <span class="cr-inicio-mini-label">Categorías</span>
+                </button>
+                <button type="button" class="cr-inicio-mini-card" data-route="/equipos">
+                    <span class="cr-inicio-mini-icon" data-cr-icon="user-group" aria-hidden="true"></span>
+                    <span class="cr-inicio-mini-label">Equipos</span>
+                </button>
+                <button type="button" class="cr-inicio-mini-card" data-route="/validados">
+                    <span class="cr-inicio-mini-icon" data-cr-icon="check-circle" aria-hidden="true"></span>
+                    <span class="cr-inicio-mini-label">Validados</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="cr-inicio-section" aria-label="Competencia">
+            <h2 class="cr-inicio-section-title">Competencia</h2>
+            <button type="button" class="cr-inicio-comp-card" data-route="/match">
+                <span class="cr-inicio-comp-icon" data-cr-icon="trophy" aria-hidden="true"></span>
+                <span class="cr-inicio-comp-text">
+                    <span class="cr-inicio-comp-title">Partidas y resultados</span>
+                    <span class="cr-inicio-comp-meta">Match · ranking · brackets sumo</span>
+                </span>
+                <span class="cr-inicio-comp-arrow" aria-hidden="true">→</span>
+            </button>
+        </section>
+
+        <section class="cr-inicio-section" aria-label="Administración">
+            <button type="button" class="cr-inicio-admin-btn" data-route="/admin/login">
+                <span class="cr-inicio-admin-btn-icon" data-cr-icon="shield-check" aria-hidden="true"></span>
+                <span class="cr-inicio-admin-btn-label">Administración</span>
+            </button>
+        </section>
     </nav>
 </section>

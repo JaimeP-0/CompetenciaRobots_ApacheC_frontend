@@ -40,9 +40,12 @@
                 var backBtn = outlet.querySelector('#cr-equipo-volver');
                 if (backBtn) {
                     if (t.category_id != null && String(t.category_id).trim() !== '') {
-                        backBtn.setAttribute('data-route', '/categoria/' + t.category_id + '/equipos');
+                        backBtn.setAttribute(
+                            'data-back-fallback',
+                            '/categoria/' + t.category_id + '/equipos'
+                        );
                     } else {
-                        backBtn.setAttribute('data-route', '/equipos');
+                        backBtn.setAttribute('data-back-fallback', '/equipos');
                     }
                 }
                 var capName = String(t.captain_name || '').trim();

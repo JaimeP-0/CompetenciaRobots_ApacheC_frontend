@@ -9,15 +9,16 @@
         <link rel="stylesheet" href="css/app.css">
         <meta
             http-equiv="Content-Security-Policy"
-            content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; connect-src 'self' https: http://127.0.0.1:* http://localhost:* http://100.124.252.101:*; style-src 'self' 'unsafe-inline'; media-src *;"
+            content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; connect-src 'self' https: http:; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;"
         />
 
     </head>
     <body
-        class="m-0 flex min-h-dvh flex-col overflow-x-hidden bg-[#f5f7fb] px-3 pb-3 pt-[max(2rem,env(safe-area-inset-top,0px))] text-base text-[#1f2937] antialiased sm:px-5 sm:pb-5 sm:pt-[max(2rem,env(safe-area-inset-top,0px))] lg:px-8 lg:pb-8"
+        class="cr-view-inicio m-0 flex min-h-dvh flex-col overflow-x-hidden bg-[#f5f7fb] px-3 pb-3 pt-[max(2rem,env(safe-area-inset-top,0px))] text-base text-[#1f2937] antialiased sm:px-5 sm:pb-5 sm:pt-[max(2rem,env(safe-area-inset-top,0px))] lg:px-8 lg:pb-8"
     >
-        <header class="flex shrink-0 justify-center pb-1.5 pt-0.5 sm:pb-2 sm:pt-1">
+        <header id="cr-site-header" class="flex shrink-0 justify-center pb-1.5 pt-0.5 sm:pb-2 sm:pt-1">
             <img
+                id="cr-site-logo"
                 src="img/logo_utnc.png"
                 alt="Universidad Tecnológica del Norte de Coahuila"
                 class="block h-auto w-auto max-w-[min(100%,11rem)] sm:max-w-[13rem] lg:max-w-[15rem]"
@@ -34,13 +35,14 @@
         <script src="js/routes.js"></script>
         <!-- API (orden fijo) -->
         <script src="js/api/http-build-url.js"></script>
+        <script src="js/api/http-transport.js"></script>
         <script src="js/api/categorias-cache.js"></script>
         <script src="js/api/equipos-registro-cache.js"></script>
         <script src="js/api/catalog-remoto-get.js"></script>
-        <script src="js/api/mock-datos.js"></script>
-        <script src="js/api/mock-handlers.js"></script>
         <script src="js/api/request.js"></script>
         <script src="js/api/partidas.js"></script>
+        <script src="js/brackets/bracket-engine.js"></script>
+        <script src="js/api/brackets.js"></script>
         <script src="js/api/public.js"></script>
         <script src="js/api/admin-remoto.js"></script>
         <script src="js/admin/almacen.js"></script>
@@ -55,8 +57,11 @@
         <script src="js/catalog/vista-equipo-detalle.js"></script>
         <script src="js/catalog/vista-validados.js"></script>
         <script src="js/catalog/vista-match.js"></script>
+        <script src="js/catalog/vista-ranking.js"></script>
+        <script src="js/catalog/vista-brackets.js"></script>
         <script src="js/catalog/catalog.js"></script>
         <!-- Núcleo app -->
+        <script src="js/core/nav-history.js"></script>
         <script src="js/core/util.js"></script>
         <script src="js/core/views.js"></script>
         <script src="js/core/router.js"></script>

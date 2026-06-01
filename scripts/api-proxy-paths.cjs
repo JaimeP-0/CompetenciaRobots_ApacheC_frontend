@@ -11,6 +11,7 @@ var API_ROUTE_PREFIXES = [
     '/validaciones',
     '/partidas',
     '/resultados',
+    '/brackets',
     '/login'
 ];
 

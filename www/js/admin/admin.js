@@ -61,6 +61,13 @@
         logout: function () {
             Sesion.clear();
         },
+        logoutAndHome: function () {
+            Sesion.clear();
+            if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+                w.CRNavHistory.reset();
+            }
+            w.location.hash = '#/';
+        },
         initLogin: function (outlet) {
             clearPanel();
             clearCats();

@@ -1,17 +1,18 @@
-<section id="cr-equipos-root" class="cr-catalog-page cr-catalog-page--wide" aria-label="Listado de equipos">
-    <button id="cr-equipos-volver" type="button" data-route="/categorias" class="cr-catalog-back" aria-label="Volver">←</button>
+<section id="cr-equipos-root" class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide" aria-label="Listado de equipos">
+    <button id="cr-equipos-volver" type="button" data-back data-back-fallback="/categorias" class="cr-catalog-back" aria-label="Volver">←</button>
 
-    <div class="min-w-0 shrink-0 space-y-0.5 px-0.5 pb-1 sm:pb-2">
-        <h1 id="cr-equipos-titulo" class="text-lg font-bold leading-tight text-navy sm:text-xl">Equipos</h1>
-        <p id="cr-equipos-sub" class="text-xs leading-snug text-graphite/75 sm:text-sm"></p>
-    </div>
+    <header class="cr-page-head">
+        <p class="cr-page-kicker">Consultar</p>
+        <h1 id="cr-equipos-titulo" class="cr-page-title">Equipos</h1>
+        <p id="cr-equipos-sub" class="cr-page-lead"></p>
+    </header>
 
-    <div class="cr-catalog-card-block shrink-0">
-        <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
-            <label for="cr-equipos-filtro-categoria" class="cr-catalog-dt mb-1.5 block">Categoría</label>
+    <div class="cr-match-setup-card shrink-0">
+        <div class="cr-match-field">
+            <label for="cr-equipos-filtro-categoria" class="cr-admin-label">Categoría</label>
             <select
                 id="cr-equipos-filtro-categoria"
-                class="cr-admin-select cr-equipos-filtro-cat h-12 w-full max-w-full rounded-xl text-sm sm:h-14 sm:text-base"
+                class="cr-admin-select cr-equipos-filtro-cat w-full max-w-full"
                 aria-label="Selecciona la categoría"
             >
                 <option value="">— Elige categoría —</option>

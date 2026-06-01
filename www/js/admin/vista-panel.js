@@ -13,7 +13,6 @@
         var saludo = outlet.querySelector('#admin-saludo');
         var statEquipos = outlet.querySelector('#admin-stat-equipos');
         var statCategorias = outlet.querySelector('#admin-stat-categorias');
-        var btnLogout = outlet.querySelector('#btn-admin-logout');
         if (!Sesion) {
             return function () {};
         }
@@ -76,20 +75,7 @@
                 setStat(statCategorias, '—', false);
             });
 
-        function onLogout() {
-            Sesion.clear();
-            w.location.hash = '#/admin/login';
-        }
-
-        if (btnLogout) {
-            btnLogout.addEventListener('click', onLogout, false);
-        }
-
-        return function cleanup() {
-            if (btnLogout) {
-                btnLogout.removeEventListener('click', onLogout, false);
-            }
-        };
+        return function cleanup() {};
     }
 
     w.CRAdminVistaPanel = { init: initAdminPanel };

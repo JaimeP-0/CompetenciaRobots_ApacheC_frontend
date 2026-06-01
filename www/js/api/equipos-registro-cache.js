@@ -12,6 +12,7 @@
         throw new Error('Carga api/http-build-url.js y config.js antes');
     }
     var buildUrl = Http.buildUrl;
+    var httpFetch = (w.CRApiTransport && w.CRApiTransport.fetch) || w.fetch.bind(w);
 
     var registroTeamsCacheMap = {};
     var registroTeamsInflightMap = {};
@@ -269,7 +270,7 @@
         if (app.debugApi) {
             console.log('[CR] fetch', url);
         }
-        return fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' }).then(function (res) {
+        return httpFetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' }).then(function (res) {
             if (res.status === 304) {
                 return res.text().then(function (t) {
                     var s = String(t || '').trim();

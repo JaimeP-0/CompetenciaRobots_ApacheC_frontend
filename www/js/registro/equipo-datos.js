@@ -4,9 +4,6 @@
 (function (w) {
     'use strict';
 
-    /** Un solo equipo de prueba (mock). */
-    var MOCK_EQUIPOS = ['Test'];
-
     function getRegFiltroCategoriaId(root) {
         var sec = registroSectionRoot(root);
         var sel = sec.querySelector('#reg-filtro-categoria');
@@ -22,21 +19,9 @@
      */
     function fetchSugerenciasEquipo(query, root) {
         var q = String(query || '').trim();
-        var app = w.CR_CONFIG || w.CR_APP || {};
         var categoryId = getRegFiltroCategoriaId(root);
         if (!q || categoryId == null) {
             return Promise.resolve([]);
-        }
-        if (app.useMockApi !== false) {
-            return new Promise(function (resolve) {
-                window.setTimeout(function () {
-                    var needle = q.toLowerCase();
-                    var hits = MOCK_EQUIPOS.filter(function (name) {
-                        return name.toLowerCase().indexOf(needle) !== -1;
-                    });
-                    resolve(hits);
-                }, 120);
-            });
         }
         if (w.CRApi && typeof w.CRApi.getRegistroSugerencias === 'function') {
             return w.CRApi.getRegistroSugerencias(q, categoryId);
@@ -156,30 +141,9 @@
      */
     function fetchDetalleEquipoPorNombre(nombre, root) {
         var n = String(nombre || '').trim();
-        var app = w.CR_CONFIG || w.CR_APP || {};
         var categoryId = getRegFiltroCategoriaId(root);
         if (!n || categoryId == null) {
             return Promise.resolve(null);
-        }
-        if (app.useMockApi !== false) {
-            return new Promise(function (resolve) {
-                window.setTimeout(function () {
-                    if (n.toLowerCase() !== 'test') {
-                        resolve(null);
-                        return;
-                    }
-                    resolve({
-                        team_id: 1,
-                        category_id: 1,
-                        escuela: 'Prueba',
-                        capitan: 'Prueba',
-                        asesor: 'Prueba',
-                        categoria: 'Minisumo',
-                        integrantes:
-                            'Integrante 1\nIntegrante 2\nIntegrante 3\nIntegrante 4\nIntegrante 5\nIntegrante 6'
-                    });
-                }, 90);
-            });
         }
         if (w.CRApi && typeof w.CRApi.getRegistroDetallePorNombre === 'function') {
             return w.CRApi.getRegistroDetallePorNombre(n, categoryId);

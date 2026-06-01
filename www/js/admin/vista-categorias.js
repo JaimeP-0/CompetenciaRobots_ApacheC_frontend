@@ -111,16 +111,27 @@
 
         function renderCard(cat) {
             var ruleCount = (cat.rules || []).length;
+            var ruleLabel = ruleCount + ' ' + (ruleCount === 1 ? 'regla' : 'reglas');
             return (
                 '<article class="cr-admin-cat-card" data-cat-id="' +
                 esc(cat.id) +
                 '">' +
+                '<details class="cr-admin-cat-details">' +
+                '<summary class="cr-admin-cat-summary">' +
+                '<span class="cr-admin-cat-summary-id" aria-label="Identificador">#' +
+                esc(cat.id) +
+                '</span>' +
+                '<span class="cr-admin-cat-summary-name">' +
+                esc(cat.name) +
+                '</span>' +
+                '<span class="cr-admin-cat-summary-badge">' +
+                ruleLabel +
+                '</span>' +
+                '<span class="cr-admin-cat-summary-chevron" aria-hidden="true">▼</span>' +
+                '</summary>' +
                 '<div class="cr-admin-cat-card-inner">' +
                 '<header class="cr-admin-cat-card-top">' +
-                '<div class="cr-admin-cat-card-id" aria-label="Identificador">#' +
-                esc(cat.id) +
-                '</div>' +
-                '<div class="cr-admin-cat-card-name-wrap">' +
+                '<div class="cr-admin-cat-card-name-wrap cr-admin-cat-card-name-wrap--full">' +
                 '<label class="cr-admin-label" for="cat-name-' +
                 esc(cat.id) +
                 '">Nombre</label>' +
@@ -147,9 +158,7 @@
                 '<span class="cr-admin-cat-rules-title-icon" data-cr-icon="document-text" aria-hidden="true"></span>' +
                 'Reglamento' +
                 '<span class="cr-admin-cat-rules-badge">' +
-                ruleCount +
-                ' ' +
-                (ruleCount === 1 ? 'regla' : 'reglas') +
+                ruleLabel +
                 '</span></h3>' +
                 renderRules(cat) +
                 '<form class="cr-admin-rule-add cr-admin-add-regla" data-cat-id="' +
@@ -157,9 +166,9 @@
                 '" action="#">' +
                 renderReglaTypeSelect('restriction', 'cr-admin-regla-type-new') +
                 '<input type="text" class="cr-admin-input cr-admin-regla-text" placeholder="Nueva regla del reglamento…" required aria-label="Texto de nueva regla" />' +
-                '<button type="submit" class="cr-app-btn cr-app-btn--primary cr-admin-rule-add-btn">' +
+                '<button type="submit" class="cr-admin-btn cr-admin-btn--primary cr-admin-rule-add-btn">' +
                 '<span data-cr-icon="plus" data-cr-icon-class="cr-icon--btn"></span>' +
-                '<span>Regla</span></button></form></section></div></article>'
+                '<span>Regla</span></button></form></section></div></details></article>'
             );
         }
 
@@ -178,7 +187,7 @@
                             '<div class="cr-admin-cats-empty">' +
                             '<span class="cr-admin-cats-empty-icon" data-cr-icon="squares-2x2" aria-hidden="true"></span>' +
                             '<p class="cr-admin-cats-empty-title">Sin categorías</p>' +
-                            '<p class="cr-admin-cats-empty-desc">Usa el formulario de arriba para crear la primera.</p></div>';
+                            '<p class="cr-admin-cats-empty-desc">Abre «Agregar categoría» para crear la primera.</p></div>';
                         decorateIcons(listHost);
                         return;
                     }

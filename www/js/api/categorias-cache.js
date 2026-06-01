@@ -10,6 +10,7 @@
         throw new Error("Carga api/http-build-url.js y config.js antes");
     }
     var buildUrl = Http.buildUrl;
+    var httpFetch = (w.CRApiTransport && w.CRApiTransport.fetch) || w.fetch.bind(w);
 
     var categoriasCache = null;
     var categoriasById = {};
@@ -116,7 +117,7 @@
     function fetchReglasForCategory(catId) {
         var path = (app.categoriasPath || '/categorias') + '/' + encodeURIComponent(String(catId)) + '/reglas';
         var url = buildUrl(path, {});
-        return fetch(url, { headers: { Accept: 'application/json' } })
+        return httpFetch(url, { headers: { Accept: 'application/json' } })
             .then(function (res) {
                 if (!res.ok) {
                     return [];
@@ -158,7 +159,7 @@
         if (app.debugApi) {
             console.log('[CR] fetch', url);
         }
-        categoriasInflight = fetch(url, { headers: { Accept: 'application/json' } })
+        categoriasInflight = httpFetch(url, { headers: { Accept: 'application/json' } })
             .then(function (res) {
                 if (!res.ok) {
                     return res.text().then(function (t) {

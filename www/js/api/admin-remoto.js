@@ -13,6 +13,7 @@
         throw new Error('Carga config.js y http-build-url.js antes de admin-remoto.js');
     }
     var buildUrl = Http.buildUrl;
+    var httpFetch = (w.CRApiTransport && w.CRApiTransport.fetch) || w.fetch.bind(w);
 
     function parseJson(res) {
         if (!res.ok) {
@@ -40,7 +41,7 @@
         if (hasBody) {
             headers['Content-Type'] = 'application/json';
         }
-        return fetch(url, {
+        return httpFetch(url, {
             method: method,
             headers: headers,
             body: hasBody ? JSON.stringify(body) : undefined

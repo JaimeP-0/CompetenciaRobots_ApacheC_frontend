@@ -23,6 +23,8 @@
             '/equipos': 'public/equipos',
             '/validados': 'public/validados',
             '/match': 'public/match',
+            '/ranking': 'public/ranking',
+            '/brackets': 'public/brackets',
             '/admin': 'admin/panel',
             '/admin/login': 'admin/login',
             '/admin/categorias': 'admin/categorias',
@@ -69,7 +71,9 @@
             'public/equipos': 'initEquipos',
             'public/equipo-detalle': 'initEquipoDetalle',
             'public/validados': 'initValidados',
-            'public/match': 'initMatch'
+            'public/match': 'initMatch',
+            'public/ranking': 'initRanking',
+            'public/brackets': 'initBrackets'
         }
     };
 })(window);

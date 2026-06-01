@@ -68,39 +68,37 @@
     .cr-btn-secondary {
         @apply inline-flex items-center justify-center rounded-lg border border-graphite/25 bg-snow px-4 py-2.5 text-sm font-semibold text-graphite hover:bg-mist focus:outline-none focus:ring-2 focus:ring-accent/30 transition;
     }
-    /* CTAs y modales: referencia “Trayectorias” — fondo gris claro, texto teal, borde lima */
+    /* Botones globales — navy/marine (misma familia que admin) */
     .cr-app-btn {
-        @apply relative inline-flex w-full max-w-full items-center justify-center rounded-lg px-4 py-3 text-center text-base font-normal leading-snug tracking-normal shadow-sm transition select-none outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f5f7fb] active:translate-y-px sm:px-6 sm:py-3.5;
+        @apply relative inline-flex w-full max-w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-center text-sm font-semibold leading-snug transition select-none outline-none [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 focus-visible:ring-marine/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f5f7fb] active:scale-[0.98];
+        font: inherit;
     }
-    /* Habilitados: borde lima (primary y outline comparten aspecto) */
-    .cr-app-btn--primary,
+    .cr-app-btn--auto {
+        @apply w-full sm:w-auto sm:min-w-[7.5rem];
+    }
+    .cr-app-btn--sm {
+        @apply min-h-10 px-3 py-2 text-sm;
+    }
+    .cr-app-btn--primary {
+        @apply border-0 bg-navy text-snow shadow-md hover:bg-navy/90;
+    }
+    .cr-app-btn--secondary,
     .cr-app-btn--outline {
-        @apply border-2 border-[#C6D93D] bg-[#F5F5F5] text-[#1B8C7A] hover:bg-[#EDEDED] hover:border-[#B8C932] focus-visible:ring-[#C6D93D]/50;
+        @apply border border-graphite/20 bg-snow text-navy shadow-sm hover:border-marine/30 hover:bg-mist/50;
     }
-    /* Deshabilitados: sin lima (gris), mismo criterio para primary u outline */
+    .cr-app-btn--ghost {
+        @apply border border-graphite/15 bg-transparent text-graphite/75 hover:border-graphite/25 hover:bg-mist/40 hover:text-navy;
+    }
+    .cr-app-btn--danger {
+        @apply border border-red-300/80 bg-snow text-red-700 shadow-sm hover:border-red-400 hover:bg-red-50;
+    }
+    .cr-app-btn:disabled,
+    .cr-app-btn[disabled] {
+        @apply cursor-not-allowed border border-graphite/15 bg-mist/40 text-graphite/45 shadow-none active:scale-100;
+    }
     .cr-app-btn--primary:disabled,
-    .cr-app-btn--primary[disabled],
-    .cr-app-btn--outline:disabled,
-    .cr-app-btn--outline[disabled] {
-        @apply cursor-not-allowed border border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A] shadow-none opacity-100;
-    }
-    .cr-app-btn--primary:disabled:hover,
-    .cr-app-btn--primary[disabled]:hover,
-    .cr-app-btn--outline:disabled:hover,
-    .cr-app-btn--outline[disabled]:hover {
-        @apply border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A];
-    }
-    .cr-app-btn--primary:disabled:active,
-    .cr-app-btn--primary[disabled]:active,
-    .cr-app-btn--outline:disabled:active,
-    .cr-app-btn--outline[disabled]:active {
-        transform: none;
-    }
-    .cr-app-btn--primary:disabled:focus-visible,
-    .cr-app-btn--primary[disabled]:focus-visible,
-    .cr-app-btn--outline:disabled:focus-visible,
-    .cr-app-btn--outline[disabled]:focus-visible {
-        @apply border-graphite/20 bg-[#F5F5F5] text-[#1B8C7A] ring-2 ring-[#1B8C7A]/25 ring-offset-2 ring-offset-[#f5f7fb];
+    .cr-app-btn--primary[disabled] {
+        @apply bg-mist/60 text-graphite/45;
     }
     /* Categorías: bloques por familia de categoría */
     .cr-comp-grupo {
@@ -174,8 +172,18 @@
     .cr-catalog-page {
         @apply relative mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col gap-5 px-1 pb-10 pt-[calc(env(safe-area-inset-top,0px)+3rem)] sm:max-w-2xl sm:gap-6 sm:px-3 sm:pb-12 sm:pt-[calc(env(safe-area-inset-top,0px)+3.25rem)] md:max-w-3xl md:px-4 lg:max-w-4xl;
     }
-    .cr-catalog-page--wide {
-        @apply max-w-4xl;
+    /** Vistas interiores: mismo ancho y ritmo que inicio */
+    .cr-catalog-page--inner {
+        @apply gap-4 px-0 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-[calc(env(safe-area-inset-top,0px)+2.35rem)] sm:max-w-lg sm:gap-5 sm:px-2 sm:pb-8 sm:pt-[calc(env(safe-area-inset-top,0px)+2.5rem)] md:max-w-xl md:px-3 lg:max-w-2xl lg:gap-6 lg:pb-10 lg:px-4;
+    }
+    .cr-catalog-page--inner.cr-catalog-page--wide {
+        @apply sm:max-w-xl md:max-w-3xl lg:max-w-4xl;
+    }
+    .cr-catalog-page--inner .cr-catalog-cat-card {
+        @apply border-graphite/15 bg-snow/95 shadow-sm hover:border-marine/25 hover:shadow-md;
+    }
+    .cr-catalog-page--inner .cr-catalog-card-block {
+        @apply border-graphite/15 bg-snow/95 shadow-sm;
     }
     /** Registro competidor: menos aire arriba (solo botón atrás), encadena altura con el outlet */
     .cr-catalog-page.cr-catalog-page--registro {
@@ -437,22 +445,16 @@
         @apply gap-4 sm:gap-5;
     }
     .cr-validados-hero {
-        @apply flex w-full min-w-0 gap-4 rounded-2xl border border-emerald-500/25 bg-gradient-to-br from-snow via-snow to-emerald-500/[0.06] p-4 shadow-sm sm:items-center sm:gap-5 sm:p-5 md:p-6;
+        @apply border-emerald-500/25 to-emerald-500/[0.06];
     }
     .cr-validados-hero-icon {
-        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 sm:h-14 sm:w-14;
+        @apply bg-emerald-500/15;
     }
     .cr-validados-hero-icon .cr-icon {
-        @apply h-7 w-7 text-emerald-700 sm:h-8 sm:w-8;
-    }
-    .cr-validados-hero-text {
-        @apply min-w-0 flex-1;
-    }
-    .cr-validados-hero-text .cr-catalog-title {
-        @apply mb-0.5 sm:text-3xl;
+        @apply text-emerald-700;
     }
     .cr-validados-filtros-card {
-        @apply w-full min-w-0 rounded-2xl border-2 border-dashed border-graphite/20 bg-snow/90 p-4 shadow-sm sm:p-5;
+        @apply w-full min-w-0;
     }
     .cr-validados-filtro-form {
         @apply grid w-full min-w-0 gap-3 sm:grid-cols-[auto_minmax(0,1fr)_minmax(9rem,11rem)_auto] sm:items-end sm:gap-4;
@@ -529,16 +531,7 @@
         @apply gap-4 sm:gap-5;
     }
     .cr-match-hero {
-        @apply flex w-full min-w-0 gap-4 rounded-2xl border border-marine/20 bg-gradient-to-br from-snow via-snow to-marine/[0.06] p-4 shadow-sm sm:items-center sm:gap-5 sm:p-5 md:p-6;
-    }
-    .cr-match-hero-icon {
-        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-marine/15 sm:h-14 sm:w-14;
-    }
-    .cr-match-hero-icon .cr-icon {
-        @apply h-7 w-7 text-marine sm:h-8 sm:w-8;
-    }
-    .cr-match-hero-text {
-        @apply min-w-0 flex-1;
+        @apply border-marine/20;
     }
     .cr-match-setup-card {
         @apply w-full min-w-0 space-y-4 rounded-2xl border border-graphite/15 bg-snow/95 p-4 shadow-sm sm:p-5;
@@ -552,7 +545,13 @@
     .cr-match-mode-hint {
         @apply m-0 text-xs leading-relaxed text-graphite/75 sm:text-sm;
     }
+    .cr-match-setup-actions {
+        @apply flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center;
+    }
     .cr-match-iniciar-btn {
+        @apply w-full sm:w-auto;
+    }
+    .cr-match-resultados-btn {
         @apply w-full sm:w-auto;
     }
     .cr-match-status {
@@ -584,6 +583,15 @@
     }
     .cr-match-card-badge--pair {
         @apply bg-accent/15 text-accent;
+    }
+    .cr-match-card-badge--solo {
+        @apply bg-marine/15 text-marine;
+    }
+    .cr-match-card-badge--velocista {
+        @apply bg-emerald-500/15 text-emerald-800;
+    }
+    .cr-match-velocista-team {
+        @apply m-0 mb-3 rounded-lg border border-graphite/10 bg-mist/30 px-3 py-2 text-base font-semibold text-navy;
     }
     .cr-match-card-desc {
         @apply m-0 mb-2 text-sm text-graphite/80;
@@ -661,16 +669,334 @@
         @apply font-semibold uppercase tracking-wide text-[0.65rem] text-emerald-800/80;
     }
     .cr-match-result-form {
-        @apply mt-3 border-t border-graphite/10 pt-3;
+        @apply mt-3 space-y-3 border-t border-graphite/10 pt-3;
     }
     .cr-match-result-form-label {
         @apply mb-1.5 block;
     }
     .cr-match-result-form-row {
-        @apply flex flex-col gap-2 sm:flex-row sm:items-center;
+        @apply flex flex-col gap-2 sm:flex-row sm:items-end;
     }
     .cr-match-winner-select {
         @apply min-w-0 flex-1;
+    }
+    .cr-match-time-fieldset {
+        @apply m-0 min-w-0 border-0 p-0;
+    }
+    .cr-match-time-legend {
+        @apply mb-1.5 px-0 text-xs font-semibold uppercase tracking-wide text-graphite/70;
+    }
+    .cr-match-time-label {
+        @apply flex flex-col gap-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-graphite/60;
+    }
+    .cr-match-result-time-inputs {
+        @apply flex items-end gap-2;
+    }
+    .cr-match-time-min,
+    .cr-match-time-sec {
+        @apply w-16 min-w-0 sm:w-20;
+    }
+    .cr-match-result-time-sep {
+        @apply pb-2 text-lg font-semibold text-graphite/50;
+    }
+    .cr-match-result-time-value {
+        @apply text-base font-bold tabular-nums text-emerald-900;
+    }
+    .cr-match-sole-team {
+        @apply m-0 text-sm font-medium text-graphite/80;
+    }
+    .cr-match-result-time-done {
+        @apply font-normal text-emerald-900/80;
+    }
+    .cr-match-save-result {
+        @apply w-full sm:w-auto;
+    }
+    .cr-match-empty-link {
+        @apply mt-4;
+    }
+
+    /* —— Ranking (#/ranking) —— */
+    .cr-ranking-page {
+        @apply gap-4 sm:gap-5;
+    }
+    .cr-ranking-hero {
+        @apply border-marine/20 to-emerald-500/[0.06];
+    }
+    .cr-ranking-hero-icon {
+        @apply bg-emerald-500/15;
+    }
+    .cr-ranking-hero-icon .cr-icon {
+        @apply text-emerald-800;
+    }
+    .cr-ranking-filters {
+        @apply grid w-full min-w-0 gap-3 sm:grid-cols-2 sm:gap-4;
+    }
+    .cr-ranking-filter-field {
+        @apply min-w-0;
+    }
+    .cr-ranking-list-head {
+        @apply px-0.5;
+    }
+    .cr-ranking-count {
+        @apply m-0 text-xs text-graphite/70 sm:text-sm;
+    }
+    .cr-ranking-loading {
+        @apply text-sm text-graphite/75;
+    }
+    .cr-ranking-table-wrap {
+        @apply min-w-0 overflow-x-auto rounded-2xl border border-graphite/15 bg-snow/95 shadow-sm;
+    }
+    .cr-ranking-table {
+        @apply w-full min-w-[20rem] border-collapse text-left text-sm;
+    }
+    .cr-ranking-th {
+        @apply border-b border-graphite/15 bg-mist/40 px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-graphite/70;
+    }
+    .cr-ranking-th--pos {
+        @apply w-10 text-center;
+    }
+    .cr-ranking-th--time {
+        @apply w-24 tabular-nums;
+    }
+    .cr-ranking-th--match {
+        @apply w-20 text-right;
+    }
+    .cr-ranking-row:nth-child(even) {
+        @apply bg-mist/20;
+    }
+    .cr-ranking-td {
+        @apply border-b border-graphite/10 px-3 py-2.5 align-middle text-graphite;
+    }
+    .cr-ranking-td--pos {
+        @apply text-center font-bold tabular-nums text-marine;
+    }
+    .cr-ranking-td--team {
+        @apply font-medium text-navy;
+    }
+    .cr-ranking-td--time {
+        @apply font-semibold tabular-nums text-emerald-900;
+    }
+    .cr-ranking-td--match {
+        @apply text-right text-xs text-graphite/70;
+    }
+    .cr-ranking-empty {
+        @apply flex flex-col items-center rounded-2xl border border-dashed border-graphite/20 bg-snow/80 px-4 py-8 text-center sm:py-10;
+    }
+    .cr-ranking-empty--error {
+        @apply border-red-200/50 bg-red-50/40;
+    }
+    .cr-ranking-empty-icon {
+        @apply mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-mist/60;
+    }
+    .cr-ranking-empty-icon .cr-icon {
+        @apply h-7 w-7 text-graphite/60;
+    }
+    .cr-ranking-empty-title {
+        @apply m-0 mb-1 text-lg font-semibold text-navy;
+    }
+    .cr-ranking-empty-desc {
+        @apply m-0 max-w-md text-sm leading-relaxed text-graphite/75;
+    }
+    .cr-ranking-empty .cr-app-btn {
+        @apply mt-4;
+    }
+
+    /* —— Brackets sumo (#/brackets) —— */
+    .cr-brackets-page {
+        @apply gap-4 sm:gap-5;
+    }
+    .cr-brackets-hero {
+        @apply border-accent/25 to-accent/[0.08];
+    }
+    .cr-brackets-hero-icon {
+        @apply bg-accent/15;
+    }
+    .cr-brackets-hero-icon .cr-icon {
+        @apply text-accent;
+    }
+    .cr-brackets-setup {
+        @apply w-full min-w-0 space-y-4;
+    }
+    .cr-brackets-setup-grid {
+        @apply grid w-full min-w-0 gap-3 sm:grid-cols-2 sm:items-end sm:gap-4;
+    }
+    .cr-brackets-field {
+        @apply min-w-0;
+    }
+    .cr-brackets-field--check {
+        @apply flex items-end pb-1;
+    }
+    .cr-brackets-check {
+        @apply flex cursor-pointer items-center gap-2 text-sm text-graphite;
+    }
+    .cr-brackets-check-input {
+        @apply h-4 w-4 rounded border-graphite/30 text-accent;
+    }
+    .cr-brackets-setup-actions {
+        @apply flex flex-col gap-2 sm:flex-row sm:flex-wrap;
+    }
+    .cr-brackets-tabs {
+        @apply flex gap-2 border-b border-graphite/10 pb-3;
+    }
+    .cr-brackets-tab {
+        @apply rounded-t-lg border border-transparent px-4 py-2 text-sm font-semibold text-graphite/70 transition-colors;
+    }
+    .cr-brackets-tab--active {
+        @apply border-graphite/15 border-b-white bg-white text-navy shadow-sm;
+    }
+    .cr-brackets-meta {
+        @apply m-0 text-xs text-graphite/75 sm:text-sm;
+    }
+    .cr-brackets-status {
+        @apply m-0 rounded-xl border border-accent/20 bg-accent/5 px-3 py-2 text-sm font-medium text-accent;
+    }
+    .cr-brackets-status--error {
+        @apply border-red-200/80 bg-red-50/90 text-red-800;
+    }
+    .cr-brackets-board-wrap {
+        @apply min-w-0 space-y-4;
+    }
+    .cr-brackets-columns {
+        @apply grid w-full min-w-0 grid-cols-1 gap-4 md:grid-cols-2 md:gap-6;
+    }
+    .cr-brackets-column {
+        @apply flex min-w-0 flex-col gap-3;
+    }
+    .cr-brackets-column--next {
+        @apply md:border-l md:border-graphite/10 md:pl-6;
+    }
+    .cr-brackets-column-title {
+        @apply m-0 text-sm font-bold uppercase tracking-wide text-navy/80;
+    }
+    .cr-brackets-column-matches {
+        @apply flex flex-col gap-3;
+    }
+    .cr-brackets-col-empty {
+        @apply m-0 rounded-xl border border-dashed border-graphite/20 bg-mist/20 px-3 py-4 text-sm text-graphite/70;
+    }
+    .cr-brackets-col-empty--champion {
+        @apply border-emerald-500/30 bg-emerald-500/10 text-emerald-900;
+    }
+    .cr-brackets-loser-panel {
+        @apply min-w-0 rounded-2xl border border-graphite/15 bg-snow/95 p-4 sm:p-5;
+    }
+    .cr-brackets-loser-header {
+        @apply mb-4 space-y-1;
+    }
+    .cr-brackets-loser-title {
+        @apply m-0 text-lg font-bold text-navy;
+    }
+    .cr-brackets-loser-desc {
+        @apply m-0 text-sm text-graphite/75;
+    }
+    .cr-brackets-loser-list {
+        @apply m-0 flex list-none flex-col gap-2 p-0;
+    }
+    .cr-brackets-loser-item {
+        @apply flex items-center justify-between gap-3 rounded-xl border border-red-200/60 bg-red-50/50 px-3 py-2.5;
+    }
+    .cr-brackets-loser-name {
+        @apply text-sm font-semibold text-red-900;
+    }
+    .cr-brackets-loser-meta {
+        @apply text-xs font-medium text-red-800/60;
+    }
+    .cr-brackets-loser-empty {
+        @apply rounded-xl border border-dashed border-graphite/20 bg-mist/20 px-4 py-6 text-center;
+    }
+    .cr-brackets-loser-empty-title {
+        @apply m-0 text-base font-semibold text-navy;
+    }
+    .cr-brackets-loser-empty-desc {
+        @apply m-0 mt-2 text-sm text-graphite/75;
+    }
+    .cr-brackets-round-footer {
+        @apply flex flex-col items-stretch gap-2 border-t border-graphite/10 pt-3 sm:items-center;
+    }
+    .cr-brackets-round-done-msg {
+        @apply m-0 text-center text-sm text-graphite/75;
+    }
+    .cr-brackets-round-footer .cr-app-btn {
+        @apply w-full sm:max-w-sm;
+    }
+    .cr-brackets-champion {
+        @apply rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-center text-sm font-medium text-emerald-900;
+    }
+    .cr-brackets-champion-label {
+        @apply mr-2 text-xs font-semibold uppercase tracking-wide text-emerald-800/80;
+    }
+    .cr-brackets-champion-name {
+        @apply text-base;
+    }
+    .cr-brackets-board {
+        @apply flex min-w-0 flex-col gap-3;
+    }
+    .cr-brackets-round {
+        @apply flex w-full min-w-0 flex-col gap-3;
+    }
+    .cr-brackets-round-title {
+        @apply m-0 text-base font-bold text-navy sm:text-lg;
+    }
+    .cr-brackets-round-matches {
+        @apply grid w-full grid-cols-1 gap-3 sm:grid-cols-2;
+    }
+    .cr-brackets-match {
+        @apply rounded-xl border border-graphite/15 bg-snow/95 p-3 shadow-sm;
+    }
+    .cr-brackets-match--vertical {
+        @apply flex flex-col;
+    }
+    .cr-brackets-match--preview {
+        @apply border-dashed border-marine/25 bg-marine/[0.03] opacity-90;
+    }
+    .cr-brackets-match--ready {
+        @apply border-accent/35 ring-1 ring-accent/15;
+    }
+    .cr-brackets-match--completed,
+    .cr-brackets-match--done {
+        @apply border-emerald-500/20 bg-emerald-500/[0.03];
+    }
+    .cr-brackets-match--bye {
+        @apply border-graphite/10 bg-mist/20 opacity-80;
+    }
+    .cr-brackets-slot {
+        @apply rounded-lg border border-graphite/10 bg-mist/30 px-2 py-1.5 text-xs font-medium text-graphite sm:text-sm;
+    }
+    .cr-brackets-slot--tbd {
+        @apply border-dashed text-graphite/50 italic;
+    }
+    .cr-brackets-slot--winner {
+        @apply border-emerald-500/35 bg-emerald-500/10 font-semibold text-emerald-900;
+    }
+    .cr-brackets-slot--loser {
+        @apply opacity-50 line-through;
+    }
+    .cr-brackets-vs {
+        @apply my-0.5 block text-center text-[0.6rem] font-bold uppercase tracking-wider text-graphite/45;
+    }
+    .cr-brackets-match-actions {
+        @apply mt-2 flex flex-col gap-1.5 border-t border-graphite/10 pt-2;
+    }
+    .cr-brackets-pick-winner {
+        @apply rounded-lg border border-accent/25 bg-accent/10 px-2 py-1.5 text-left text-xs font-semibold text-accent transition hover:bg-accent/20 sm:text-sm;
+    }
+    .cr-brackets-pick-winner:disabled {
+        @apply cursor-not-allowed opacity-50;
+    }
+    .cr-brackets-empty {
+        @apply flex flex-col items-center rounded-2xl border border-dashed border-graphite/20 bg-snow/80 px-4 py-8 text-center sm:py-10;
+    }
+    .cr-brackets-empty-icon {
+        @apply mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-mist/60;
+    }
+    .cr-brackets-empty-icon .cr-icon {
+        @apply h-7 w-7 text-graphite/60;
+    }
+    .cr-brackets-empty-title {
+        @apply m-0 mb-1 text-lg font-semibold text-navy;
+    }
+    .cr-brackets-empty-desc {
+        @apply m-0 max-w-md text-sm leading-relaxed text-graphite/75;
     }
 
     .cr-catalog-skel {
@@ -765,53 +1091,197 @@
 
     /* Inicio: título principal */
     .cr-inicio-head {
-        @apply w-full min-w-0 px-0.5 pb-1 pt-0.5 text-center sm:px-1 sm:pb-2 lg:pb-3;
+        @apply w-full min-w-0 px-0.5 pb-2 pt-0.5 text-center sm:px-1 sm:pb-3 lg:pb-4;
+    }
+    .cr-inicio-kicker {
+        @apply m-0 mb-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-marine/80 sm:text-xs;
     }
     .cr-inicio-title {
-        @apply m-0 text-2xl font-bold leading-tight tracking-tight text-navy sm:text-3xl md:text-4xl lg:text-[2.25rem];
+        @apply m-0 text-2xl font-bold leading-tight tracking-tight text-navy sm:text-3xl md:text-4xl;
+    }
+    .cr-inicio-lead {
+        @apply mx-auto mt-2 max-w-md text-sm leading-relaxed text-graphite/75 sm:text-base;
     }
 
-    /* Inicio: 1 col móvil → 2 cols tablet/desktop; ancho fluido */
+    /* Inicio: layout agrupado */
     .cr-catalog-page.cr-catalog-page--inicio {
-        @apply relative mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col gap-4 px-0 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-1 sm:max-w-xl sm:gap-5 sm:px-2 sm:pb-8 sm:pt-3 md:max-w-2xl md:px-3 lg:max-w-4xl lg:gap-6 lg:px-4 lg:pb-12 lg:pt-6;
+        @apply relative mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col gap-5 px-0 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-1 sm:max-w-lg sm:gap-6 sm:px-2 sm:pb-8 sm:pt-3 md:max-w-xl md:px-3 lg:max-w-2xl lg:gap-7 lg:px-4 lg:pb-10 lg:pt-5;
     }
     .cr-inicio-nav {
-        @apply grid w-full min-w-0 grid-cols-1 gap-3 sm:gap-3.5 lg:grid-cols-2 lg:gap-4;
-        grid-template-columns: minmax(0, 1fr);
+        @apply flex w-full min-w-0 flex-col gap-5 sm:gap-6;
     }
-    @media (min-width: 1024px) {
-        .cr-inicio-nav {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-    }
-    .cr-inicio-nav .cr-inicio-tile--primary {
-        @apply lg:col-span-2;
-    }
-    .cr-inicio-nav .cr-catalog-cat-card {
-        @apply box-border flex min-h-[3.5rem] w-full min-w-0 max-w-full cursor-pointer flex-row items-center gap-2.5 overflow-hidden py-3.5 pl-3 pr-2.5 text-left text-[0.9375rem] [-webkit-tap-highlight-color:transparent] sm:min-h-[3.75rem] sm:gap-3 sm:pl-4 sm:pr-3 sm:text-base lg:min-h-[4rem] lg:gap-4 lg:py-4 lg:pr-4;
+    .cr-inicio-hero-card {
+        @apply flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-2xl border border-marine/30 bg-gradient-to-br from-snow via-snow to-marine/[0.09] p-4 text-left shadow-md transition [-webkit-tap-highlight-color:transparent] hover:border-marine/45 hover:shadow-lg active:scale-[0.99] sm:gap-4 sm:p-5;
         font: inherit;
     }
-    .cr-inicio-tile-icon {
-        @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-mist/60 sm:h-11 sm:w-11;
+    .cr-inicio-hero-icon {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-marine/15 sm:h-14 sm:w-14;
     }
-    .cr-inicio-tile-icon .cr-icon {
-        @apply h-6 w-6 sm:h-7 sm:w-7;
+    .cr-inicio-hero-icon .cr-icon {
+        @apply h-7 w-7 text-marine sm:h-8 sm:w-8;
     }
-    .cr-inicio-tile-text {
-        @apply flex min-w-0 flex-1 flex-col justify-center gap-0.5 overflow-hidden;
+    .cr-inicio-hero-text {
+        @apply min-w-0 flex-1;
     }
-    .cr-inicio-tile-text .cr-catalog-cat-card-title {
-        @apply break-words text-[0.9375rem] font-semibold leading-snug text-navy sm:text-base lg:text-[1.05rem];
-        overflow-wrap: anywhere;
+    .cr-inicio-hero-title {
+        @apply block text-base font-bold text-marine sm:text-lg;
     }
-    .cr-inicio-tile-text .cr-catalog-cat-card-meta {
-        @apply break-words text-xs leading-snug text-graphite/70;
-        overflow-wrap: anywhere;
+    .cr-inicio-hero-meta {
+        @apply mt-0.5 block text-xs leading-snug text-graphite/70 sm:text-sm;
     }
-    .cr-inicio-meta-hide {
-        @apply hidden lg:block;
+    .cr-inicio-hero-arrow {
+        @apply shrink-0 text-lg text-marine/70;
     }
-    .cr-inicio-nav .cr-catalog-cat-card-arrow {
+    .cr-inicio-section {
+        @apply min-w-0 space-y-2.5;
+    }
+    .cr-inicio-section-title {
+        @apply m-0 px-0.5 text-xs font-bold uppercase tracking-[0.14em] text-graphite/55;
+    }
+    .cr-inicio-grid {
+        @apply grid grid-cols-3 gap-2 sm:gap-3;
+    }
+    .cr-inicio-mini-card {
+        @apply flex min-w-0 cursor-pointer flex-col items-center gap-2 rounded-xl border border-graphite/15 bg-snow/95 px-2 py-3 text-center shadow-sm transition [-webkit-tap-highlight-color:transparent] hover:border-marine/25 hover:shadow-md active:scale-[0.98] sm:py-3.5;
+        font: inherit;
+    }
+    .cr-inicio-mini-icon {
+        @apply flex h-9 w-9 items-center justify-center rounded-lg bg-mist/50 sm:h-10 sm:w-10;
+    }
+    .cr-inicio-mini-icon .cr-icon {
+        @apply h-5 w-5 text-navy sm:h-6 sm:w-6;
+    }
+    .cr-inicio-mini-label {
+        @apply text-xs font-semibold leading-tight text-navy sm:text-sm;
+    }
+    .cr-inicio-comp-card {
+        @apply flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-2xl border border-graphite/15 bg-snow/95 p-3.5 text-left shadow-sm transition [-webkit-tap-highlight-color:transparent] hover:border-accent/30 hover:shadow-md active:scale-[0.99] sm:p-4;
+        font: inherit;
+    }
+    .cr-inicio-comp-icon {
+        @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/15;
+    }
+    .cr-inicio-comp-icon .cr-icon {
+        @apply h-6 w-6 text-accent;
+    }
+    .cr-inicio-comp-text {
+        @apply min-w-0 flex-1;
+    }
+    .cr-inicio-comp-title {
+        @apply block text-sm font-semibold text-navy sm:text-base;
+    }
+    .cr-inicio-comp-meta {
+        @apply mt-0.5 block text-xs text-graphite/65;
+    }
+    .cr-inicio-comp-arrow {
+        @apply shrink-0 text-graphite/45;
+    }
+    .cr-inicio-admin-btn {
+        @apply flex w-full min-w-0 cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-graphite/20 bg-snow px-4 py-3 text-sm font-semibold text-navy shadow-sm transition [-webkit-tap-highlight-color:transparent] hover:border-marine/30 hover:bg-mist/40 active:scale-[0.99] sm:py-3.5;
+        font: inherit;
+    }
+    .cr-inicio-admin-btn-icon {
+        @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-mist/60;
+    }
+    .cr-inicio-admin-btn-icon .cr-icon {
+        @apply h-5 w-5 text-graphite/70;
+    }
+    .cr-inicio-admin-btn-label {
+        @apply leading-none;
+    }
+
+    /* Logo UT: grande en inicio, compacto en el resto de vistas */
+    #cr-site-header {
+        @apply transition-[padding] duration-200 ease-out;
+    }
+    #cr-site-logo {
+        @apply transition-[max-width] duration-200 ease-out;
+    }
+    body.cr-view-inner {
+        @apply pt-[max(0.5rem,env(safe-area-inset-top,0px))] sm:pt-[max(0.65rem,env(safe-area-inset-top,0px))];
+    }
+    body.cr-view-inner #cr-site-header {
+        @apply pb-0 pt-0 sm:pb-0.5;
+    }
+    body.cr-view-inner #cr-site-logo {
+        @apply max-w-[4.25rem] sm:max-w-[5rem] md:max-w-[5.5rem];
+    }
+    body.cr-view-inicio #cr-site-header {
+        @apply pb-1.5 pt-0.5 sm:pb-2 sm:pt-1;
+    }
+    body.cr-view-inicio #cr-site-logo {
+        @apply max-w-[min(100%,11rem)] sm:max-w-[13rem] lg:max-w-[15rem];
+    }
+
+    /* Cabecera de página interior (misma familia tipográfica que inicio) */
+    .cr-page-head {
+        @apply w-full min-w-0 px-0.5 pb-1 pt-0 text-left sm:px-1 sm:pb-2;
+    }
+    .cr-page-kicker {
+        @apply m-0 mb-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-marine/80 sm:text-xs;
+    }
+    .cr-page-title {
+        @apply m-0 text-xl font-bold leading-tight tracking-tight text-navy sm:text-2xl md:text-[1.65rem];
+    }
+    .cr-page-lead {
+        @apply mt-1.5 max-w-prose text-sm leading-relaxed text-graphite/75 sm:mt-2 sm:text-[0.9375rem];
+    }
+    .cr-page-section-title {
+        @apply m-0 px-0.5 text-xs font-bold uppercase tracking-[0.14em] text-graphite/55;
+    }
+
+    /* Hero compacto reutilizable (match, ranking, brackets, validados, admin) */
+    .cr-page-hero,
+    .cr-match-hero,
+    .cr-ranking-hero,
+    .cr-brackets-hero,
+    .cr-validados-hero,
+    .cr-admin-cats-hero {
+        @apply flex w-full min-w-0 gap-3 rounded-2xl border border-marine/25 bg-gradient-to-br from-snow via-snow to-marine/[0.07] p-3.5 shadow-sm sm:items-center sm:gap-4 sm:p-4;
+    }
+    .cr-page-hero-icon,
+    .cr-match-hero-icon,
+    .cr-ranking-hero-icon,
+    .cr-brackets-hero-icon,
+    .cr-validados-hero-icon,
+    .cr-admin-cats-hero-icon {
+        @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-marine/15 sm:h-11 sm:w-11;
+    }
+    .cr-page-hero-icon .cr-icon,
+    .cr-match-hero-icon .cr-icon,
+    .cr-ranking-hero-icon .cr-icon,
+    .cr-brackets-hero-icon .cr-icon,
+    .cr-validados-hero-icon .cr-icon,
+    .cr-admin-cats-hero-icon .cr-icon {
+        @apply h-6 w-6 text-marine sm:h-7 sm:w-7;
+    }
+    .cr-page-hero-text,
+    .cr-match-hero-text,
+    .cr-ranking-hero-text,
+    .cr-brackets-hero-text,
+    .cr-validados-hero-text,
+    .cr-admin-cats-hero-text {
+        @apply min-w-0 flex-1;
+    }
+    .cr-page-hero-text .cr-page-lead,
+    .cr-match-hero-text .cr-page-lead {
+        @apply mt-1 text-sm leading-snug text-graphite/80 sm:text-base;
+    }
+    .cr-page-hero-text .cr-catalog-title,
+    .cr-page-hero-text .cr-page-title,
+    .cr-match-hero-text .cr-catalog-title,
+    .cr-ranking-hero-text .cr-catalog-title,
+    .cr-brackets-hero-text .cr-catalog-title,
+    .cr-validados-hero-text .cr-catalog-title,
+    .cr-admin-cats-hero-text .cr-catalog-title {
+        @apply mb-0.5 text-lg sm:text-xl;
+    }
+    .cr-page-hero-text .cr-page-kicker {
+        @apply mb-0.5;
+    }
+
+    /* Legacy inicio tiles (otras vistas reutilizan cr-catalog-cat-card) */
+    .cr-inicio-nav .cr-catalog-cat-card .cr-catalog-cat-card-arrow {
         @apply ml-1 shrink-0 text-sm sm:text-base;
     }
     .cr-catalog-cat-card.cr-inicio-tile--primary {
@@ -823,45 +1293,102 @@
     .cr-catalog-cat-card.cr-inicio-tile--admin {
         @apply border-graphite/20 bg-mist/30;
     }
-    /* —— Admin: mismo patrón que catálogo (atrás fijo arriba-izq + ancho en desktop) —— */
+    /* —— Admin: mismo layout que catálogo/match —— */
     html.cr-admin-active #cr-outlet {
         @apply w-full min-w-0 max-w-full;
     }
-    .cr-admin-page {
-        @apply relative mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col px-1 pb-8 pt-[calc(env(safe-area-inset-top,0px)+3.25rem)] sm:max-w-2xl sm:gap-0 sm:px-3 sm:pb-10 sm:pt-[calc(env(safe-area-inset-top,0px)+3.5rem)] md:max-w-3xl md:px-4 lg:max-w-4xl lg:px-6 lg:pb-12;
-    }
     .cr-admin-shell {
-        @apply min-h-0;
+        @apply min-h-0 flex flex-1 flex-col;
     }
     .cr-admin-shell-inner {
-        @apply mx-auto flex w-full min-w-0 max-w-full flex-col gap-5 sm:gap-6 lg:gap-8;
+        @apply mx-auto flex w-full min-w-0 max-w-full flex-1 flex-col gap-4 sm:gap-5 lg:gap-6;
     }
     .cr-admin-shell-inner--narrow {
-        @apply sm:max-w-md md:mx-auto;
+        @apply w-full;
     }
     .cr-admin-shell-inner--wide {
         @apply w-full;
     }
     .cr-admin-topbar {
-        @apply w-full min-w-0 shrink-0 border-b border-graphite/10 pb-4;
+        @apply w-full min-w-0 shrink-0;
     }
     .cr-admin-topbar [data-admin-subnav] {
         @apply min-w-0;
     }
     .cr-admin-subnav {
-        @apply flex w-full min-w-0 flex-wrap gap-1 rounded-xl border border-graphite/15 bg-mist/30 p-1 sm:p-1.5 md:flex-nowrap;
+        @apply grid w-full min-w-0 grid-cols-3 gap-1 rounded-xl border border-graphite/15 bg-mist/30 p-1;
     }
     .cr-admin-subnav-link {
-        @apply rounded-lg px-3 py-2 text-center text-sm font-semibold text-graphite/80 no-underline transition hover:bg-snow/80 hover:text-navy md:flex-1 md:px-4;
+        @apply rounded-lg px-1.5 py-2 text-center text-xs font-semibold text-graphite/80 no-underline transition hover:bg-snow/80 hover:text-navy sm:px-3 sm:text-sm;
     }
     .cr-admin-subnav-link--active {
         @apply bg-snow text-navy shadow-sm;
     }
-    .cr-admin-page-head {
-        @apply border-b border-graphite/10 pb-4 md:pb-5;
+
+    /* Alias admin — misma familia que cr-app-btn */
+    .cr-admin-btn {
+        @apply cr-app-btn;
     }
-    .cr-admin-page-head .cr-catalog-title {
-        @apply mb-1 sm:text-3xl;
+    .cr-admin-btn--auto {
+        @apply cr-app-btn--auto;
+    }
+    .cr-admin-btn--sm {
+        @apply cr-app-btn--sm;
+    }
+    .cr-admin-btn--primary {
+        @apply cr-app-btn--primary;
+    }
+    .cr-admin-btn--secondary {
+        @apply cr-app-btn--secondary;
+    }
+    .cr-admin-btn--ghost {
+        @apply cr-app-btn--ghost;
+    }
+    .cr-admin-btn--danger {
+        @apply cr-app-btn--danger;
+    }
+    .cr-admin-btn:disabled,
+    .cr-admin-btn[disabled] {
+        @apply cursor-not-allowed border border-graphite/15 bg-mist/40 text-graphite/45 shadow-none active:scale-100;
+    }
+    .cr-admin-btn--primary:disabled,
+    .cr-admin-btn--primary[disabled] {
+        @apply bg-mist/60 text-graphite/45;
+    }
+    .cr-admin-mode-tabs {
+        @apply grid w-full grid-cols-2 gap-1 rounded-xl border border-graphite/15 bg-mist/30 p-1;
+    }
+    .cr-admin-mode-tab {
+        @apply cursor-pointer rounded-lg border-0 bg-transparent px-3 py-2.5 text-center text-sm font-semibold text-graphite/75 transition [-webkit-tap-highlight-color:transparent] hover:bg-snow/60 hover:text-navy active:scale-[0.99];
+        font: inherit;
+    }
+    .cr-admin-mode-tab--active {
+        @apply bg-snow text-navy shadow-sm;
+    }
+    .cr-admin-collapsible {
+        @apply overflow-hidden;
+    }
+    .cr-admin-collapsible-summary {
+        @apply flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-navy marker:content-none [&::-webkit-details-marker]:hidden;
+    }
+    .cr-admin-collapsible-title {
+        @apply min-w-0;
+    }
+    .cr-admin-collapsible-chevron {
+        @apply shrink-0 text-xs text-graphite/50 transition-transform duration-200;
+    }
+    .cr-admin-collapsible[open] .cr-admin-collapsible-chevron {
+        @apply rotate-180;
+    }
+    .cr-admin-collapsible-body {
+        @apply border-t border-graphite/10 px-4 pb-4 pt-3;
+    }
+    .cr-admin-cats-add-form--stack {
+        @apply flex flex-col gap-3;
+    }
+    .cr-catalog-page > .cr-catalog-back,
+    .cr-admin-shell > .cr-catalog-back {
+        @apply z-[80];
     }
     .cr-admin-block {
         @apply flex flex-col gap-3;
@@ -873,13 +1400,16 @@
         @apply border-graphite/10 bg-mist/25;
     }
     .cr-admin-block-title {
-        @apply m-0 text-sm font-bold uppercase tracking-wide text-navy;
+        @apply m-0 px-0.5 text-xs font-bold uppercase tracking-[0.14em] text-graphite/55;
     }
     .cr-admin-block-desc {
         @apply m-0 -mt-1 text-sm leading-relaxed text-graphite/75;
     }
     .cr-admin-footer {
-        @apply flex flex-col gap-3 border-t border-graphite/10 pt-4 sm:flex-row sm:items-center sm:justify-end;
+        @apply mt-auto flex flex-col gap-3 border-t border-graphite/10 pt-4 sm:items-center;
+    }
+    .cr-admin-footer .cr-admin-btn {
+        @apply w-full sm:max-w-xs;
     }
     .cr-admin-mock-hint {
         @apply mb-4 rounded-lg border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs leading-snug text-amber-950;
@@ -918,22 +1448,18 @@
         @apply mt-1 text-2xl font-bold tabular-nums text-navy;
     }
     .cr-admin-tiles {
-        @apply grid gap-3 sm:grid-cols-2 lg:gap-4;
+        @apply grid gap-3 sm:grid-cols-1 lg:gap-4;
+    }
+    a.cr-admin-tile,
+    a.cr-inicio-comp-card.cr-admin-tile {
+        @apply no-underline;
+        color: inherit;
     }
     .cr-admin-tile {
-        @apply flex min-h-[5.5rem] flex-col gap-1 rounded-xl border border-graphite/15 bg-snow p-4 no-underline shadow-sm transition hover:border-marine/30 hover:shadow-md md:min-h-[6rem] md:p-5;
+        @apply min-h-0;
     }
     .cr-admin-tile--primary {
-        @apply border-marine/30 bg-gradient-to-br from-snow to-marine/[0.06];
-    }
-    .cr-admin-tile-title {
-        @apply font-semibold text-navy;
-    }
-    .cr-admin-tile-desc {
-        @apply text-xs leading-snug text-graphite/70;
-    }
-    .cr-admin-tile-arrow {
-        @apply mt-1 text-sm font-bold text-marine;
+        @apply border-marine/30;
     }
     .cr-admin-link-list {
         @apply m-0 flex list-none flex-col gap-0 divide-y divide-graphite/10 rounded-xl border border-graphite/15 bg-snow p-0 overflow-hidden;
@@ -944,7 +1470,7 @@
     .cr-admin-form--inline {
         @apply flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end;
     }
-    .cr-admin-form--inline > .cr-app-btn {
+    .cr-admin-form--inline > .cr-admin-btn {
         @apply w-full sm:w-auto sm:min-w-[7.5rem] sm:max-w-[10rem];
     }
     .cr-admin-field--grow {
@@ -967,7 +1493,7 @@
     .cr-admin-filtros-equipos-actions {
         @apply flex min-w-0 items-end;
     }
-    .cr-admin-filtros-equipos-actions .cr-app-btn {
+    .cr-admin-filtros-equipos-actions .cr-admin-btn {
         @apply min-h-12 w-full sm:min-w-[7.5rem] sm:max-w-[10rem] sm:w-auto;
     }
     @media (min-width: 640px) {
@@ -984,9 +1510,6 @@
         .cr-admin-field--filtro-cat .cr-admin-select {
             min-width: 10rem;
         }
-    }
-    .cr-admin-page > .cr-catalog-back {
-        @apply z-[80];
     }
     .cr-admin-input--sm {
         @apply min-h-10 text-sm;
@@ -1005,26 +1528,11 @@
     }
 
     /* —— Admin categorías (#/admin/categorias) —— */
-    .cr-admin-cats-page .cr-admin-page-head {
-        @apply hidden;
-    }
     .cr-admin-cats-hero {
-        @apply flex gap-4 rounded-2xl border border-marine/20 bg-gradient-to-br from-snow via-snow to-marine/[0.06] p-4 shadow-sm sm:p-5 md:items-center md:gap-6 md:p-6;
-    }
-    .cr-admin-cats-hero-text .cr-catalog-title {
-        @apply md:text-3xl;
+        @apply border-marine/20;
     }
     .cr-admin-cats-hero-icon {
-        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-marine/10 sm:h-14 sm:w-14;
-    }
-    .cr-admin-cats-hero-icon .cr-icon {
-        @apply h-7 w-7 text-marine sm:h-8 sm:w-8;
-    }
-    .cr-admin-cats-hero-text {
-        @apply min-w-0 flex-1;
-    }
-    .cr-admin-cats-hero-text .cr-catalog-title {
-        @apply mb-0.5;
+        @apply bg-marine/10;
     }
     .cr-admin-cats-toast {
         @apply sticky top-[calc(env(safe-area-inset-top,0px)+3.5rem)] z-[60] shadow-md;
@@ -1033,7 +1541,7 @@
         @apply border-emerald-200/80 bg-emerald-50 text-emerald-950;
     }
     .cr-admin-cats-add {
-        @apply rounded-2xl border-2 border-dashed border-[#C6D93D]/70 bg-snow/90 p-4 shadow-sm sm:p-5;
+        @apply space-y-3;
     }
     .cr-admin-cats-add-form {
         @apply flex min-w-0 flex-col gap-3 sm:flex-row sm:items-end sm:gap-4;
@@ -1057,7 +1565,7 @@
         @apply flex flex-wrap items-center justify-between gap-2 border-b border-graphite/10 pb-3;
     }
     .cr-admin-cats-list-title {
-        @apply m-0 text-sm font-bold uppercase tracking-wide text-navy;
+        @apply m-0 px-0.5 text-xs font-bold uppercase tracking-[0.14em] text-graphite/55;
     }
     .cr-admin-cats-count {
         @apply rounded-full bg-mist/80 px-3 py-1 text-xs font-semibold tabular-nums text-graphite;
@@ -1089,17 +1597,35 @@
     .cr-admin-cat-card {
         @apply overflow-hidden rounded-2xl border border-graphite/15 bg-snow shadow-md transition hover:border-marine/25 hover:shadow-lg;
     }
+    .cr-admin-cat-details {
+        @apply block;
+    }
+    .cr-admin-cat-summary {
+        @apply flex cursor-pointer list-none items-center gap-2 px-3 py-3 marker:content-none sm:gap-3 sm:px-4 sm:py-3.5 [&::-webkit-details-marker]:hidden;
+    }
+    .cr-admin-cat-summary-id {
+        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-bold text-snow;
+    }
+    .cr-admin-cat-summary-name {
+        @apply min-w-0 flex-1 truncate text-sm font-semibold text-navy sm:text-base;
+    }
+    .cr-admin-cat-summary-badge {
+        @apply shrink-0 rounded-full bg-mist px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-graphite/70;
+    }
+    .cr-admin-cat-summary-chevron {
+        @apply shrink-0 text-xs text-graphite/50 transition-transform duration-200;
+    }
+    .cr-admin-cat-details[open] .cr-admin-cat-summary-chevron {
+        @apply rotate-180;
+    }
     .cr-admin-cat-card-inner {
-        @apply flex flex-col;
+        @apply flex flex-col border-t border-graphite/10;
     }
     .cr-admin-cat-card-top {
-        @apply grid gap-3 border-b border-graphite/10 bg-gradient-to-r from-mist/30 to-snow p-4 sm:grid-cols-[auto_1fr_auto] sm:items-end sm:gap-4 sm:p-5;
+        @apply grid gap-3 bg-gradient-to-r from-mist/30 to-snow p-4 sm:grid-cols-[1fr_auto] sm:items-end sm:gap-4 sm:p-5;
     }
-    .cr-admin-cat-card-id {
-        @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-bold text-snow sm:h-9 sm:w-9;
-    }
-    .cr-admin-cat-card-name-wrap {
-        @apply min-w-0;
+    .cr-admin-cat-card-name-wrap--full {
+        @apply min-w-0 sm:col-span-1;
     }
     .cr-admin-cat-card-name-wrap .cr-admin-label {
         @apply mb-1;
@@ -1111,10 +1637,11 @@
         @apply flex flex-wrap gap-2 sm:justify-end;
     }
     .cr-admin-icon-btn {
-        @apply inline-flex min-h-10 min-w-0 items-center justify-center gap-1.5 rounded-xl border border-graphite/20 bg-snow px-3 py-2 text-sm font-semibold text-navy shadow-sm transition hover:border-marine/30 hover:bg-mist/50 active:scale-[0.98];
+        @apply inline-flex min-h-9 min-w-0 cursor-pointer items-center justify-center gap-1.5 rounded-lg border-0 bg-mist/50 px-2.5 py-2 text-sm font-semibold text-navy transition hover:bg-marine/10 active:scale-[0.98];
+        font: inherit;
     }
     .cr-admin-icon-btn--danger {
-        @apply border-red-200/80 text-red-800 hover:border-red-300 hover:bg-red-50;
+        @apply bg-red-50 text-red-700 hover:bg-red-100;
     }
     .cr-admin-icon-btn .cr-icon--btn-only {
         @apply m-0 h-5 w-5;
@@ -1179,6 +1706,10 @@
     .cr-admin-rule-add-btn {
         @apply inline-flex w-full shrink-0 items-center justify-center gap-1 sm:w-auto sm:min-w-[6.5rem];
     }
+    .cr-admin-cats-add-btn,
+    .cr-admin-equipos-nuevo-btn {
+        @apply w-full sm:w-auto sm:min-w-[7.5rem];
+    }
     @media (min-width: 640px) {
         .cr-admin-cat-card-toolbar .cr-admin-icon-btn-label {
             @apply inline;
@@ -1202,13 +1733,10 @@
     .cr-admin-pagination-btns {
         @apply flex shrink-0 gap-2;
     }
-    .cr-admin-pagination-btns .cr-app-btn {
+    .cr-admin-pagination-btns .cr-admin-btn {
         @apply w-auto min-w-[6.5rem] px-4 py-2 text-sm;
     }
     /* —— Admin equipos (#/admin/equipos), alineado a categorías —— */
-    .cr-admin-equipos-page .cr-admin-page-head {
-        @apply hidden;
-    }
     .cr-admin-equipos-hint {
         @apply mt-2 rounded-lg border border-graphite/10 bg-mist/40 px-3 py-2 text-xs leading-snug text-graphite/75;
     }

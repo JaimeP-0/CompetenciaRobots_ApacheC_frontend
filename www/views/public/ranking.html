@@ -1,0 +1,43 @@
+<section
+    id="cr-ranking-root"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide cr-ranking-page"
+    data-cr-modulo="1-catalogo"
+    aria-label="Resultados por categoría"
+>
+    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
+
+    <header class="cr-page-hero">
+        <div class="cr-page-hero-icon" data-cr-icon="chart-bar" aria-hidden="true"></div>
+        <div class="cr-page-hero-text">
+            <p class="cr-page-kicker">Competencia</p>
+            <h1 class="cr-page-title">Resultados</h1>
+            <p id="cr-ranking-sub" class="cr-page-lead">
+                Partidas con resultado registrado, filtradas por categoría y ordenadas por tiempo.
+            </p>
+        </div>
+    </header>
+
+    <section class="cr-match-setup-card cr-ranking-filters" aria-label="Filtros">
+        <div class="cr-ranking-filter-field">
+            <label class="cr-admin-label" for="cr-ranking-cat">Categoría</label>
+            <select id="cr-ranking-cat" class="cr-admin-select" aria-label="Filtrar por categoría">
+                <option value="">Todas las categorías</option>
+            </select>
+        </div>
+        <div class="cr-ranking-filter-field">
+            <label class="cr-admin-label" for="cr-ranking-sort">Orden por tiempo</label>
+            <select id="cr-ranking-sort" class="cr-admin-select" aria-label="Ordenar por tiempo">
+                <option value="desc">Mayor → menor (peor primero)</option>
+                <option value="asc">Menor → mayor (mejor primero)</option>
+            </select>
+        </div>
+    </section>
+
+    <div class="cr-ranking-list-head">
+        <p id="cr-ranking-count" class="cr-ranking-count"></p>
+    </div>
+
+    <div id="cr-ranking-list" class="cr-ranking-list" aria-live="polite">
+        <p class="cr-ranking-loading">Cargando resultados…</p>
+    </div>
+</section>

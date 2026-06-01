@@ -1,12 +1,17 @@
 <section
     id="cr-cat-root"
-    class="cr-catalog-page"
+    class="cr-catalog-page cr-catalog-page--inner"
     data-cr-modulo="1-catalogo"
     aria-label="Categorías de la competencia"
 >
-    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
 
-    <h1 class="sr-only">Categorías</h1>
+    <header class="cr-page-head">
+        <p class="cr-page-kicker">Consultar</p>
+        <h1 class="cr-page-title">Categorías</h1>
+        <p class="cr-page-lead">Reglamento y equipos por modalidad de competencia.</p>
+    </header>
+
     <div id="cr-cat-list" class="cr-catalog-cat-grid" role="list"></div>
 
     <div class="cr-catalog-actions">

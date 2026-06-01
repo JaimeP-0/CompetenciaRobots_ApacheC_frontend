@@ -46,6 +46,9 @@
                 w.CRIcons.decorate(outlet);
             }
             d.documentElement.classList.toggle('cr-registro-fit', name === 'registro/registrar');
+            var isInicio = name === 'public/inicio';
+            d.body.classList.toggle('cr-view-inicio', isInicio);
+            d.body.classList.toggle('cr-view-inner', !isInicio);
             var isAdminView =
                 (Admin && Admin.isAdminLoginView(name)) || (Admin && Admin.isAdminView(name));
             d.documentElement.classList.toggle('cr-admin-active', isAdminView);
@@ -145,6 +148,9 @@
             }
             return;
         }
+        if (w.CRNavHistory && typeof w.CRNavHistory.onNavigate === 'function') {
+            w.CRNavHistory.onNavigate(route);
+        }
         var resolved = Router.resolve(route);
         if (!resolved) {
             Views.showError(outlet, new Error('Ruta no encontrada: ' + route));
@@ -161,8 +167,18 @@
     }
 
     function onOutletClick(e) {
-        var btn = e.target.closest('[data-route]');
+        var btn = e.target.closest('[data-back], [data-route]');
         if (!btn || !outlet || !outlet.contains(btn)) {
+            return;
+        }
+        if (btn.hasAttribute('data-back')) {
+            e.preventDefault();
+            var fallback = btn.getAttribute('data-back-fallback') || '/';
+            if (w.CRNavHistory && typeof w.CRNavHistory.back === 'function') {
+                w.CRNavHistory.back(fallback);
+            } else {
+                w.location.hash = fallback.charAt(0) === '/' ? fallback : '/' + fallback;
+            }
             return;
         }
         var targetRoute = btn.getAttribute('data-route');

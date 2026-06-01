@@ -11,6 +11,9 @@
         if (mode === 'pairwise') {
             return 'Parejas (1 vs 1)';
         }
+        if (mode === 'solo') {
+            return 'Carrera individual (1 por equipo)';
+        }
         if (mode === 'shared') {
             return 'Concurso (cola compartida)';
         }
@@ -97,7 +100,9 @@
                 modeLabel(inferred) +
                 (inferred === 'pairwise'
                     ? ' (categorías tipo sumo).'
-                    : ' (p. ej. velocista). Solo equipos con robot válido.');
+                    : inferred === 'solo'
+                      ? ' (seguidor de línea, velocista). Una partida por equipo para medir tiempo.'
+                      : ' (concurso en cola). Solo equipos con robot válido.');
         }
 
         function categoryLabel(catId) {
@@ -160,6 +165,20 @@
             return match.mode === 'pairwise' || !!(match.team_a || match.team_b || match.team_a_id != null);
         }
 
+        function isSoloRaceMatch(match) {
+            if (!match) {
+                return false;
+            }
+            var q = match.queue || [];
+            if (q.length === 1) {
+                return true;
+            }
+            if (match.team_a_id != null && match.team_b_id == null && !q.length) {
+                return true;
+            }
+            return false;
+        }
+
         function teamIdsForMatch(match) {
             if (isPairwiseMatch(match)) {
                 var ids = [];
@@ -181,19 +200,157 @@
                 : '';
         }
 
-        function renderResultadoBlock(match, resultado, teamsById) {
-            if (resultado && resultado.winner_team_id != null) {
-                return (
-                    '<div class="cr-match-result-done">' +
-                    '<span class="cr-match-result-label">Ganador</span> ' +
-                    CRDom.escapeHtml(teamName(teamsById, resultado.winner_team_id)) +
-                    '</div>'
-                );
+        function resultKindForCategory(catId) {
+            var name = categoryLabel(catId);
+            if (typeof w.CRApi.isVelocistaCategory === 'function' && w.CRApi.isVelocistaCategory(name)) {
+                return 'velocista';
             }
+            if (typeof w.CRApi.isLineFollowerCategory === 'function' && w.CRApi.isLineFollowerCategory(name)) {
+                return 'line-follower';
+            }
+            return 'winner';
+        }
+
+        function formatResultTime(time) {
+            if (!time || time.minutes == null || time.seconds == null) {
+                return '';
+            }
+            var mins = Number(time.minutes, 10);
+            var secs = Number(time.seconds, 10);
+            if (isNaN(mins) || isNaN(secs)) {
+                return '';
+            }
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        function winnerIdFromResultado(resultado) {
+            if (!resultado) {
+                return null;
+            }
+            var id =
+                resultado.team_id != null
+                    ? resultado.team_id
+                    : resultado.winner != null
+                      ? resultado.winner
+                      : resultado.winner_team_id;
+            return id != null ? id : null;
+        }
+
+        function isResultComplete(kind, resultado) {
+            if (!resultado) {
+                return false;
+            }
+            if (kind === 'velocista') {
+                if (typeof w.CRApi.isPartidaResultComplete === 'function') {
+                    var cat = selectedCategory();
+                    if (cat && cat.name) {
+                        return w.CRApi.isPartidaResultComplete(resultado, cat.name);
+                    }
+                }
+                return !!resultado.time;
+            }
+            return winnerIdFromResultado(resultado) != null;
+        }
+
+        function isPartidaPendiente(partida, resByMatch) {
+            if (!partida) {
+                return false;
+            }
+            var res = resByMatch[String(partida.id)] || partida.result || null;
+            var catName = categoryLabel(partida.category_id);
+            if (typeof w.CRApi.isPartidaResultComplete === 'function') {
+                return !w.CRApi.isPartidaResultComplete(res, catName);
+            }
+            var kind = resultKindForCategory(partida.category_id);
+            return !isResultComplete(kind, res);
+        }
+
+        function renderTimeFieldset(required) {
+            var req = required ? ' required' : '';
+            return (
+                '<fieldset class="cr-match-time-fieldset">' +
+                '<legend class="cr-match-time-legend">' +
+                (required ? 'Tiempo' : 'Tiempo (opcional)') +
+                '</legend>' +
+                '<div class="cr-match-result-time-inputs">' +
+                '<label class="cr-match-time-label">Min' +
+                '<input type="number" name="time-min" min="0" step="1"' +
+                req +
+                ' class="cr-admin-input cr-match-time-min" inputmode="numeric" placeholder="0" aria-label="Minutos">' +
+                '</label>' +
+                '<span class="cr-match-result-time-sep" aria-hidden="true">:</span>' +
+                '<label class="cr-match-time-label">Seg' +
+                '<input type="number" name="time-sec" min="0" max="59" step="1"' +
+                req +
+                ' class="cr-admin-input cr-match-time-sec" inputmode="numeric" placeholder="00" aria-label="Segundos">' +
+                '</label>' +
+                '</div></fieldset>'
+            );
+        }
+
+        function renderResultSaved(kind, match, resultado, teamsById) {
+            var ids = teamIdsForMatch(match);
+            var winnerId = winnerIdFromResultado(resultado);
+            var teamId = winnerId != null ? winnerId : ids.length ? ids[0] : null;
+            var html = '<div class="cr-match-result-done">';
+
+            if (kind === 'velocista') {
+                html +=
+                    '<span class="cr-match-result-label">Tiempo</span> ' +
+                    '<span class="cr-match-result-time-value">' +
+                    CRDom.escapeHtml(formatResultTime(resultado.time) || '—') +
+                    '</span>';
+                if (teamId != null) {
+                    html +=
+                        '<span class="cr-match-result-time-done"> · ' +
+                        CRDom.escapeHtml(teamName(teamsById, teamId)) +
+                        '</span>';
+                }
+            } else {
+                html +=
+                    '<span class="cr-match-result-label">Ganador</span> ' +
+                    CRDom.escapeHtml(teamName(teamsById, winnerId));
+                if (resultado.time) {
+                    html +=
+                        '<span class="cr-match-result-time-done"> · ' +
+                        CRDom.escapeHtml(formatResultTime(resultado.time)) +
+                        '</span>';
+                }
+            }
+            return html + '</div>';
+        }
+
+        function renderResultForm(kind, match, teamsById) {
             var ids = teamIdsForMatch(match);
             if (!ids.length) {
                 return '<p class="cr-match-card-desc">Sin equipos para registrar resultado.</p>';
             }
+
+            var attrs =
+                'class="cr-match-result-form" data-match-id="' +
+                CRDom.escapeHtml(String(match.id)) +
+                '" data-result-kind="' +
+                CRDom.escapeHtml(kind) +
+                '"';
+
+            if (kind === 'velocista' || (kind === 'line-follower' && isSoloRaceMatch(match))) {
+                var soleId = ids[0];
+                var timeRequired = kind === 'velocista';
+                return (
+                    '<form ' +
+                    attrs +
+                    ' data-team-id="' +
+                    CRDom.escapeHtml(String(soleId)) +
+                    '">' +
+                    '<p class="cr-match-sole-team">' +
+                    CRDom.escapeHtml(teamName(teamsById, soleId)) +
+                    '</p>' +
+                    renderTimeFieldset(timeRequired) +
+                    '<button type="submit" class="cr-app-btn cr-app-btn--primary cr-match-save-result">Registrar tiempo</button>' +
+                    '</form>'
+                );
+            }
+
             var opts = ids
                 .map(function (tid) {
                     return (
@@ -205,18 +362,131 @@
                     );
                 })
                 .join('');
+
             return (
-                '<div class="cr-match-result-form" data-match-id="' +
+                '<form ' +
+                attrs +
+                '>' +
+                '<label class="cr-admin-label cr-match-result-form-label" for="cr-match-winner-' +
                 CRDom.escapeHtml(String(match.id)) +
-                '">' +
-                '<label class="cr-admin-label cr-match-result-form-label">Registrar ganador</label>' +
+                '">Ganador</label>' +
                 '<div class="cr-match-result-form-row">' +
-                '<select class="cr-admin-select cr-match-winner-select" aria-label="Ganador">' +
+                '<select id="cr-match-winner-' +
+                CRDom.escapeHtml(String(match.id)) +
+                '" name="team_id" class="cr-admin-select cr-match-winner-select" required aria-label="Ganador">' +
                 opts +
                 '</select>' +
-                '<button type="button" class="cr-app-btn cr-app-btn--outline cr-match-save-result">Guardar</button>' +
-                '</div></div>'
+                '<button type="submit" class="cr-app-btn cr-app-btn--primary cr-match-save-result">Guardar</button>' +
+                '</div>' +
+                (kind === 'line-follower' ? renderTimeFieldset(false) : '') +
+                '</form>'
             );
+        }
+
+        function renderResultSection(match, resultado, teamsById) {
+            var kind = resultKindForCategory(match.category_id);
+            if (isResultComplete(kind, resultado)) {
+                return renderResultSaved(kind, match, resultado, teamsById);
+            }
+            return renderResultForm(kind, match, teamsById);
+        }
+
+        function readTimeFromForm(form) {
+            var minEl = form.querySelector('[name=time-min]');
+            var secEl = form.querySelector('[name=time-sec]');
+            var minVal = minEl ? minEl.value : '';
+            var secVal = secEl ? secEl.value : '';
+            if ((minVal === '' || minVal == null) && (secVal === '' || secVal == null)) {
+                return null;
+            }
+            return { minutes: minVal, seconds: secVal };
+        }
+
+        function buildPayloadFromForm(form) {
+            var kind = form.getAttribute('data-result-kind') || 'winner';
+            var body = {};
+
+            if (kind === 'velocista' || form.getAttribute('data-team-id')) {
+                var teamId = form.getAttribute('data-team-id');
+                if (!teamId) {
+                    throw new Error('No se encontró el equipo de la partida.');
+                }
+                var time = readTimeFromForm(form);
+                var kindAttr = form.getAttribute('data-result-kind') || '';
+                if (kindAttr === 'velocista' && !time) {
+                    throw new Error('Indica minutos y segundos.');
+                }
+                if (kindAttr === 'line-follower' && !time) {
+                    throw new Error('Indica minutos y segundos.');
+                }
+                body.team_id = Number(teamId, 10);
+                if (time) {
+                    body.requireTime = kindAttr === 'velocista';
+                    body.time = time;
+                }
+                return body;
+            }
+
+            var sel = form.querySelector('[name=team_id]');
+            if (!sel || !sel.value) {
+                throw new Error('Elige un ganador.');
+            }
+            body.team_id = Number(sel.value, 10);
+            if (kind === 'line-follower') {
+                var optionalTime = readTimeFromForm(form);
+                if (optionalTime) {
+                    body.time = optionalTime;
+                }
+            }
+            return body;
+        }
+
+        function renderSoloRaceCard(match, teamsById, resultado, kind) {
+            var teamId =
+                (match.queue && match.queue[0]) ||
+                match.team_a_id ||
+                null;
+            var badge =
+                kind === 'velocista'
+                    ? 'Velocista'
+                    : 'Carrera individual';
+            var badgeCls =
+                kind === 'velocista'
+                    ? ' cr-match-card-badge--velocista'
+                    : ' cr-match-card-badge--solo';
+            return (
+                '<article class="cr-catalog-team-card cr-match-card cr-match-card--solo">' +
+                '<div class="cr-match-card-head">' +
+                '<h3 class="cr-match-card-title">Partida #' +
+                CRDom.escapeHtml(String(match.id)) +
+                '</h3>' +
+                '<span class="cr-match-card-badge' +
+                badgeCls +
+                '">' +
+                CRDom.escapeHtml(badge) +
+                '</span></div>' +
+                '<p class="cr-match-card-line">' +
+                categoryChip(match.category_id) +
+                '</p>' +
+                (teamId != null
+                    ? '<p class="cr-match-velocista-team">' +
+                      CRDom.escapeHtml(teamName(teamsById, teamId)) +
+                      '</p>'
+                    : '') +
+                renderResultSection(match, resultado, teamsById) +
+                '</article>'
+            );
+        }
+
+        function renderMatchCard(match, teamsById, resultado) {
+            var kind = resultKindForCategory(match.category_id);
+            if ((kind === 'velocista' || kind === 'line-follower') && isSoloRaceMatch(match)) {
+                return renderSoloRaceCard(match, teamsById, resultado, kind);
+            }
+            if (isPairwiseMatch(match)) {
+                return renderPairwiseCard(match, teamsById, resultado);
+            }
+            return renderSharedCard(match, teamsById, resultado);
         }
 
         function renderSharedCard(match, teamsById, resultado) {
@@ -249,7 +519,7 @@
                 '<ol class="cr-match-queue-list">' +
                 chips +
                 '</ol>' +
-                renderResultadoBlock(match, resultado, teamsById) +
+                renderResultSection(match, resultado, teamsById) +
                 '</article>'
             );
         }
@@ -290,24 +560,34 @@
                 categoryChip(match.category_id) +
                 '</p>' +
                 body +
-                renderResultadoBlock(match, resultado, teamsById) +
+                renderResultSection(match, resultado, teamsById) +
                 '</article>'
             );
         }
 
-        function renderEmptyList(conFiltro) {
+        function renderEmptyList(conFiltro, todasCompletadas) {
+            var title = conFiltro ? 'Sin partidas pendientes' : 'No hay partidas pendientes';
+            var desc;
+            if (todasCompletadas) {
+                desc =
+                    'Todas las partidas de esta categoría ya tienen resultado. Consulta la vista Resultados o inicia cola para equipos nuevos.';
+            } else if (conFiltro) {
+                desc = 'Usa «Iniciar cola» para agregar equipos validados que aún no tengan partida.';
+            } else {
+                desc = 'Inicia la cola en una categoría para crear partidas pendientes.';
+            }
             listEl.innerHTML =
                 '<div class="cr-match-empty">' +
                 '<span class="cr-match-empty-icon" data-cr-icon="trophy" aria-hidden="true"></span>' +
                 '<h2 class="cr-match-empty-title">' +
-                (conFiltro ? 'Sin partidas en esta categoría' : 'No hay partidas') +
+                CRDom.escapeHtml(title) +
                 '</h2>' +
                 '<p class="cr-match-empty-desc">' +
-                (conFiltro
-                    ? 'Usa «Iniciar cola» para crear partidas con equipos validados.'
-                    : 'Inicia la cola en una categoría para crear partidas.') +
-                '</p></div>';
-            if (w.CRIicons) {
+                CRDom.escapeHtml(desc) +
+                '</p>' +
+                '<button type="button" class="cr-app-btn cr-app-btn--secondary cr-match-empty-link" data-route="/ranking">Ver resultados</button>' +
+                '</div>';
+            if (w.CRIcons) {
                 w.CRIcons.decorate(listEl);
             }
         }
@@ -351,10 +631,7 @@
             var html = filtered
                 .map(function (m) {
                     var res = resByMatch[String(m.id)] || null;
-                    if (isPairwiseMatch(m)) {
-                        return renderPairwiseCard(m, teamsById, res);
-                    }
-                    return renderSharedCard(m, teamsById, res);
+                    return renderMatchCard(m, teamsById, res);
                 })
                 .join('');
             listEl.innerHTML = '<div class="cr-match-results-grid">' + html + '</div>';
@@ -379,21 +656,35 @@
                         return Number(b.id) - Number(a.id);
                     });
                     var resByMatch = indexResultados(arr[1]);
+                    all.forEach(function (p) {
+                        if (p && p.result && p.id != null) {
+                            resByMatch[String(p.id)] = p.result;
+                        }
+                    });
+                    var pendingAll = all.filter(function (p) {
+                        return isPartidaPendiente(p, resByMatch);
+                    });
                     var filtered = catFilter
-                        ? all.filter(function (p) {
+                        ? pendingAll.filter(function (p) {
                               return String(p.category_id) === String(catFilter);
                           })
-                        : all;
+                        : pendingAll;
+                    var todasCompletadas =
+                        !!catFilter &&
+                        !filtered.length &&
+                        all.some(function (p) {
+                            return String(p.category_id) === String(catFilter);
+                        });
                     if (countEl) {
                         countEl.textContent = filtered.length
                             ? filtered.length === 1
-                                ? '1 partida'
-                                : filtered.length + ' partidas'
+                                ? '1 pendiente'
+                                : filtered.length + ' pendientes'
                             : '';
                     }
                     if (!filtered.length) {
-                        renderEmptyList(!!catFilter);
-                        return;
+                        renderEmptyList(!!catFilter, todasCompletadas);
+                        return 0;
                     }
                     renderPartidasList(filtered, resByMatch, {});
                     var catIds = [];
@@ -405,14 +696,15 @@
                         }
                     });
                     if (!catIds.length) {
-                        return;
+                        return filtered.length;
                     }
                     return loadTeamsMaps(catIds)
                         .then(function (extraTeams) {
                             renderPartidasList(filtered, resByMatch, extraTeams);
+                            return filtered.length;
                         })
                         .catch(function () {
-                            /* ya visible con equipos embebidos */
+                            return filtered.length;
                         });
                 })
                 .catch(function (err) {
@@ -435,33 +727,42 @@
                     if (w.CRIcons) {
                         w.CRIcons.decorate(listEl);
                     }
+                    return 0;
                 });
         }
 
-        function onListClick(e) {
-            var btn = e.target.closest('.cr-match-save-result');
-            if (!btn || !listEl.contains(btn)) {
+        function onListSubmit(e) {
+            var form = e.target.closest('.cr-match-result-form');
+            if (!form || !listEl.contains(form)) {
                 return;
             }
-            var form = btn.closest('.cr-match-result-form');
-            if (!form) {
-                return;
-            }
+            e.preventDefault();
             var matchId = form.getAttribute('data-match-id');
-            var sel = form.querySelector('.cr-match-winner-select');
-            if (!matchId || !sel || !sel.value) {
+            if (!matchId) {
                 return;
             }
-            btn.disabled = true;
+            var btn = form.querySelector('.cr-match-save-result');
+            var payload;
+            try {
+                payload = buildPayloadFromForm(form);
+            } catch (err) {
+                setStatus((err && err.message) || 'Revisa el formulario.', true);
+                return;
+            }
+            if (btn) {
+                btn.disabled = true;
+            }
             setStatus('Guardando resultado…', false);
-            w.CRApi.postPartidaResultado(matchId, { winner_team_id: Number(sel.value, 10) })
+            w.CRApi.postPartidaResultado(matchId, payload)
                 .then(function () {
                     setStatus('Resultado guardado.', false);
                     return loadPartidasList();
                 })
                 .catch(function (err) {
                     setStatus((err && err.message) || 'No se pudo guardar el resultado.', true);
-                    btn.disabled = false;
+                    if (btn) {
+                        btn.disabled = false;
+                    }
                 });
         }
 
@@ -471,14 +772,15 @@
                 setStatus('Elige una categoría.', true);
                 return;
             }
-            var opts = {};
+            var cat = selectedCategory();
+            var opts = { categoryName: cat && cat.name ? cat.name : '' };
             if (selMode && (selMode.value === 'pairwise' || selMode.value === 'shared')) {
                 opts.mode = selMode.value;
             }
             var usedMode =
                 opts.mode ||
-                (w.CRApi.inferMatchMode
-                    ? w.CRApi.inferMatchMode(selectedCategory() && selectedCategory().name)
+                (w.CRApi.inferMatchMode && cat && cat.name
+                    ? w.CRApi.inferMatchMode(cat.name)
                     : 'shared');
 
             btnIniciar.disabled = true;
@@ -486,16 +788,30 @@
 
             w.CRApi.postPartidasIniciar(catId, opts)
                 .then(function (matches) {
-                    var n = (matches || []).length;
-                    setStatus(
-                        n
-                            ? n === 1
-                                ? 'Se creó 1 partida.'
-                                : 'Se crearon ' + n + ' partidas.'
-                            : 'Cola iniciada sin partidas nuevas.',
-                        false
-                    );
-                    return loadPartidasList();
+                    if (selListFilter) {
+                        selListFilter.value = catId;
+                    }
+                    return loadPartidasList().then(function (pendingCount) {
+                        var apiN = (matches || []).length;
+                        if (pendingCount > 0) {
+                            setStatus(
+                                pendingCount === 1
+                                    ? '1 partida pendiente lista para registrar.'
+                                    : pendingCount + ' partidas pendientes listas para registrar.',
+                                false
+                            );
+                        } else if (apiN > 0) {
+                            setStatus(
+                                'La cola respondió pero no hay partidas nuevas pendientes (puede que todos los equipos ya tengan resultado). Revisa Resultados.',
+                                false
+                            );
+                        } else {
+                            setStatus(
+                                'No hay equipos validados disponibles para nuevas partidas en esta categoría.',
+                                false
+                            );
+                        }
+                    });
                 })
                 .catch(function (err) {
                     setStatus((err && err.message) || 'No se pudo iniciar la cola.', true);
@@ -556,7 +872,7 @@
             selMode.addEventListener('change', onModeChange, false);
         }
         btnIniciar.addEventListener('click', onIniciarClick, false);
-        listEl.addEventListener('click', onListClick, false);
+        listEl.addEventListener('submit', onListSubmit, false);
 
         if (w.CRApi.fetchCategorias) {
             w.CRApi.fetchCategorias()

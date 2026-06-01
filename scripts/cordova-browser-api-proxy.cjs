@@ -8,7 +8,7 @@ const express = require('express');
 const httpProxy = require('http-proxy');
 const { isApiRoute } = require('./api-proxy-paths.cjs');
 
-const DEFAULT_API = 'http://100.124.252.101:8080';
+const DEFAULT_API = 'http://100.119.194.73:8080';
 const API_TARGET = (process.env.CR_API_TARGET || DEFAULT_API).replace(/\/$/, '');
 const IS_HTTPS = API_TARGET.indexOf('https://') === 0;
 

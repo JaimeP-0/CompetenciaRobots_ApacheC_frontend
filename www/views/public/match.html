@@ -1,17 +1,18 @@
 <section
     id="cr-match-root"
-    class="cr-catalog-page cr-catalog-page--wide cr-match-page"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide cr-match-page"
     data-cr-modulo="1-catalogo"
     aria-label="Iniciar partidas"
 >
-    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
 
-    <header class="cr-match-hero">
-        <div class="cr-match-hero-icon" data-cr-icon="trophy" aria-hidden="true"></div>
-        <div class="cr-match-hero-text">
-            <h1 class="cr-catalog-title">Match</h1>
-            <p id="cr-match-sub" class="text-sm leading-snug text-graphite/80 sm:text-base">
-                Inicia la cola de partidas con equipos que tengan robot válido.
+    <header class="cr-page-hero">
+        <div class="cr-page-hero-icon" data-cr-icon="trophy" aria-hidden="true"></div>
+        <div class="cr-page-hero-text">
+            <p class="cr-page-kicker">Competencia</p>
+            <h1 class="cr-page-title">Match</h1>
+            <p id="cr-match-sub" class="cr-page-lead">
+                Inicia la cola y registra resultados de partidas pendientes. Los tiempos guardados aparecen en Resultados.
             </p>
         </div>
     </header>
@@ -34,16 +35,24 @@
             </div>
         </div>
         <p id="cr-match-mode-hint" class="cr-match-mode-hint" aria-live="polite"></p>
-        <button type="button" id="cr-match-iniciar" class="cr-app-btn cr-app-btn--primary cr-match-iniciar-btn" disabled>
-            Iniciar cola
-        </button>
+        <div class="cr-match-setup-actions">
+            <button type="button" id="cr-match-iniciar" class="cr-app-btn cr-app-btn--primary cr-match-iniciar-btn" disabled>
+                Iniciar cola
+            </button>
+            <button type="button" class="cr-app-btn cr-app-btn--secondary cr-match-resultados-btn" data-route="/ranking">
+                Ver resultados
+            </button>
+            <button type="button" class="cr-app-btn cr-app-btn--secondary" data-route="/brackets">
+                Brackets sumo
+            </button>
+        </div>
     </section>
 
     <p id="cr-match-status" class="cr-match-status hidden" aria-live="polite"></p>
 
     <section class="cr-match-list-section" aria-label="Partidas">
         <div class="cr-match-list-head">
-            <h2 class="cr-match-list-title">Partidas actuales</h2>
+            <h2 class="cr-page-section-title">Partidas pendientes</h2>
             <div class="cr-match-list-head-actions">
                 <label class="sr-only" for="cr-match-list-filter">Filtrar por categoría</label>
                 <select id="cr-match-list-filter" class="cr-admin-select cr-match-list-filter" aria-label="Filtrar partidas">

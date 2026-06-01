@@ -24,10 +24,9 @@ var app = w.CR_APP || w.CR_CONFIG;
         },
         postRegistro: function (body) {
             if (!app.registroEnvioHabilitado) {
-                if (app.debugApi) {
-                    console.log('[CR] verificación (solo local, sin POST):', body);
-                }
-                return Promise.resolve({ ok: true, local: true, is_valid: !!(body && body.valid_rules && body.valid_rules.length) });
+                return Promise.reject(
+                    new Error('El envío de verificación está deshabilitado en la configuración.')
+                );
             }
             var teamId = body && (body.team_id != null ? body.team_id : body.teamId);
             if (teamId == null || teamId === '') {
@@ -83,6 +82,27 @@ var app = w.CR_APP || w.CR_CONFIG;
         inferMatchMode: function (categoryName) {
             return Partidas.inferMatchModeFromCategoryName(categoryName);
         },
+        isLineFollowerCategory: function (categoryName) {
+            return Partidas.isLineFollowerCategoryName(categoryName);
+        },
+        isVelocistaCategory: function (categoryName) {
+            return Partidas.isVelocistaCategoryName(categoryName);
+        },
+        isSumoCategory: function (categoryName) {
+            return Partidas.isSumoCategoryName(categoryName);
+        },
+        isSoloRaceCategory: function (categoryName) {
+            return Partidas.isSoloRaceCategoryName(categoryName);
+        },
+        isPartidaResultComplete: function (resultado, categoryName) {
+            return Partidas.isResultComplete(resultado, categoryName);
+        },
+        resultTimeSeconds: function (resultado) {
+            return Partidas.resultTimeSeconds(resultado);
+        },
+        formatResultTime: function (time) {
+            return Partidas.formatResultTimeDisplay(time);
+        },
         getPartidas: function () {
             return Partidas.fetchAll();
         },
@@ -93,7 +113,11 @@ var app = w.CR_APP || w.CR_CONFIG;
             return Partidas.create(body);
         },
         postPartidasIniciar: function (categoryId, opts) {
-            return Partidas.postIniciar(categoryId, opts || {});
+            opts = opts || {};
+            if (!opts.categoryName && opts.catName) {
+                opts.categoryName = opts.catName;
+            }
+            return Partidas.postIniciar(categoryId, opts);
         },
         getPartidaResultados: function () {
             return Partidas.fetchAllResultados();
@@ -103,6 +127,36 @@ var app = w.CR_APP || w.CR_CONFIG;
         },
         postPartidaResultado: function (matchId, body) {
             return Partidas.createResultado(matchId, body || {});
+        },
+        getBracket: function (categoryId, opts) {
+            if (!w.CRApiBrackets) {
+                return Promise.reject(new Error('Brackets no cargado.'));
+            }
+            return w.CRApiBrackets.fetch(categoryId, opts || {});
+        },
+        getBracketPair: function (categoryId) {
+            if (!w.CRApiBrackets) {
+                return Promise.reject(new Error('Brackets no cargado.'));
+            }
+            return w.CRApiBrackets.fetchPair(categoryId);
+        },
+        postBracketIniciar: function (categoryId, opts) {
+            if (!w.CRApiBrackets) {
+                return Promise.reject(new Error('Brackets no cargado.'));
+            }
+            return w.CRApiBrackets.iniciar(categoryId, opts || {});
+        },
+        postBracketWinner: function (categoryId, bracket, matchKey, winnerTeamId) {
+            if (!w.CRApiBrackets) {
+                return Promise.reject(new Error('Brackets no cargado.'));
+            }
+            return w.CRApiBrackets.recordWinner(categoryId, bracket, matchKey, winnerTeamId);
+        },
+        resetBracket: function (categoryId) {
+            if (!w.CRApiBrackets) {
+                return Promise.reject(new Error('Brackets no cargado.'));
+            }
+            return w.CRApiBrackets.reset(categoryId);
         },
         getPerfil: function (id) {
             return request('GET', '/perfil', { query: { id: id } });

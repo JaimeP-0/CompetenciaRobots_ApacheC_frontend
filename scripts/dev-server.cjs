@@ -11,7 +11,7 @@
  *   cordova run browser   ← no uses esto si necesitas /registro
  *
  * Variable CR_API_TARGET (opcional): por defecto Hostinger PHP.
- * Si apunta a 100.124.252.101 y da 502, borra: Remove-Item Env:CR_API_TARGET
+ * Si apunta a 100.119.194.73 y da 502, borra: Remove-Item Env:CR_API_TARGET
  * Variable CR_WWW_ROOT: carpeta a servir (por defecto platforms/browser/www si existe)
  */
 const http = require('http');
@@ -23,7 +23,7 @@ const { isApiRoute, API_ROUTE_PREFIXES } = require('./api-proxy-paths.cjs');
 
 const PORT = Number(process.env.PORT || 8000);
 const API_TARGET = (
-    process.env.CR_API_TARGET || 'http://100.124.252.101:8080'
+    process.env.CR_API_TARGET || 'http://100.119.194.73:8080'
 ).replace(/\/$/, '');
 const projectRoot = path.join(__dirname, '..');
 const browserWww = path.join(projectRoot, 'platforms', 'browser', 'www');
@@ -125,14 +125,28 @@ const server = http.createServer(function (req, res) {
     serveStatic(req, res);
 });
 
-server.listen(PORT, function () {
+server.listen(PORT, '0.0.0.0', function () {
     var url = 'http://localhost:' + PORT + '/';
     console.log('');
     console.log('CR dev server: ' + url);
     console.log('  www:   ' + WWW);
     console.log('  proxy: ' + API_ROUTE_PREFIXES.join(', ') + ' → ' + API_TARGET);
+    try {
+        var os = require('os');
+        var ifaces = os.networkInterfaces();
+        Object.keys(ifaces).forEach(function (name) {
+            ifaces[name].forEach(function (iface) {
+                if (iface.family === 'IPv4' && !iface.internal) {
+                    console.log('  LAN:   http://' + iface.address + ':' + PORT + '/');
+                }
+            });
+        });
+    } catch (e) {
+        /* opcional */
+    }
     console.log('');
-    console.log('No uses "cordova run browser" para probar el API; usa "npm run browser".');
+    console.log('Abre la app por localhost o por la IP LAN de arriba (mismo puerto ' + PORT + ').');
+    console.log('No uses "cordova run browser" a mano si necesitas API; usa "npm run browser".');
     console.log('Android (cordova run android) llama al backend directo, sin este proxy.');
     console.log('');
     if (shouldOpen) {

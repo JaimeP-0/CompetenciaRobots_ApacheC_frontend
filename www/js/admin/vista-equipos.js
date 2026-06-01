@@ -200,10 +200,10 @@
                     : 'Sin equipos con este filtro') +
                 '</p>' +
                 '<div class="cr-admin-pagination-btns">' +
-                '<button type="button" class="cr-app-btn cr-app-btn--outline cr-admin-page-prev"' +
+                '<button type="button" class="cr-admin-btn cr-admin-btn--secondary cr-admin-btn--auto cr-admin-btn--sm cr-admin-page-prev"' +
                 (prevDisabled ? ' disabled' : '') +
                 '>Anterior</button>' +
-                '<button type="button" class="cr-app-btn cr-app-btn--outline cr-admin-page-next"' +
+                '<button type="button" class="cr-admin-btn cr-admin-btn--secondary cr-admin-btn--auto cr-admin-btn--sm cr-admin-page-next"' +
                 (nextDisabled ? ' disabled' : '') +
                 '>Siguiente</button>' +
                 '</div></div>'
@@ -294,7 +294,7 @@
                 '" type="email" class="cr-admin-input cr-admin-miembro-email" placeholder="Opcional" /></div>' +
                 '<label class="cr-admin-equipo-add-member-leader">' +
                 '<input type="checkbox" class="cr-admin-miembro-lider" /> Capitán</label>' +
-                '<button type="button" class="cr-app-btn cr-app-btn--primary cr-admin-equipo-add-member-btn cr-admin-btn-add-miembro">Agregar</button>' +
+                '<button type="button" class="cr-admin-btn cr-admin-btn--primary cr-admin-btn--auto cr-admin-btn--sm cr-admin-equipo-add-member-btn cr-admin-btn-add-miembro">Agregar</button>' +
                 '</div></section>'
             );
         }
@@ -658,9 +658,42 @@
             formNuevo.addEventListener('submit', onNuevoEquipoSubmit, false);
         }
 
+        var modeTabs = outlet.querySelectorAll('[data-admin-equipos-mode]');
+        var panelBuscar = outlet.querySelector('#admin-equipos-panel-buscar');
+        var panelAgregar = outlet.querySelector('#admin-equipos-panel-agregar');
+
+        function setEquiposMode(mode) {
+            var next = mode === 'agregar' ? 'agregar' : 'buscar';
+            modeTabs.forEach(function (btn) {
+                var active = btn.getAttribute('data-admin-equipos-mode') === next;
+                btn.classList.toggle('cr-admin-mode-tab--active', active);
+                btn.setAttribute('aria-selected', active ? 'true' : 'false');
+            });
+            if (panelBuscar) {
+                panelBuscar.classList.toggle('hidden', next !== 'buscar');
+                panelBuscar.hidden = next !== 'buscar';
+            }
+            if (panelAgregar) {
+                panelAgregar.classList.toggle('hidden', next !== 'agregar');
+                panelAgregar.hidden = next !== 'agregar';
+            }
+        }
+
+        function onModeTabClick(e) {
+            setEquiposMode(e.currentTarget.getAttribute('data-admin-equipos-mode'));
+        }
+
+        modeTabs.forEach(function (btn) {
+            btn.addEventListener('click', onModeTabClick, false);
+        });
+        setEquiposMode('buscar');
+
         loadCategoriesOnly();
 
         return function cleanup() {
+            modeTabs.forEach(function (btn) {
+                btn.removeEventListener('click', onModeTabClick, false);
+            });
             listHost.removeEventListener('click', onListClick, false);
             if (pagTop) {
                 pagTop.removeEventListener('click', onListClick, false);

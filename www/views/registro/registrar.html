@@ -2,9 +2,15 @@
     id="registrar-root"
     data-cr-modulo="3-equipos-registro"
     aria-label="Registrar competidor"
-    class="cr-catalog-page cr-catalog-page--registro flex min-h-0 flex-1 flex-col overflow-x-hidden"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--registro flex min-h-0 flex-1 flex-col overflow-x-hidden"
 >
-    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
+
+    <header class="cr-page-head shrink-0">
+        <p class="cr-page-kicker">Jueces</p>
+        <h1 class="cr-page-title">Registrar robots</h1>
+        <p class="cr-page-lead">Verificación en pista según el reglamento de la categoría.</p>
+    </header>
 
     <form
         id="f-registro-equipo"
@@ -15,7 +21,7 @@
     >
         <div
             id="reg-loading-boot"
-            class="flex shrink-0 flex-col items-center justify-center gap-2 rounded-2xl border border-graphite/15 bg-snow/95 px-4 py-6 text-center sm:gap-3 sm:py-7"
+            class="cr-match-setup-card flex shrink-0 flex-col items-center justify-center gap-2 px-4 py-6 text-center sm:gap-3 sm:py-7"
             aria-live="polite"
             aria-busy="true"
         >
@@ -26,12 +32,12 @@
             <p class="text-sm font-medium text-graphite sm:text-base">Cargando…</p>
         </div>
 
-        <div class="cr-catalog-card-block shrink-0">
-            <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
-                <label for="reg-filtro-categoria" class="cr-catalog-dt mb-1.5 block">Categoría</label>
+        <div class="cr-match-setup-card shrink-0">
+            <div class="cr-match-field">
+                <label for="reg-filtro-categoria" class="cr-admin-label">Categoría</label>
                 <select
                     id="reg-filtro-categoria"
-                    class="cr-admin-select cr-reg-filtro-categoria h-12 w-full rounded-xl text-sm sm:h-14 sm:text-base"
+                    class="cr-admin-select cr-reg-filtro-categoria w-full"
                     required
                     aria-label="Selecciona la categoría del equipo"
                 >
@@ -45,8 +51,8 @@
             class="reg-equipo-block reg-equipo-block--disabled shrink-0"
             aria-disabled="true"
         >
-        <div class="cr-catalog-card-block">
-            <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
+        <div class="cr-match-setup-card shrink-0">
+            <div class="cr-match-field">
                 <div class="relative w-full">
                     <input
                         id="nombre-equipo"
@@ -61,11 +67,11 @@
                         placeholder=" "
                         disabled
                         aria-disabled="true"
-                        class="peer h-12 w-full rounded-xl border border-graphite/20 bg-snow px-2.5 pb-2 pt-[1.35rem] text-sm leading-normal tracking-normal text-graphite shadow-sm outline-none transition-[border-color,box-shadow] duration-200 placeholder:text-transparent focus:border-accent focus:ring-2 focus:ring-accent/30 disabled:cursor-not-allowed disabled:border-graphite/20 disabled:bg-mist/50 disabled:text-graphite/75 sm:h-14 sm:px-3 sm:pb-2.5 sm:pt-6 sm:text-base"
+                        class="cr-admin-input peer h-12 pb-2 pt-[1.35rem] placeholder:text-transparent disabled:cursor-not-allowed disabled:bg-mist/50 disabled:text-graphite/75 sm:h-14 sm:pb-2.5 sm:pt-6"
                     />
                     <label
                         for="nombre-equipo"
-                        class="pointer-events-none absolute left-2.5 origin-[0] text-graphite transition-all duration-200 ease-out top-1/2 -translate-y-1/2 text-sm peer-focus:top-1.5 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-semibold peer-focus:leading-none peer-focus:text-navy peer-[&:not(:placeholder-shown)]:top-1.5 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-[11px] peer-[&:not(:placeholder-shown)]:font-semibold peer-[&:not(:placeholder-shown)]:leading-none peer-[&:not(:placeholder-shown)]:text-navy peer-disabled:text-graphite/55 sm:left-3 sm:peer-focus:top-2 sm:peer-focus:text-xs sm:peer-[&:not(:placeholder-shown)]:top-2 sm:peer-[&:not(:placeholder-shown)]:text-xs sm:text-base"
+                        class="pointer-events-none absolute left-3 origin-[0] text-graphite transition-all duration-200 ease-out top-1/2 -translate-y-1/2 text-sm peer-focus:top-2 peer-focus:translate-y-0 peer-focus:text-xs peer-focus:font-semibold peer-focus:text-navy peer-[&:not(:placeholder-shown)]:top-2 peer-[&:not(:placeholder-shown)]:translate-y-0 peer-[&:not(:placeholder-shown)]:text-xs peer-[&:not(:placeholder-shown)]:font-semibold peer-[&:not(:placeholder-shown)]:text-navy peer-disabled:text-graphite/55 sm:text-base"
                     >
                         Nombre del equipo
                     </label>
@@ -94,9 +100,8 @@
         </div>
 
         <div id="reg-detalle-panel" class="hidden shrink-0 space-y-3">
-            <div class="cr-catalog-card-block">
-                <div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo">
-                    <dl class="cr-catalog-dl">
+            <div class="cr-match-setup-card shrink-0">
+                <dl class="cr-catalog-dl">
                         <div>
                             <dt class="cr-catalog-dt">Escuela</dt>
                             <dd id="reg-dato-escuela" class="cr-catalog-dd select-none" tabindex="-1">—</dd>
@@ -128,7 +133,6 @@
                             </dd>
                         </div>
                     </dl>
-                </div>
             </div>
             <div class="cr-catalog-actions flex w-full min-w-0 justify-center">
                 <button
@@ -166,7 +170,7 @@
                     </button>
                     <button
                         type="button"
-                        class="cr-app-btn cr-app-btn--outline cr-reg-checklist-footer-danger min-h-11 border-red-300 text-red-700 hover:bg-red-50 sm:min-h-14"
+                        class="cr-app-btn cr-app-btn--danger cr-reg-checklist-footer-danger min-h-11 sm:min-h-14"
                         data-reg-eliminar
                         aria-label="Eliminar: descalificar al equipo"
                     >
@@ -189,7 +193,7 @@
                     </button>
                     <button
                         type="button"
-                        class="cr-app-btn cr-app-btn--outline cr-reg-checklist-footer-danger min-h-11 border-red-300 text-red-700 hover:bg-red-50 sm:min-h-14"
+                        class="cr-app-btn cr-app-btn--danger cr-reg-checklist-footer-danger min-h-11 sm:min-h-14"
                         data-reg-eliminar
                         aria-label="Eliminar: descalificar al equipo"
                     >
@@ -209,7 +213,7 @@
         aria-hidden="true"
     >
         <div
-            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl"
+            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl cr-match-setup-card"
             role="document"
         >
             <p class="cr-catalog-kicker mb-1">Confirmar</p>
@@ -222,7 +226,7 @@
                 <button
                     type="button"
                     id="reg-modal-confirmar-cancelar"
-                    class="cr-app-btn cr-app-btn--outline min-h-11 min-w-[7.5rem] max-w-full text-sm sm:min-h-14 sm:text-base"
+                    class="cr-app-btn cr-app-btn--secondary min-h-11 min-w-[7.5rem] max-w-full text-sm sm:min-h-14 sm:text-base"
                 >
                     Cancelar
                 </button>
@@ -246,7 +250,7 @@
         aria-hidden="true"
     >
         <div
-            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl"
+            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl cr-match-setup-card"
             role="document"
         >
             <p class="cr-catalog-kicker mb-1">Aviso</p>
@@ -276,7 +280,7 @@
         aria-hidden="true"
     >
         <div
-            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl"
+            class="w-full max-h-[min(85dvh,32rem)] max-w-lg overflow-y-auto rounded-2xl border border-graphite/15 bg-snow px-5 py-6 shadow-xl sm:max-w-xl sm:px-7 sm:py-8 lg:max-w-2xl cr-match-setup-card"
             role="document"
         >
             <p class="cr-catalog-kicker mb-1">Registro</p>

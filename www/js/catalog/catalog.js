@@ -14,6 +14,8 @@
         initEquipos: V.equiposLista,
         initEquipoDetalle: V.equipoDetalle,
         initValidados: V.validados,
-        initMatch: V.match
+        initMatch: V.match,
+        initRanking: V.ranking,
+        initBrackets: V.brackets
     };
 })(window);

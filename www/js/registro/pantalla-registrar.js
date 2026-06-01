@@ -485,13 +485,9 @@
             tabla1ChangeHandlers = [];
             var checks = host1.querySelectorAll('input[type="checkbox"][data-reg-chk]');
             function syncSiguiente() {
-                var all = true;
-                checks.forEach(function (c) {
-                    if (!c.checked) {
-                        all = false;
-                    }
-                });
-                btnSig.disabled = !all;
+                if (btnSig) {
+                    btnSig.disabled = false;
+                }
             }
             checks.forEach(function (c) {
                 var fn = syncSiguiente;
@@ -508,13 +504,9 @@
             tabla2ChangeHandlers = [];
             var checks = host2.querySelectorAll('input[type="checkbox"][data-reg-chk]');
             function syncRegistrar() {
-                var all = true;
-                checks.forEach(function (c) {
-                    if (!c.checked) {
-                        all = false;
-                    }
-                });
-                btnReg.disabled = !all;
+                if (btnReg) {
+                    btnReg.disabled = false;
+                }
             }
             checks.forEach(function (c) {
                 var fn = syncRegistrar;
@@ -551,28 +543,12 @@
                 return Promise.resolve([]);
             }
             var fromChecks = collectCheckedRuleIdsFromHosts();
-            if (fromChecks.length) {
-                return Promise.resolve(fromChecks);
-            }
-            var catId = resolveChecklistCategoryId();
-            if (catId == null) {
+            if (!fromChecks.length) {
                 return Promise.reject(
-                    new Error('No se identificó la categoría. Elige categoría y equipo antes de registrar.')
+                    new Error('Marca al menos una regla que el robot sí cumple, o usa «Descalificar» si no pasa.')
                 );
             }
-            var api = w.CRApi;
-            if (!api || typeof api.getReglasByCategory !== 'function') {
-                return Promise.reject(new Error('No hay API para cargar reglas de la categoría.'));
-            }
-            return api.getReglasByCategory(catId).then(function (rules) {
-                return (rules || [])
-                    .map(function (r) {
-                        return Number(r.id, 10);
-                    })
-                    .filter(function (n) {
-                        return !isNaN(n) && n > 0;
-                    });
-            });
+            return Promise.resolve(fromChecks);
         }
 
         function buildPayloadRegistroVerificacion(teamId, validRules) {
@@ -691,26 +667,19 @@
                     if (!nombreEq) {
                         nombreEq = 'equipo #' + body.team_id;
                     }
-                    var soloLocal = res && res.local;
                     var valido = res && (res.is_valid === true || res.is_valid === 1);
-                    var titulo = soloLocal
-                        ? 'Verificación completada'
-                        : valido
-                          ? 'Registro completado'
-                          : 'Verificación parcial';
-                    var mensaje = soloLocal
-                        ? 'Se validó el equipo ' + nombreEq + ' en este dispositivo.'
-                        : valido
-                          ? 'Se registró la verificación de ' + nombreEq + ' correctamente (todas las reglas).'
-                          : 'Se guardaron ' +
-                            (body.valid_rules ? body.valid_rules.length : 0) +
-                            ' regla(s) para ' +
-                            nombreEq +
-                            '. El robot sigue inválido hasta cumplir todas las reglas de la categoría.';
+                    var titulo = valido ? 'Robot validado' : 'Verificación registrada';
+                    var mensaje = valido
+                        ? 'Se registró la verificación de ' + nombreEq + ': cumple todas las reglas marcadas y queda validado.'
+                        : 'Se guardó la verificación de ' +
+                          nombreEq +
+                          ' con ' +
+                          (body.valid_rules ? body.valid_rules.length : 0) +
+                          ' regla(s) aprobadas. Las reglas no marcadas quedan registradas como no cumplidas: el robot no está validado.';
                     showPostRegistroModal({
                         titulo: titulo,
                         mensaje: mensaje,
-                        irAlInicio: valido || soloLocal
+                        irAlInicio: false
                     });
                 },
                 onErr: function (err) {
@@ -767,13 +736,13 @@
                                 filaSig.classList.remove('hidden');
                             }
                             filaReg.classList.add('hidden');
-                            btnSig.disabled = true;
+                            btnSig.disabled = false;
                         } else {
                             if (filaSig) {
                                 filaSig.classList.add('hidden');
                             }
                             filaReg.classList.remove('hidden');
-                            btnReg.disabled = true;
+                            btnReg.disabled = false;
                         }
                         bindTabla1Checks();
                         return;
@@ -791,7 +760,7 @@
                         filaSig.classList.add('hidden');
                     }
                     filaReg.classList.remove('hidden');
-                    btnReg.disabled = true;
+                    btnReg.disabled = false;
                     bindTabla2Checks();
                 })
                 .catch(function (err) {
@@ -832,7 +801,7 @@
                 filaSig.classList.add('hidden');
             }
             filaReg.classList.remove('hidden');
-            btnReg.disabled = true;
+            btnReg.disabled = false;
             bindTabla2Checks();
         }
 

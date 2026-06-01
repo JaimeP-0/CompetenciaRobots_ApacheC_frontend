@@ -7,9 +7,8 @@
         categorias: Object.freeze(['minisumo', 'seguidor']),
         categoriasDinamicas: [],
         reglasRango: Object.freeze([1, 2, 3]),
-        /** Base directa: http://100.124.252.101:8080/categorias (sin /api) */
-        apiRemoteBase: 'http://100.124.252.101:8080',
-        useMockApi: false,
+        /** Base del API en celular/APK. Debe ser alcanzable vía Tailscale/LAN. */
+        apiRemoteBase: 'http://100.119.194.73:8080',
         registroEnvioHabilitado: true,
         categoryNamesById: {},
         registroMinLoadingMs: 0,
@@ -84,18 +83,22 @@
     };
 
     var loc = w.location || {};
-    var host = String(loc.hostname || '').toLowerCase();
-    var isLocalWeb =
-        loc.protocol &&
-        loc.protocol.indexOf('http') === 0 &&
-        (host === 'localhost' || host === '127.0.0.1');
-
+    var port = String(loc.port || '');
+    var platformId = w.cordova && w.cordova.platformId;
+    var devPort = String(w.CR_DEV_SERVER_PORT || '8000');
     /**
-     * localhost: apiBase vacío → /partidas pasa por el proxy de cordova run browser
-     * y llega a apiRemoteBase (p. ej. http://100.124.252.101:8080/partidas).
-     * En dispositivo: apiBase = apiRemoteBase (llamada directa, sin CORS del navegador).
+     * Solo el dev-server del navegador (:8000 o platform browser) usa apiBase vacío (proxy).
+     * Android/iOS cargan desde https://localhost sin puerto 8000 → apiRemoteBase directo.
+     * (Antes localhost rompía el celular: fetch a https://localhost/categorias)
      */
-    cfg.apiBase = isLocalWeb ? '' : cfg.apiRemoteBase;
+    var isDevBrowserProxy =
+        platformId === 'browser' ||
+        (loc.protocol === 'http:' &&
+            platformId !== 'android' &&
+            platformId !== 'ios' &&
+            port === devPort);
+
+    cfg.apiBase = isDevBrowserProxy ? '' : cfg.apiRemoteBase;
     cfg.categoriasPath = '/categorias';
     cfg.equiposPath = '/equipos';
     cfg.reglasPath = '/reglas';
@@ -105,7 +108,8 @@
     cfg.validacionesPath = '/validaciones';
     cfg.partidasPath = '/partidas';
     cfg.partidasResultadosPath = '/resultados';
+        cfg.bracketsPath = '/brackets';
 
-    w.CR_CONFIG = cfg;
+        w.CR_CONFIG = cfg;
     w.CR_APP = cfg;
 })(window);

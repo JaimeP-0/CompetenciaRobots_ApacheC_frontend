@@ -1,54 +1,62 @@
 <section
     id="admin-cat-root"
-    class="cr-admin-shell cr-admin-page cr-admin-cats-page"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide cr-admin-shell cr-admin-cats-page"
     data-cr-modulo="2-admin-categorias"
     aria-label="Gestionar categorías"
 >
-    <button type="button" data-route="/admin" class="cr-catalog-back" aria-label="Volver al panel">←</button>
+    <button type="button" data-back data-back-fallback="/admin" class="cr-catalog-back" aria-label="Volver">←</button>
 
     <div class="cr-admin-shell-inner cr-admin-shell-inner--wide">
         <nav class="cr-admin-topbar" aria-label="Secciones de administración">
             <div data-admin-subnav></div>
         </nav>
 
-        <header class="cr-admin-cats-hero">
-            <div class="cr-admin-cats-hero-icon" data-cr-icon="squares-2x2" aria-hidden="true"></div>
-            <div class="cr-admin-cats-hero-text">
-                <p class="cr-catalog-kicker">Gestión</p>
-                <h1 class="cr-catalog-title">Categorías y reglas</h1>
+        <header class="cr-page-hero cr-admin-cats-hero">
+            <div class="cr-page-hero-icon cr-admin-cats-hero-icon" data-cr-icon="squares-2x2" aria-hidden="true"></div>
+            <div class="cr-page-hero-text cr-admin-cats-hero-text">
+                <p class="cr-page-kicker">Gestión</p>
+                <h1 class="cr-page-title">Categorías y reglas</h1>
             </div>
         </header>
 
         <p id="admin-cat-msg" class="cr-admin-msg cr-admin-cats-toast hidden" role="status" aria-live="polite"></p>
 
-        <section class="cr-admin-cats-add" aria-labelledby="admin-nueva-cat-title">
-            <h2 id="admin-nueva-cat-title" class="sr-only">Nueva categoría</h2>
-            <form id="f-admin-nueva-cat" class="cr-admin-cats-add-form" action="#" method="post">
-                <span class="cr-admin-cats-add-icon" data-cr-icon="plus" aria-hidden="true"></span>
-                <div class="cr-admin-cats-add-field">
-                    <label class="cr-admin-label" for="admin-nueva-cat-nombre">Nueva categoría</label>
-                    <input
-                        id="admin-nueva-cat-nombre"
-                        type="text"
-                        class="cr-admin-input"
-                        placeholder="Ej. Minisumo, Fútbol de robots…"
-                        required
-                    />
-                </div>
-                <button type="submit" class="cr-app-btn cr-app-btn--primary cr-admin-cats-add-btn">
-                    Agregar
-                </button>
-            </form>
-        </section>
+        <details class="cr-admin-collapsible cr-match-setup-card">
+            <summary class="cr-admin-collapsible-summary">
+                <span class="cr-admin-collapsible-title">Agregar categoría</span>
+                <span class="cr-admin-collapsible-chevron" aria-hidden="true">▼</span>
+            </summary>
+            <div class="cr-admin-collapsible-body">
+                <form id="f-admin-nueva-cat" class="cr-admin-cats-add-form cr-admin-cats-add-form--stack" action="#" method="post">
+                    <div class="cr-admin-cats-add-field">
+                        <label class="cr-admin-label" for="admin-nueva-cat-nombre">Nombre</label>
+                        <input
+                            id="admin-nueva-cat-nombre"
+                            type="text"
+                            class="cr-admin-input"
+                            placeholder="Ej. Minisumo, Fútbol de robots…"
+                            required
+                        />
+                    </div>
+                    <button type="submit" class="cr-admin-btn cr-admin-btn--primary cr-admin-cats-add-btn">
+                        Agregar
+                    </button>
+                </form>
+            </div>
+        </details>
 
         <section class="cr-admin-cats-list-section" aria-labelledby="admin-lista-cat-title">
             <div class="cr-admin-cats-list-head">
-                <h2 id="admin-lista-cat-title" class="cr-admin-cats-list-title">Categorías registradas</h2>
+                <h2 id="admin-lista-cat-title" class="cr-page-section-title">Categorías registradas</h2>
                 <span id="admin-cat-count" class="cr-admin-cats-count" aria-live="polite">…</span>
             </div>
             <div id="admin-cat-list" class="cr-admin-cat-list" aria-busy="true">
                 <p class="cr-admin-cats-loading">Cargando categorías…</p>
             </div>
         </section>
+
+        <footer class="cr-admin-footer">
+            <button type="button" class="cr-admin-btn cr-admin-btn--ghost" data-admin-logout>Cerrar sesión</button>
+        </footer>
     </div>
 </section>

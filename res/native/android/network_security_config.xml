@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- Backend en Tailscale (HTTP sin TLS). -->
-    <domain-config cleartextTrafficPermitted="true">
-        <domain includeSubdomains="false">100.124.252.101</domain>
-    </domain-config>
+    <!-- API en Tailscale/LAN sin TLS (HTTP). Si cambia la IP del servidor, no hace falta tocar esto. -->
+    <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

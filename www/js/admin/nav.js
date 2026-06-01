@@ -32,12 +32,32 @@
         );
     }
 
+    function bindLogout(outlet) {
+        var btn = outlet.querySelector('[data-admin-logout]');
+        if (!btn || btn.getAttribute('data-admin-logout-bound') === '1') {
+            return;
+        }
+        btn.setAttribute('data-admin-logout-bound', '1');
+        btn.addEventListener('click', function () {
+            if (w.CRAdmin && typeof w.CRAdmin.logoutAndHome === 'function') {
+                w.CRAdmin.logoutAndHome();
+            } else if (w.CRAdminSesion) {
+                w.CRAdminSesion.clear();
+                if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+                    w.CRNavHistory.reset();
+                }
+                w.location.hash = '#/';
+            }
+        });
+    }
+
     function mount(outlet, activeId) {
         var host = outlet.querySelector('[data-admin-subnav]');
         if (!host) {
             return;
         }
         host.innerHTML = htmlSubnav(activeId);
+        bindLogout(outlet);
     }
 
     w.CRAdminNav = {

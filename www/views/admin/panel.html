@@ -1,19 +1,26 @@
-<section id="admin-panel-root" class="cr-admin-shell cr-admin-page" aria-label="Panel de administración">
-    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Salir al inicio público">←</button>
+<section
+    id="admin-panel-root"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide cr-admin-shell"
+    aria-label="Panel de administración"
+>
+    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
 
     <div class="cr-admin-shell-inner">
         <nav class="cr-admin-topbar" aria-label="Secciones de administración">
             <div data-admin-subnav></div>
         </nav>
 
-        <header class="cr-admin-page-head">
-            <p class="cr-catalog-kicker">Administración</p>
-            <h1 class="cr-catalog-title">Panel</h1>
-            <p id="admin-saludo" class="cr-catalog-lead hidden" aria-live="polite"></p>
+        <header class="cr-page-hero cr-admin-cats-hero">
+            <div class="cr-page-hero-icon cr-admin-cats-hero-icon" data-cr-icon="squares-2x2" aria-hidden="true"></div>
+            <div class="cr-page-hero-text cr-admin-cats-hero-text">
+                <p class="cr-page-kicker">Administración</p>
+                <h1 class="cr-page-title">Panel</h1>
+                <p id="admin-saludo" class="cr-page-lead hidden" aria-live="polite"></p>
+            </div>
         </header>
 
         <section class="cr-admin-block" aria-label="Resumen">
-            <h2 class="cr-admin-block-title">Resumen</h2>
+            <h2 class="cr-page-section-title">Resumen</h2>
             <div class="cr-admin-stats">
                 <article class="cr-admin-stat-card">
                     <p class="cr-admin-stat-k">Equipos</p>
@@ -26,26 +33,30 @@
             </div>
         </section>
 
-        <section class="cr-admin-block cr-admin-block--card" aria-labelledby="admin-gestion-title">
-            <h2 id="admin-gestion-title" class="cr-admin-block-title">Gestión</h2>
+        <section class="cr-match-setup-card cr-admin-block" aria-labelledby="admin-gestion-title">
+            <h2 id="admin-gestion-title" class="cr-page-section-title">Gestión</h2>
             <div class="cr-admin-tiles">
-                <a href="#/admin/categorias" class="cr-admin-tile cr-admin-tile--primary" data-route="/admin/categorias">
-                    <span class="cr-admin-tile-title">Categorías y reglas</span>
-                    <span class="cr-admin-tile-desc">Crear categorías y su reglamento</span>
-                    <span class="cr-admin-tile-arrow" aria-hidden="true">→</span>
+                <a href="#/admin/categorias" class="cr-inicio-comp-card cr-admin-tile cr-admin-tile--primary" data-route="/admin/categorias">
+                    <span class="cr-inicio-comp-icon" data-cr-icon="squares-2x2" aria-hidden="true"></span>
+                    <span class="cr-inicio-comp-text">
+                        <span class="cr-inicio-comp-title">Categorías y reglas</span>
+                        <span class="cr-inicio-comp-meta">Crear categorías y su reglamento</span>
+                    </span>
+                    <span class="cr-inicio-comp-arrow" aria-hidden="true">→</span>
                 </a>
-                <a href="#/admin/equipos" class="cr-admin-tile" data-route="/admin/equipos">
-                    <span class="cr-admin-tile-title">Equipos</span>
-                    <span class="cr-admin-tile-desc">Alta de equipos, miembros y categoría</span>
-                    <span class="cr-admin-tile-arrow" aria-hidden="true">→</span>
+                <a href="#/admin/equipos" class="cr-inicio-comp-card cr-admin-tile" data-route="/admin/equipos">
+                    <span class="cr-inicio-comp-icon" data-cr-icon="user-group" aria-hidden="true"></span>
+                    <span class="cr-inicio-comp-text">
+                        <span class="cr-inicio-comp-title">Equipos</span>
+                        <span class="cr-inicio-comp-meta">Alta de equipos, miembros y categoría</span>
+                    </span>
+                    <span class="cr-inicio-comp-arrow" aria-hidden="true">→</span>
                 </a>
             </div>
         </section>
 
         <footer class="cr-admin-footer">
-            <button type="button" id="btn-admin-logout" class="cr-app-btn cr-app-btn--outline sm:ml-auto sm:w-auto">
-                Cerrar sesión
-            </button>
+            <button type="button" class="cr-admin-btn cr-admin-btn--ghost" data-admin-logout>Cerrar sesión</button>
         </footer>
     </div>
 </section>

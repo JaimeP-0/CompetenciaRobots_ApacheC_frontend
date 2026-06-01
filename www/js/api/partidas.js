@@ -82,6 +82,46 @@
         return 'unknown';
     }
 
+    function parseBracketKey(key) {
+        var m = String(key || '').match(/^r(\d+)-m(\d+)$/i);
+        if (!m) {
+            return { round: null, slot: null };
+        }
+        return { round: Number(m[1], 10), slot: Number(m[2], 10) };
+    }
+
+    function normalizePartidaStatus(raw, hasResult) {
+        var s = raw != null ? String(raw).toLowerCase() : '';
+        if (s === 'done') {
+            s = 'completed';
+        }
+        if (hasResult && (!s || s === 'ready' || s === 'pending')) {
+            return 'completed';
+        }
+        if (!s) {
+            return hasResult ? 'completed' : 'ready';
+        }
+        return s;
+    }
+
+    function filterPartidasByCategory(list, categoryId) {
+        if (categoryId == null || categoryId === '') {
+            return list || [];
+        }
+        return (list || []).filter(function (p) {
+            return p && String(p.category_id) === String(categoryId);
+        });
+    }
+
+    function filterPartidasByBracketId(list, bracketId) {
+        if (!bracketId) {
+            return list || [];
+        }
+        return (list || []).filter(function (p) {
+            return p && String(p.bracket_id) === String(bracketId);
+        });
+    }
+
     function normalizePartida(raw) {
         if (!raw || raw.id == null) {
             return null;
@@ -125,13 +165,105 @@
             }
         }
         item.mode = inferPartidaMode(item);
+        if (raw.result && typeof raw.result === 'object') {
+            var resRaw = raw.result;
+            if (resRaw.match_id == null) {
+                resRaw = Object.assign({ match_id: id }, resRaw);
+            }
+            item.result = normalizeResultado(resRaw);
+        }
+        var bracketRaw =
+            raw.bracket_id != null
+                ? raw.bracket_id
+                : raw.bracket_type != null
+                  ? raw.bracket_type
+                  : null;
+        if (bracketRaw != null && bracketRaw !== '') {
+            item.bracket_id = String(bracketRaw).toLowerCase();
+        }
+        if (raw.bracket_key != null && raw.bracket_key !== '') {
+            item.bracket_key = String(raw.bracket_key);
+        } else if (raw.bracket_match_key != null && raw.bracket_match_key !== '') {
+            item.bracket_key = String(raw.bracket_match_key);
+        }
+        var br = Number(raw.bracket_round, 10);
+        if (!isNaN(br)) {
+            item.bracket_round = br;
+        }
+        var bs = Number(raw.bracket_slot, 10);
+        if (!isNaN(bs)) {
+            item.bracket_slot = bs;
+        }
+        if (item.bracket_key && (item.bracket_round == null || item.bracket_slot == null)) {
+            var parsedKey = parseBracketKey(item.bracket_key);
+            if (item.bracket_round == null && parsedKey.round != null) {
+                item.bracket_round = parsedKey.round;
+            }
+            if (item.bracket_slot == null && parsedKey.slot != null) {
+                item.bracket_slot = parsedKey.slot;
+            }
+        }
+        item.status = normalizePartidaStatus(raw.status, !!item.result);
         return item;
+    }
+
+    function normalizeResultadoFromPartidasList(partidas) {
+        var map = {};
+        (partidas || []).forEach(function (p) {
+            if (p && p.result && p.id != null) {
+                map[String(p.id)] = p.result;
+            }
+        });
+        return map;
     }
 
     function normalizePartidasList(data) {
         return parseListPayload(data)
             .map(normalizePartida)
             .filter(Boolean);
+    }
+
+    function normalizeResultTime(raw) {
+        if (raw == null) {
+            return null;
+        }
+        if (typeof raw === 'object') {
+            if (raw.minutes != null && raw.seconds != null) {
+                var mins = Number(raw.minutes, 10);
+                var secs = Number(raw.seconds, 10);
+                if (!isNaN(mins) && !isNaN(secs)) {
+                    return { minutes: mins, seconds: secs };
+                }
+            }
+            if (raw.result_time_seconds != null) {
+                var totalObj = Number(raw.result_time_seconds, 10);
+                if (!isNaN(totalObj) && totalObj >= 0) {
+                    return { minutes: Math.floor(totalObj / 60), seconds: totalObj % 60 };
+                }
+            }
+            return null;
+        }
+        var total = Number(raw, 10);
+        if (isNaN(total) || total < 0) {
+            return null;
+        }
+        return { minutes: Math.floor(total / 60), seconds: total % 60 };
+    }
+
+    function readResultTimeRaw(raw) {
+        if (!raw || typeof raw !== 'object') {
+            return null;
+        }
+        if (raw.time != null) {
+            return raw.time;
+        }
+        if (raw.result_time != null) {
+            return raw.result_time;
+        }
+        if (raw.result_time_seconds != null) {
+            return raw.result_time_seconds;
+        }
+        return null;
     }
 
     function normalizeResultado(raw) {
@@ -150,12 +282,30 @@
         if (!isNaN(matchId)) {
             item.match_id = matchId;
         }
-        var winner = Number(
-            raw.winner_team_id != null ? raw.winner_team_id : raw.winner_id != null ? raw.winner_id : raw.team_id,
+        var teamId = Number(
+            raw.team_id != null
+                ? raw.team_id
+                : raw.winner != null
+                  ? raw.winner
+                  : raw.winner_team_id != null
+                    ? raw.winner_team_id
+                    : raw.winner_id != null
+                      ? raw.winner_id
+                      : NaN,
             10
         );
-        if (!isNaN(winner)) {
-            item.winner_team_id = winner;
+        if (!isNaN(teamId)) {
+            item.team_id = teamId;
+            item.winner = teamId;
+            item.winner_team_id = teamId;
+        }
+        var eliminated = Number(raw.eliminated_team_id, 10);
+        if (!isNaN(eliminated)) {
+            item.eliminated_team_id = eliminated;
+        }
+        var time = normalizeResultTime(readResultTimeRaw(raw));
+        if (time) {
+            item.time = time;
         }
         if (raw.notes != null) {
             item.notes = String(raw.notes);
@@ -169,10 +319,44 @@
         return item;
     }
 
+    function buildResultadoPayload(body) {
+        body = body || {};
+        var teamRaw =
+            body.team_id != null ? body.team_id : body.winner != null ? body.winner : body.winner_team_id;
+        var teamId = Number(teamRaw, 10);
+        if (isNaN(teamId)) {
+            throw new Error('team_id requerido.');
+        }
+        var payload = { team_id: teamId };
+        if (body.eliminated_team_id != null && body.eliminated_team_id !== '') {
+            var eliminated = Number(body.eliminated_team_id, 10);
+            if (!isNaN(eliminated)) {
+                payload.eliminated_team_id = eliminated;
+            }
+        }
+        if (body.requireTime) {
+            var requiredTime = parseResultTimeFields(body.time);
+            if (!requiredTime) {
+                throw new Error('Indica minutos y segundos.');
+            }
+            payload.time = requiredTime;
+            return payload;
+        }
+        var optionalTime = parseResultTimeFields(body.time);
+        if (optionalTime) {
+            payload.time = optionalTime;
+        }
+        return payload;
+    }
+
     function normalizeResultadosList(data) {
         return parseListPayload(data)
             .map(normalizeResultado)
             .filter(Boolean);
+    }
+
+    function isSoloRaceCategoryName(categoryName) {
+        return isLineFollowerCategoryName(categoryName) || isVelocistaCategoryName(categoryName);
     }
 
     function inferMatchModeFromCategoryName(categoryName) {
@@ -182,7 +366,70 @@
         if (n.indexOf('sumo') !== -1) {
             return 'pairwise';
         }
+        if (isSoloRaceCategoryName(categoryName)) {
+            return 'solo';
+        }
         return 'shared';
+    }
+
+    function isVelocistaCategoryName(categoryName) {
+        var n = String(categoryName || '')
+            .trim()
+            .toLowerCase();
+        return n.indexOf('velocista') !== -1 || n.indexOf('velocisra') !== -1 || n.indexOf('speedster') !== -1;
+    }
+
+    function isSumoCategoryName(categoryName) {
+        var n = String(categoryName || '')
+            .trim()
+            .toLowerCase();
+        return n.indexOf('sumo') !== -1;
+    }
+
+    function isLineFollowerCategoryName(categoryName) {
+        if (isVelocistaCategoryName(categoryName)) {
+            return true;
+        }
+        var n = String(categoryName || '')
+            .trim()
+            .toLowerCase();
+        if (!n || n.indexOf('sumo') !== -1) {
+            return false;
+        }
+        var keys = ['classic', 'seguidor', 'line follower', 'line-follower', 'linefollower'];
+        var i;
+        for (i = 0; i < keys.length; i++) {
+            if (n.indexOf(keys[i]) !== -1) {
+                return true;
+            }
+        }
+        if (n === 'more' || /\bmore\b/.test(n)) {
+            return true;
+        }
+        return false;
+    }
+
+    function parseResultTimeFields(timeBody) {
+        timeBody = timeBody || {};
+        var minRaw = timeBody.minutes;
+        var secRaw = timeBody.seconds;
+        var hasMin = minRaw !== '' && minRaw != null;
+        var hasSec = secRaw !== '' && secRaw != null;
+        if (!hasMin && !hasSec) {
+            return null;
+        }
+        var mins = hasMin ? Math.max(0, Math.floor(Number(minRaw, 10))) : 0;
+        var secs = hasSec ? Math.floor(Number(secRaw, 10)) : 0;
+        if (isNaN(mins)) {
+            mins = 0;
+        }
+        if (isNaN(secs)) {
+            secs = 0;
+        }
+        if (secs < 0 || secs > 59) {
+            throw new Error('Los segundos deben estar entre 0 y 59.');
+        }
+        return { minutes: mins, seconds: secs };
     }
 
     function partidasIniciarPath(categoryId) {
@@ -194,8 +441,27 @@
         );
     }
 
-    function fetchPartidas() {
-        return request('GET', partidasPath(), {}).then(normalizePartidasList);
+    function fetchPartidas(query) {
+        query = query || {};
+        return request('GET', partidasPath(), { query: query }).then(function (data) {
+            var list = normalizePartidasList(data);
+            if (query.category_id != null && query.category_id !== '') {
+                list = filterPartidasByCategory(list, query.category_id);
+            }
+            if (query.bracket_id != null && query.bracket_id !== '') {
+                list = filterPartidasByBracketId(list, query.bracket_id);
+            }
+            return list;
+        });
+    }
+
+    function fetchPartidasByCategory(categoryId, opts) {
+        opts = opts || {};
+        var query = { category_id: categoryId };
+        if (opts.bracket_id != null) {
+            query.bracket_id = opts.bracket_id;
+        }
+        return fetchPartidas(query);
     }
 
     function fetchPartidaById(matchId) {
@@ -212,11 +478,140 @@
         });
     }
 
+    function fetchValidatedTeamIdsForCategory(categoryId) {
+        var Equipos = w.CRApiEquiposRegistro;
+        if (!Equipos || typeof Equipos.fetchRobots !== 'function') {
+            return Promise.resolve([]);
+        }
+        return Equipos.fetchRobots()
+            .then(function (robots) {
+                var ids = [];
+                var seen = {};
+                (robots || []).forEach(function (r) {
+                    if (!r || !(r.is_valid === true || r.is_valid === 1) || r.team_id == null) {
+                        return;
+                    }
+                    var catOk = false;
+                    if (r.category_id != null && String(r.category_id) === String(categoryId)) {
+                        catOk = true;
+                    }
+                    if (!catOk && Array.isArray(r.rules)) {
+                        r.rules.forEach(function (rule) {
+                            if (rule && String(rule.category_id) === String(categoryId)) {
+                                catOk = true;
+                            }
+                        });
+                    }
+                    if (!catOk) {
+                        return;
+                    }
+                    var tid = Number(r.team_id, 10);
+                    if (!isNaN(tid) && !seen[String(tid)]) {
+                        seen[String(tid)] = true;
+                        ids.push(tid);
+                    }
+                });
+                ids.sort(function (a, b) {
+                    return a - b;
+                });
+                return ids;
+            })
+            .catch(function () {
+                return [];
+            });
+    }
+
+    function teamIdsInPartida(partida) {
+        if (!partida) {
+            return [];
+        }
+        if (partida.queue && partida.queue.length) {
+            return partida.queue.slice();
+        }
+        var ids = [];
+        if (partida.team_a_id != null) {
+            ids.push(Number(partida.team_a_id, 10));
+        }
+        if (partida.team_b_id != null) {
+            ids.push(Number(partida.team_b_id, 10));
+        }
+        return ids;
+    }
+
+    function teamInPartidaList(teamId, partidas) {
+        var tid = Number(teamId, 10);
+        if (isNaN(tid)) {
+            return false;
+        }
+        var i;
+        for (i = 0; i < (partidas || []).length; i++) {
+            var ids = teamIdsInPartida(partidas[i]);
+            var j;
+            for (j = 0; j < ids.length; j++) {
+                if (ids[j] === tid) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Una partida por equipo (carrera individual con tiempo). */
+    function postPartidasIniciarSolo(categoryId, opts) {
+        opts = opts || {};
+        return fetchValidatedTeamIdsForCategory(categoryId)
+            .then(function (validatedIds) {
+                return fetchPartidasByCategory(categoryId).then(function (existing) {
+                    var toCreate = validatedIds.filter(function (tid) {
+                        return !teamInPartidaList(tid, existing);
+                    });
+                    if (!toCreate.length) {
+                        return [];
+                    }
+                    var created = [];
+                    var chain = Promise.resolve();
+                    toCreate.forEach(function (tid) {
+                        chain = chain.then(function () {
+                            return createPartida({
+                                category_id: Number(categoryId, 10),
+                                mode: 'shared',
+                                queue: [tid]
+                            }).then(function (p) {
+                                if (p) {
+                                    created.push(p);
+                                }
+                            });
+                        });
+                    });
+                    return chain.then(function () {
+                        return created;
+                    });
+                });
+            });
+    }
+
     function postPartidasIniciar(categoryId, opts) {
         opts = opts || {};
+        var mode = opts.mode;
+        if (!mode && opts.categoryName) {
+            mode = inferMatchModeFromCategoryName(opts.categoryName);
+        }
+        if (mode === 'solo') {
+            return postPartidasIniciarSolo(categoryId, opts);
+        }
         var payload = {};
         if (opts.mode === 'pairwise' || opts.mode === 'shared') {
             payload.mode = opts.mode;
+        }
+        var teamIds = opts.team_ids || opts.teamIds;
+        if (Array.isArray(teamIds) && teamIds.length) {
+            payload.team_ids = teamIds
+                .map(function (id) {
+                    return Number(id, 10);
+                })
+                .filter(function (n) {
+                    return !isNaN(n) && n > 0;
+                });
         }
         return request('POST', partidasIniciarPath(categoryId), { body: payload }).then(normalizePartidasList);
     }
@@ -240,21 +635,80 @@
     }
 
     function createResultado(matchId, body) {
+        var payload = buildResultadoPayload(body);
         return request(
             'POST',
             partidasPath() + '/' + encodeURIComponent(String(matchId)) + '/resultado',
-            { body: body || {} }
+            { body: payload }
         ).then(function (data) {
             return normalizeResultado(data);
         });
     }
 
+    function winnerIdFromResultado(resultado) {
+        if (!resultado) {
+            return null;
+        }
+        var id =
+            resultado.team_id != null
+                ? resultado.team_id
+                : resultado.winner != null
+                  ? resultado.winner
+                  : resultado.winner_team_id;
+        return id != null ? id : null;
+    }
+
+    function isResultComplete(resultado, categoryName) {
+        if (!resultado) {
+            return false;
+        }
+        if (isVelocistaCategoryName(categoryName) || isLineFollowerCategoryName(categoryName)) {
+            return !!normalizeResultTime(readResultTimeRaw(resultado));
+        }
+        return winnerIdFromResultado(resultado) != null;
+    }
+
+    function resultTimeSeconds(resultado) {
+        var time = normalizeResultTime(readResultTimeRaw(resultado));
+        if (!time) {
+            return null;
+        }
+        return time.minutes * 60 + time.seconds;
+    }
+
+    function formatResultTimeDisplay(time) {
+        if (!time || time.minutes == null || time.seconds == null) {
+            return '';
+        }
+        var mins = Number(time.minutes, 10);
+        var secs = Number(time.seconds, 10);
+        if (isNaN(mins) || isNaN(secs)) {
+            return '';
+        }
+        return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }
+
     w.CRApiPartidas = {
         inferMatchModeFromCategoryName: inferMatchModeFromCategoryName,
+        isSoloRaceCategoryName: isSoloRaceCategoryName,
+        isLineFollowerCategoryName: isLineFollowerCategoryName,
+        isVelocistaCategoryName: isVelocistaCategoryName,
+        isSumoCategoryName: isSumoCategoryName,
+        buildResultadoPayload: buildResultadoPayload,
+        normalizeResultTime: normalizeResultTime,
         normalizePartida: normalizePartida,
         normalizePartidasList: normalizePartidasList,
+        normalizeResultadoFromPartidasList: normalizeResultadoFromPartidasList,
         normalizeResultado: normalizeResultado,
+        winnerIdFromResultado: winnerIdFromResultado,
+        isResultComplete: isResultComplete,
+        resultTimeSeconds: resultTimeSeconds,
+        formatResultTimeDisplay: formatResultTimeDisplay,
+        parseBracketKey: parseBracketKey,
+        filterPartidasByCategory: filterPartidasByCategory,
+        filterPartidasByBracketId: filterPartidasByBracketId,
         fetchAll: fetchPartidas,
+        fetchByCategory: fetchPartidasByCategory,
         fetchById: fetchPartidaById,
         create: createPartida,
         postIniciar: postPartidasIniciar,

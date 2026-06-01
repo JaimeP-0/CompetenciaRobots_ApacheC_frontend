@@ -1,28 +1,59 @@
 <section
     id="admin-equipos-root"
-    class="cr-admin-shell cr-admin-page cr-admin-equipos-page"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide cr-admin-shell cr-admin-equipos-page"
     data-cr-modulo="3-equipos-registro"
     aria-label="Asignar categoría a equipos"
 >
-    <button type="button" data-route="/admin" class="cr-catalog-back" aria-label="Volver al panel">←</button>
+    <button type="button" data-back data-back-fallback="/admin" class="cr-catalog-back" aria-label="Volver">←</button>
 
     <div class="cr-admin-shell-inner cr-admin-shell-inner--wide">
         <nav class="cr-admin-topbar" aria-label="Secciones de administración">
             <div data-admin-subnav></div>
         </nav>
 
-        <header class="cr-admin-cats-hero">
-            <div class="cr-admin-cats-hero-icon" data-cr-icon="user-group" aria-hidden="true"></div>
-            <div class="cr-admin-cats-hero-text">
-                <p class="cr-catalog-kicker">Gestión</p>
-                <h1 class="cr-catalog-title">Equipos y miembros</h1>
+        <header class="cr-page-hero cr-admin-cats-hero">
+            <div class="cr-page-hero-icon cr-admin-cats-hero-icon" data-cr-icon="user-group" aria-hidden="true"></div>
+            <div class="cr-page-hero-text cr-admin-cats-hero-text">
+                <p class="cr-page-kicker">Gestión</p>
+                <h1 class="cr-page-title">Equipos y miembros</h1>
             </div>
         </header>
 
         <p id="admin-equipos-msg" class="cr-admin-msg cr-admin-cats-toast hidden" role="status" aria-live="polite"></p>
 
-        <section class="cr-admin-cats-add cr-admin-equipos-nuevo" aria-labelledby="admin-nuevo-equipo-title">
-            <h2 id="admin-nuevo-equipo-title" class="cr-admin-cats-list-title">Nuevo equipo</h2>
+        <div class="cr-admin-mode-tabs" role="tablist" aria-label="Acciones de equipos">
+            <button
+                type="button"
+                id="admin-equipos-tab-buscar"
+                class="cr-admin-mode-tab cr-admin-mode-tab--active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="admin-equipos-panel-buscar"
+                data-admin-equipos-mode="buscar"
+            >
+                Buscar equipos
+            </button>
+            <button
+                type="button"
+                id="admin-equipos-tab-agregar"
+                class="cr-admin-mode-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="admin-equipos-panel-agregar"
+                data-admin-equipos-mode="agregar"
+            >
+                Agregar equipos
+            </button>
+        </div>
+
+        <section
+            id="admin-equipos-panel-agregar"
+            class="cr-match-setup-card cr-admin-cats-add cr-admin-equipos-nuevo hidden"
+            role="tabpanel"
+            aria-labelledby="admin-equipos-tab-agregar"
+            hidden
+        >
+            <h2 class="cr-page-section-title">Nuevo equipo</h2>
             <form id="f-admin-nuevo-equipo" class="cr-admin-equipos-nuevo-form" action="#" method="post">
                 <div class="cr-admin-equipos-nuevo-grid">
                     <div class="cr-admin-equipos-nuevo-field">
@@ -54,17 +85,21 @@
                         </select>
                     </div>
                 </div>
-                <button type="submit" class="cr-app-btn cr-app-btn--primary cr-admin-equipos-nuevo-btn">
+                <button type="submit" class="cr-admin-btn cr-admin-btn--primary cr-admin-equipos-nuevo-btn">
                     Agregar equipo
                 </button>
             </form>
         </section>
 
-        <section class="cr-admin-cats-add cr-admin-equipos-filtros" aria-labelledby="admin-equipos-filtros-title">
-            <h2 id="admin-equipos-filtros-title" class="cr-admin-cats-list-title">Buscar equipos</h2>
+        <section
+            id="admin-equipos-panel-buscar"
+            class="cr-match-setup-card cr-admin-cats-add cr-admin-equipos-filtros"
+            role="tabpanel"
+            aria-labelledby="admin-equipos-tab-buscar"
+        >
+            <h2 class="cr-page-section-title">Buscar equipos</h2>
             <p class="cr-admin-equipos-filtros-hint">Elige una categoría y luego busca dentro de ella.</p>
             <form id="f-admin-equipos-filtro" class="cr-admin-cats-add-form cr-admin-equipos-filtros-form" action="#" method="get">
-                <span class="cr-admin-cats-add-icon" data-cr-icon="magnifying-glass" aria-hidden="true"></span>
                 <div class="cr-admin-equipos-filtros-cat">
                     <label class="cr-admin-label" for="admin-equipos-filtro-cat">Categoría</label>
                     <select id="admin-equipos-filtro-cat" class="cr-admin-select" required>
@@ -82,7 +117,7 @@
                         disabled
                     />
                 </div>
-                <button type="submit" id="admin-equipos-filtro-btn" class="cr-app-btn cr-app-btn--primary cr-admin-cats-add-btn" disabled>
+                <button type="submit" id="admin-equipos-filtro-btn" class="cr-admin-btn cr-admin-btn--primary cr-admin-cats-add-btn" disabled>
                     Buscar
                 </button>
             </form>
@@ -90,7 +125,7 @@
 
         <section class="cr-admin-cats-list-section" aria-labelledby="admin-equipos-lista-title">
             <div class="cr-admin-cats-list-head">
-                <h2 id="admin-equipos-lista-title" class="cr-admin-cats-list-title">Equipos registrados</h2>
+                <h2 id="admin-equipos-lista-title" class="cr-page-section-title">Equipos registrados</h2>
                 <span id="admin-equipos-count" class="cr-admin-cats-count" aria-live="polite">…</span>
             </div>
 
@@ -106,5 +141,9 @@
 
             <div id="admin-equipos-pagination-foot" class="cr-admin-equipos-pagination hidden" aria-label="Paginación de equipos"></div>
         </section>
+
+        <footer class="cr-admin-footer">
+            <button type="button" class="cr-admin-btn cr-admin-btn--ghost" data-admin-logout>Cerrar sesión</button>
+        </footer>
     </div>
 </section>

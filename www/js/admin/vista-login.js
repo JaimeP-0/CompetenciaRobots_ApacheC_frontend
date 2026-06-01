@@ -71,6 +71,9 @@
                         usuario: res.usuario || usuario,
                         rol: 'admin'
                     });
+                    if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+                        w.CRNavHistory.reset();
+                    }
                     w.location.hash = '#/admin';
                 })
                 .catch(function (err) {

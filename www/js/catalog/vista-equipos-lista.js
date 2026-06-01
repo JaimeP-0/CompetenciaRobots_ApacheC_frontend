@@ -85,7 +85,7 @@
                 subt.textContent = 'Elige una categoría para ver sus equipos.';
             }
             if (volver) {
-                volver.setAttribute('data-route', '/categorias');
+                volver.setAttribute('data-back-fallback', '/categorias');
             }
             listHost.innerHTML =
                 '<p class="cr-catalog-msg">Selecciona una categoría arriba.</p>';
@@ -97,7 +97,10 @@
                 return;
             }
             if (volver) {
-                volver.setAttribute('data-route', '/categoria/' + encodeURIComponent(String(catId)));
+                volver.setAttribute(
+                    'data-back-fallback',
+                    '/categoria/' + encodeURIComponent(String(catId))
+                );
             }
             if (titulo) {
                 titulo.textContent = 'Equipos de la categoría';

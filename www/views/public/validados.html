@@ -1,19 +1,21 @@
 <section
     id="cr-validados-root"
-    class="cr-catalog-page cr-catalog-page--wide cr-validados-page"
+    class="cr-catalog-page cr-catalog-page--inner cr-catalog-page--wide cr-validados-page"
     data-cr-modulo="1-catalogo"
     aria-label="Equipos verificados"
 >
-    <button type="button" data-route="/" class="cr-catalog-back" aria-label="Volver al inicio">←</button>
+    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
 
-    <header class="cr-validados-hero">
-        <div class="cr-validados-hero-icon" data-cr-icon="check-circle" aria-hidden="true"></div>
-        <div class="cr-validados-hero-text">
-            <h1 class="cr-catalog-title">Equipos validados</h1>
+    <header class="cr-page-hero">
+        <div class="cr-page-hero-icon" data-cr-icon="check-circle" aria-hidden="true"></div>
+        <div class="cr-page-hero-text">
+            <p class="cr-page-kicker">Competencia</p>
+            <h1 class="cr-page-title">Equipos validados</h1>
+            <p class="cr-page-lead">Robots que pasaron la verificación en pista, listos para competir.</p>
         </div>
     </header>
 
-    <section class="cr-validados-filtros-card" aria-label="Filtrar equipos validados">
+    <section class="cr-match-setup-card" aria-label="Filtrar equipos validados">
         <form id="f-validados-filtro" class="cr-validados-filtro-form" action="#" method="get">
             <span class="cr-validados-filtro-icon" data-cr-icon="magnifying-glass" aria-hidden="true"></span>
             <div class="cr-validados-filtro-field cr-validados-filtro-field--grow">
