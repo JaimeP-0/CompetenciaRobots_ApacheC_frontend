@@ -982,7 +982,7 @@
         @apply m-0 w-full basis-full text-center text-[0.65rem] leading-snug text-graphite/60 sm:text-left sm:text-xs;
     }
     .cr-visitante-official-controls {
-        @apply absolute right-3 top-2 z-20 flex flex-col items-end gap-1 sm:right-5 lg:right-6;
+        @apply absolute left-1/2 top-2 z-20 flex -translate-x-1/2 items-center;
     }
     .cr-visitante-qr-toggle {
         @apply inline-flex items-center rounded-full border border-amber-300/70 bg-amber-50/95 p-1 shadow-sm;
@@ -1001,8 +1001,11 @@
         transform: translateX(1.25rem);
     }
     .cr-visitante-qr-countdown {
-        @apply m-0 rounded-md bg-black/55 px-2 py-1 text-[10px] font-bold tracking-wide text-white;
-        min-height: 1.25rem;
+        @apply m-0 mt-2 rounded-md bg-black/65 px-3 py-1.5 text-xs font-bold tracking-wide text-white;
+    }
+    .cr-visitante-official-mode #cr-visitante-staff-bar,
+    .cr-visitante-official-mode .cr-visitante-toolbar {
+        @apply hidden;
     }
 
     .cr-visitante-body {

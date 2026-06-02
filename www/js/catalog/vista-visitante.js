@@ -322,11 +322,7 @@
                 return;
             }
             if (qrNextShowAt > 0) {
-                var showSecs = Math.max(0, Math.ceil((qrNextShowAt - now) / 1000));
-                if (showSecs > 0 && showSecs <= 5) {
-                    setQrCountdownText('Mostrando QR en ' + showSecs + '...');
-                    return;
-                }
+                /* En modo oficial no mostramos contador previo en el header. */
             }
             setQrCountdownText('');
         }
@@ -1116,6 +1112,7 @@
         selCat.addEventListener('change', onFilterChange, false);
         routePath = currentRoutePath();
         officialMode = !!(routePath === '/dashboard-oficial' || routePath === '/tablero-oficial');
+        root.classList.toggle('cr-visitante-official-mode', officialMode);
         if (officialMode) {
             ensureOfficialOwner();
             if (qrToggle) {
