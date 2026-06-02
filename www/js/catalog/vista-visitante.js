@@ -116,6 +116,8 @@
         var recentEl = root.querySelector('#cr-visitante-recent');
         var officialControls = root.querySelector('#cr-visitante-official-controls');
         var qrToggle = root.querySelector('#cr-visitante-qr-enabled');
+        var qrHeaderProgressEl = root.querySelector('#cr-visitante-qr-header-progress');
+        var qrHeaderProgressFillEl = root.querySelector('#cr-visitante-qr-header-progress-fill');
         var qrHeaderCountdownEl = root.querySelector('#cr-visitante-qr-header-countdown');
         var qrCountdownEl = root.querySelector('#cr-visitante-qr-countdown');
         var qrOverlay = root.querySelector('#cr-visitante-qr-overlay');
@@ -315,6 +317,14 @@
             qrHeaderCountdownEl.textContent = String(text || '');
         }
 
+        function setQrHeaderProgress(percent) {
+            if (!qrHeaderProgressFillEl) {
+                return;
+            }
+            var p = Math.max(0, Math.min(100, Number(percent) || 0));
+            qrHeaderProgressFillEl.style.width = String(p) + '%';
+        }
+
         function setQrCountdownText(text) {
             if (!qrCountdownEl) {
                 return;
@@ -327,11 +337,15 @@
             if (qrVisibleNow && qrHideAt > 0) {
                 var hideSecs = Math.max(0, Math.ceil((qrHideAt - now) / 1000));
                 setQrHeaderCountdownText('');
+                setQrHeaderProgress(100);
                 setQrCountdownText(hideSecs > 0 ? 'QR desaparece en ' + hideSecs + '...' : '');
                 return;
             }
             if (qrNextShowAt > 0) {
                 var showSecs = Math.max(0, Math.ceil((qrNextShowAt - now) / 1000));
+                var hiddenMs = Math.max(1, QR_CYCLE_MS - QR_VISIBLE_MS);
+                var elapsedMs = Math.max(0, hiddenMs - (qrNextShowAt - now));
+                setQrHeaderProgress((elapsedMs / hiddenMs) * 100);
                 if (showSecs > 0 && showSecs <= 5) {
                     setQrHeaderCountdownText('Mostrando QR en ' + showSecs + '...');
                     setQrCountdownText('');
@@ -339,6 +353,7 @@
                 }
             }
             setQrHeaderCountdownText('');
+            setQrHeaderProgress(0);
             setQrCountdownText('');
         }
 
@@ -368,6 +383,7 @@
             qrVisibleNow = false;
             showQrOverlay(false);
             setQrHeaderCountdownText('');
+            setQrHeaderProgress(0);
             setQrCountdownText('');
         }
 
@@ -402,9 +418,13 @@
                 return;
             }
             officialControls.classList.toggle('hidden', !(officialMode && ownerTab));
+            if (qrHeaderProgressEl) {
+                qrHeaderProgressEl.classList.toggle('hidden', !(officialMode && ownerTab));
+            }
             qrToggle.checked = readQrEnabled();
             if (!officialMode || !ownerTab) {
                 setQrHeaderCountdownText('');
+                setQrHeaderProgress(0);
                 setQrCountdownText('');
             } else {
                 showQrOverlay(false);

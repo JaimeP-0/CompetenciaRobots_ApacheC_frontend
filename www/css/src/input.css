@@ -1004,9 +1004,20 @@
         @apply m-0 mt-2 rounded-lg bg-black/75 px-5 py-2 text-center text-xl font-black tracking-wide text-white sm:text-2xl;
         max-width: min(90vw, 42rem);
     }
+    .cr-visitante-qr-header-progress {
+        @apply pointer-events-none absolute left-1/2 top-2 z-20 flex -translate-x-1/2 flex-col items-center gap-2;
+        min-width: min(90vw, 30rem);
+    }
+    .cr-visitante-qr-header-progress-track {
+        @apply relative h-8 w-full overflow-hidden rounded-full border border-white/20 bg-black/70 shadow;
+    }
+    .cr-visitante-qr-header-progress-fill {
+        @apply absolute left-0 top-0 h-full rounded-full bg-emerald-500/90;
+        width: 0%;
+        transition: width 0.2s linear;
+    }
     .cr-visitante-qr-header-countdown {
-        @apply pointer-events-none absolute left-1/2 top-2 z-20 m-0 -translate-x-1/2 rounded-xl bg-black/75 px-6 py-3 text-center text-2xl font-black tracking-wide text-white sm:text-3xl;
-        min-width: 24rem;
+        @apply m-0 min-h-[1.5rem] rounded-lg bg-black/70 px-4 py-1 text-center text-2xl font-black tracking-wide text-white;
     }
     .cr-visitante-official-mode #cr-visitante-staff-bar,
     .cr-visitante-official-mode .cr-visitante-toolbar {
