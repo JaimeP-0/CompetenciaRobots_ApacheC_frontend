@@ -53,7 +53,14 @@
             }
             if (!res.ok) {
                 return res.text().then(function (t) {
-                    throw new Error(res.status + ' ' + t);
+                    var msg = String(t || '').trim();
+                    if (res.status === 401) {
+                        throw new Error('Usuario o contraseña incorrectos.');
+                    }
+                    if (res.status === 400 && /invalid login/i.test(msg)) {
+                        throw new Error('Datos de acceso inválidos (revisa usuario y contraseña).');
+                    }
+                    throw new Error((res.status ? res.status + ' ' : '') + (msg || 'Error del servidor'));
                 });
             }
             return parseJsonBody(res, pathOnly);

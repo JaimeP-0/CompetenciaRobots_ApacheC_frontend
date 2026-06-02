@@ -18,7 +18,7 @@
         if (!w.CRApi || typeof w.CRApi.postLogin !== 'function') {
             return Promise.reject(new Error('No hay API de login configurada.'));
         }
-        return w.CRApi.postLogin({ usuario: usuario, password: password });
+        return w.CRApi.postLogin({ username: usuario, password: password });
     }
 
     function initAdminLogin(outlet) {
@@ -66,11 +66,21 @@
             setLoading(true);
             loginRequest(usuario, password)
                 .then(function (res) {
+                    var body = res && res.body ? res.body : res;
+                    var role = body && body.role ? String(body.role).toLowerCase() : 'admin';
+                    if (role !== 'admin' && role !== 'dev') {
+                        throw new Error('Este acceso es solo para administración.');
+                    }
                     Sesion.save({
-                        token: res.token || 'mock-admin-local',
-                        usuario: res.usuario || usuario,
-                        rol: 'admin'
+                        token: (body && body.token) || 'api:' + usuario,
+                        usuario: (body && body.username) || usuario,
+                        rol: role
                     });
+                    if (w.CRStaffSesion && typeof w.CRStaffSesion.parseFromLogin === 'function') {
+                        try {
+                            w.CRStaffSesion.save(w.CRStaffSesion.parseFromLogin(body, usuario));
+                        } catch (ignore) {}
+                    }
                     if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
                         w.CRNavHistory.reset();
                     }

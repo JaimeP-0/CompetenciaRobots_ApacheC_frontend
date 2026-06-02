@@ -5,22 +5,36 @@
     'use strict';
 
     var app = w.CR_APP || w.CR_CONFIG;
-    if (!app || typeof app.listaCategorias !== "function") {
+    if (!app) {
         throw new Error("CR_CONFIG no definido (config.js)");
     }
 
+    function cacheTieneCategorias() {
+        var Cat = w.CRApiCategorias;
+        return Cat && typeof Cat.listaNombres === "function" && (Cat.listaNombres() || []).length > 0;
+    }
+
     function isCategoria(c) {
-        return app.listaCategorias().indexOf(c) !== -1;
+        if (c == null || String(c).trim() === "") {
+            return false;
+        }
+        if (cacheTieneCategorias()) {
+            return w.CRApiCategorias.isKnown(c);
+        }
+        return true;
     }
 
     function assertCategoria(c) {
         if (!isCategoria(c)) {
-            throw new Error('Categoría no válida: ' + c);
+            throw new Error("Categoría no válida: " + c);
         }
     }
 
     function buildUrl(path, query) {
         var base = (app.apiBase || '').replace(/\/$/, '');
+        if (!base && w.location && w.location.origin) {
+            base = String(w.location.origin).replace(/\/$/, '');
+        }
         var qs = '';
         if (query && Object.keys(query).length) {
             var p = new URLSearchParams();

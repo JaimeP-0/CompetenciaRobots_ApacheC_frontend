@@ -25,11 +25,27 @@
             var body = res && res.body ? res.body : res;
             var session = Sesion.parseFromLogin(body, u);
             Sesion.save(session);
+            syncAdminSession(session);
             var scope = Sesion.queueScope(session);
             if (scope && w.CRTeamOrigin) {
                 w.CRTeamOrigin.storeQueueScope(scope);
             }
             return { ok: true, session: session };
+        });
+    }
+
+    function syncAdminSession(session) {
+        if (!session || !w.CRAdminSesion || typeof w.CRAdminSesion.save !== 'function') {
+            return;
+        }
+        var role = String(session.role || '').toLowerCase();
+        if (role !== 'admin' && role !== 'dev') {
+            return;
+        }
+        w.CRAdminSesion.save({
+            token: session.token || 'staff:' + session.username,
+            usuario: session.username,
+            rol: role
         });
     }
 

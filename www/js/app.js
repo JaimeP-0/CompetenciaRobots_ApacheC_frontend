@@ -271,7 +271,11 @@
         renderCurrentRoute();
     }
 
-    d.addEventListener('DOMContentLoaded', boot, false);
+    if (d.readyState === 'loading') {
+        d.addEventListener('DOMContentLoaded', boot, false);
+    } else {
+        boot();
+    }
     d.addEventListener('deviceready', applyStatusBarLayout, false);
     d.addEventListener('deviceready', boot, false);
     w.addEventListener('hashchange', renderCurrentRoute, false);

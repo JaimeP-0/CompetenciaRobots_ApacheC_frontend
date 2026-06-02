@@ -7,6 +7,7 @@
     w.CR_API_OVERRIDES = {
         apiProfile: 'vps',
         publicUrl: 'https://utarena.online',
+        adminLoginMock: false,
         diagFeedKey: 'cr-diag-utarena-x7k9m2'
     };
 })(window);

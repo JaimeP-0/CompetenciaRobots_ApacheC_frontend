@@ -7,9 +7,27 @@
     var Auth = w.CRStaffAuth;
     var Sesion = w.CRStaffSesion;
 
+    function showLoginError(errEl, msg) {
+        if (!errEl) {
+            return;
+        }
+        errEl.textContent = msg || 'No se pudo iniciar sesión.';
+        errEl.classList.remove('hidden');
+    }
+
     function initStaffLogin(outlet) {
         var form = outlet.querySelector('#f-staff-login');
-        if (!form || !Auth) {
+        var errEl = outlet.querySelector('#staff-login-error');
+        var btn = outlet.querySelector('#btn-staff-login');
+        var inputUser = outlet.querySelector('#staff-usuario');
+        var inputPass = outlet.querySelector('#staff-password');
+
+        if (!form || !inputUser || !inputPass) {
+            showLoginError(errEl, 'No se cargó el formulario de acceso.');
+            return;
+        }
+        if (!Auth || typeof Auth.login !== 'function') {
+            showLoginError(errEl, 'Falta el módulo de autenticación. Recarga la página (Ctrl+F5).');
             return;
         }
 
@@ -18,16 +36,9 @@
             return;
         }
 
-        var errEl = outlet.querySelector('#staff-login-error');
-        var btn = outlet.querySelector('#btn-staff-login');
-
-        form.setAttribute('action', '');
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            var usuario =
-                (outlet.querySelector('#staff-usuario') && outlet.querySelector('#staff-usuario').value) || '';
-            var password =
-                (outlet.querySelector('#staff-password') && outlet.querySelector('#staff-password').value) || '';
+        function doLogin() {
+            var usuario = String(inputUser.value || '').trim();
+            var password = String(inputPass.value || '');
             if (errEl) {
                 errEl.classList.add('hidden');
                 errEl.textContent = '';
@@ -40,16 +51,19 @@
                     Auth.redirectAfterLogin(res.session);
                 })
                 .catch(function (err) {
-                    if (errEl) {
-                        errEl.textContent = (err && err.message) || 'No se pudo iniciar sesión.';
-                        errEl.classList.remove('hidden');
-                    }
+                    showLoginError(errEl, (err && err.message) || 'No se pudo iniciar sesión.');
                 })
                 .finally(function () {
                     if (btn) {
                         btn.disabled = false;
                     }
                 });
+        }
+
+        form.setAttribute('action', '');
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            doLogin();
         });
     }
 
