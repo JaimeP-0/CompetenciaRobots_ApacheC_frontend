@@ -1159,6 +1159,26 @@
 
             w.CRApi.postPartidasIniciar(catId, opts)
                 .then(function (matches) {
+                    var initial = matches || [];
+                    var shouldExpandAll =
+                        cat &&
+                        ((typeof w.CRApi.isMinisumoCategory === 'function' &&
+                            w.CRApi.isMinisumoCategory(cat.name)) ||
+                            (typeof w.CRApi.isFutbolCategory === 'function' &&
+                                w.CRApi.isFutbolCategory(cat.name)));
+                    if (shouldExpandAll) {
+                        return w.CRApi
+                            .postGenerarMasPartidas(catId, Object.assign({}, opts, { mode: 'pairwise' }))
+                            .then(function (extra) {
+                                return initial.concat(extra || []);
+                            })
+                            .catch(function () {
+                                return initial;
+                            });
+                    }
+                    return initial;
+                })
+                .then(function (matches) {
                     if (selListFilter) {
                         selListFilter.value = catId;
                     }

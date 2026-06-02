@@ -6,7 +6,8 @@
 
     var CRDom = w.CRDom;
     var POLL_MS = 12000;
-    var RECENT_LIMIT = 24;
+    var RECENT_LIMIT = 2;
+    var UPCOMING_LIMIT = 8;
     var LIVE_PAIRWISE_MAX = 6;
 
     if (!CRDom) {
@@ -521,7 +522,7 @@
 
             return {
                 live: live,
-                upcoming: upcoming,
+                upcoming: upcoming.slice(0, UPCOMING_LIMIT),
                 recent: completed.slice(0, RECENT_LIMIT)
             };
         }

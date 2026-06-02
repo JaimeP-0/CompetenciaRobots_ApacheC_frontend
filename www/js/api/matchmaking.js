@@ -222,22 +222,39 @@
         if (!Cats.isMinisumoCategoryName(opts.categoryName) && !Cats.isFutbolCategoryName(opts.categoryName)) {
             return Promise.reject(new Error('Solo minisumo y fútbol usan emparejamiento por ronda.'));
         }
-        return pickTeamsForPairing(categoryId, opts, true).then(function (picked) {
-            if (picked.pendingCount > 0) {
+        var MAX_BATCHES = 48;
+        var createdAll = [];
+
+        function runBatch(batchNo) {
+            if (batchNo >= MAX_BATCHES) {
+                return createdAll;
+            }
+            return pickTeamsForPairing(categoryId, opts, false).then(function (picked) {
+                if (picked.teamIds.length < 2) {
+                    return createdAll;
+                }
+                var ordered = shuffleArray(picked.teamIds);
+                return Partidas.postIniciar(
+                    categoryId,
+                    Object.assign({}, opts, { mode: 'pairwise', team_ids: ordered })
+                ).then(function (created) {
+                    var list = created || [];
+                    if (!list.length) {
+                        return createdAll;
+                    }
+                    createdAll = createdAll.concat(list);
+                    return runBatch(batchNo + 1);
+                });
+            });
+        }
+
+        return runBatch(0).then(function (allCreated) {
+            if (!allCreated.length) {
                 return Promise.reject(
-                    new Error('Aún hay partidas pendientes en esta cola. Regístralas antes de generar más.')
+                    new Error('No hay suficientes equipos para crear nuevas partidas en esta cola.')
                 );
             }
-            if (picked.teamIds.length < 2) {
-                return Promise.reject(
-                    new Error('No hay suficientes equipos para otra ronda en esta cola.')
-                );
-            }
-            var ordered = shuffleArray(picked.teamIds);
-            return Partidas.postIniciar(
-                categoryId,
-                Object.assign({}, opts, { mode: 'pairwise', team_ids: ordered })
-            );
+            return allCreated;
         });
     }
 
