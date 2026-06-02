@@ -535,6 +535,11 @@
                 });
             });
 
+            if (live.length > 1) {
+                upcoming = live.slice(1).concat(upcoming);
+                live = live.slice(0, 1);
+            }
+
             return {
                 live: live,
                 upcoming: upcoming.slice(0, UPCOMING_LIMIT),
