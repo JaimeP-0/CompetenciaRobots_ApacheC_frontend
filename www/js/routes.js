@@ -28,6 +28,7 @@
             '/match/externos': 'public/match',
             '/visitante': 'public/visitante',
             '/dashboard': 'public/visitante',
+            '/pruebapdf': 'public/pruebapdf',
             '/cr-doc-credenciales-1xuso-9k2m': 'public/pruebapdf',
             '/ranking': 'public/ranking',
             '/admin': 'admin/panel',
