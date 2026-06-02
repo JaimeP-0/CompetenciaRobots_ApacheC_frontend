@@ -15,7 +15,9 @@
         initEquipoDetalle: V.equipoDetalle,
         initValidados: V.validados,
         initMatch: V.match,
+        initVisitante: V.visitante,
+        initLoginStaff: V.loginStaff,
         initRanking: V.ranking,
-        initBrackets: V.brackets
+        initDiagFeed: V.diagFeed
     };
 })(window);

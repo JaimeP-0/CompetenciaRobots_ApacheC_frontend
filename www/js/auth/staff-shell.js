@@ -1,5 +1,5 @@
 /**
- * Barra / pie de sesión staff (juez / árbitro) con cerrar sesión.
+ * Barra / pie de sesión staff (árbitro / consulta juez) con cerrar sesión.
  */
 (function (w) {
     'use strict';
@@ -7,7 +7,7 @@
     function roleLabel(role) {
         var r = String(role || '').toLowerCase();
         if (r === 'juez') {
-            return 'Juez';
+            return 'Consulta (juez)';
         }
         if (r === 'registro') {
             return 'Registro';

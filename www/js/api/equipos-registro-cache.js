@@ -440,8 +440,10 @@
         opts = opts || {};
         if (opts.categoryId != null && opts.categoryId !== '') {
             var key = String(opts.categoryId);
-            if (opts.requireCategory || opts.excludeRobotValid) {
+            if (opts.excludeRobotValid) {
                 key += '_pendientes';
+            } else if (opts.requireCategory) {
+                key += '_todos';
             }
             return key;
         }
@@ -558,7 +560,7 @@
         return fetchRegistroTeams(false, {
             categoryId: categoryId,
             requireCategory: true,
-            excludeRobotValid: true
+            excludeRobotValid: false
         }).then(function (teams) {
             var exact = teams.filter(function (t) {
                 return t.name.toLowerCase() === n;
@@ -645,16 +647,24 @@
             return fetchRegistroTeams(false, {
                 categoryId: categoryId,
                 requireCategory: true,
-                excludeRobotValid: true
+                excludeRobotValid: false
             }).then(function (teams) {
                 var needle = String(q || '').trim().toLowerCase();
-                if (!needle) {
-                    return [];
+                var list = teams || [];
+                if (needle) {
+                    list = list.filter(function (t) {
+                        return t && t.name && t.name.toLowerCase().indexOf(needle) !== -1;
+                    });
                 }
-                return teams
-                    .filter(function (t) {
-                        return t.name.toLowerCase().indexOf(needle) !== -1;
-                    })
+                list = list.slice().sort(function (a, b) {
+                    var av = a && a.robot_valid === true ? 1 : 0;
+                    var bv = b && b.robot_valid === true ? 1 : 0;
+                    if (av !== bv) {
+                        return av - bv;
+                    }
+                    return String(a.name || '').localeCompare(String(b.name || ''), 'es');
+                });
+                return list
                     .map(function (t) {
                         return t.name;
                     })

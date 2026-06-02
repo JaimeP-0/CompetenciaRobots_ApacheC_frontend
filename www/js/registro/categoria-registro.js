@@ -68,6 +68,50 @@
         });
     }
 
+    function staffRole(ses) {
+        if (w.CRQueueRoutes && typeof w.CRQueueRoutes.staffRole === 'function') {
+            return w.CRQueueRoutes.staffRole(ses);
+        }
+        var r = String((ses && ses.role) || '').toLowerCase();
+        return r === 'registro' ? 'arbitro' : r;
+    }
+
+    function resolveStaffCategoryValue(ses, sel) {
+        if (!ses || !sel) {
+            return '';
+        }
+        var catId =
+            w.CRStaffSesion && typeof w.CRStaffSesion.primaryCategoryId === 'function'
+                ? w.CRStaffSesion.primaryCategoryId(ses)
+                : '';
+        if (catId && sel.querySelector('option[value="' + String(catId).replace(/"/g, '\\"') + '"]')) {
+            return String(catId);
+        }
+        var catName = String(ses.category || '').trim();
+        if (!catName) {
+            return catId ? String(catId) : '';
+        }
+        var i;
+        var norm = catName.toLowerCase();
+        for (i = 0; i < sel.options.length; i++) {
+            var opt = sel.options[i];
+            if (opt.value && String(opt.textContent || '').trim().toLowerCase() === norm) {
+                return opt.value;
+            }
+        }
+        return catId ? String(catId) : '';
+    }
+
+    function syncEquipoBlockFromSelect(root, hooks) {
+        var sec = sectionRoot(root);
+        var sel = sec.querySelector('#reg-filtro-categoria');
+        if (sel && sel.value) {
+            onCategoriaChange(root, hooks || {});
+        } else {
+            setEquipoBlockEnabled(root, false);
+        }
+    }
+
     function fillSelect(root, cats, hooks) {
         var sec = sectionRoot(root);
         var sel = sec.querySelector('#reg-filtro-categoria');
@@ -93,6 +137,7 @@
             sel.value = prev;
         }
         applyStaffCategoryLock(root, hooks);
+        syncEquipoBlockFromSelect(root, hooks);
     }
 
     function applyStaffCategoryLock(root, hooks) {
@@ -100,15 +145,7 @@
         if (!ses) {
             return;
         }
-        var role = String(ses.role || '').toLowerCase();
-        if (role !== 'juez' && role !== 'registro') {
-            return;
-        }
-        var catId =
-            w.CRStaffSesion && typeof w.CRStaffSesion.primaryCategoryId === 'function'
-                ? w.CRStaffSesion.primaryCategoryId(ses)
-                : '';
-        if (!catId) {
+        if (staffRole(ses) !== 'arbitro') {
             return;
         }
         var sec = sectionRoot(root);
@@ -116,11 +153,13 @@
         if (!sel) {
             return;
         }
-        if (sel.querySelector('option[value="' + String(catId).replace(/"/g, '\\"') + '"]')) {
-            sel.value = catId;
-            sel.disabled = true;
-            onCategoriaChange(root, hooks || {});
+        var catValue = resolveStaffCategoryValue(ses, sel);
+        if (!catValue) {
+            return;
         }
+        sel.value = catValue;
+        sel.disabled = true;
+        onCategoriaChange(root, hooks || {});
     }
 
     function initCategoriaRegistro(root, opts) {

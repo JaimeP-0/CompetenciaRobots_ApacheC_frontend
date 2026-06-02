@@ -56,13 +56,13 @@
 
     function matchModeLabel(mode, categoryName) {
         if (mode === 'solo') {
-            return 'Carrera individual (uno tras otro)';
+            return 'Velocista';
         }
         if (mode === 'pairwise' && isFutbolCategoryName(categoryName)) {
-            return 'Fútbol 2v2 (equipo vs equipo, 2 robots por equipo)';
+            return 'Fútbol 2v2';
         }
         if (mode === 'pairwise') {
-            return 'Minisumo 1v1 (emparejamiento por ronda)';
+            return 'Minisumo 1v1';
         }
         return 'Cola compartida';
     }

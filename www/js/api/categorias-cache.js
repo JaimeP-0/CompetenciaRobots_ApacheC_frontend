@@ -114,6 +114,30 @@
         });
     }
 
+    /** Valida id o nombre contra la última carga de GET /categorias. */
+    function isKnownCategoria(c) {
+        if (c == null || String(c).trim() === '') {
+            return false;
+        }
+        var key = String(c).trim();
+        var id = Number(key, 10);
+        if (!isNaN(id) && categoriasById[id]) {
+            return true;
+        }
+        var lower = key.toLowerCase();
+        return (categoriasCache || []).some(function (cat) {
+            return String(cat.id) === key || String(cat.name || '').toLowerCase() === lower;
+        });
+    }
+
+    function listaNombresCategorias() {
+        return (categoriasCache || [])
+            .map(function (cat) {
+                return cat.name != null ? String(cat.name).trim() : '';
+            })
+            .filter(Boolean);
+    }
+
     function fetchReglasForCategory(catId) {
         var path = (app.categoriasPath || '/categorias') + '/' + encodeURIComponent(String(catId)) + '/reglas';
         var url = buildUrl(path, {});
@@ -203,6 +227,8 @@
         fetch: fetchCategorias,
         fetchRulesForCategory: fetchReglasForCategory,
         normalizeRules: normalizeCatalogRules,
+        isKnown: isKnownCategoria,
+        listaNombres: listaNombresCategorias,
         clearCache: function () {
             categoriasCache = null;
             categoriasById = {};

@@ -87,6 +87,14 @@
             w.location.hash = '#/dashboard';
             return;
         }
+        if (role === 'admin' || role === 'dev') {
+            w.location.hash = '#/admin';
+            return;
+        }
+        if (QueueRoutes && typeof QueueRoutes.staffWorkspaceHash === 'function') {
+            w.location.hash = QueueRoutes.staffWorkspaceHash(s);
+            return;
+        }
         w.location.hash = '#/inicio';
     }
 

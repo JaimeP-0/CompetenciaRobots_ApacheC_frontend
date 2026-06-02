@@ -545,6 +545,12 @@
     .cr-match-mode-hint {
         @apply m-0 text-xs leading-relaxed text-graphite/75 sm:text-sm;
     }
+    .cr-match-spectator-banner {
+        @apply m-0 rounded-xl border border-amber-300/80 bg-amber-50 px-3 py-2.5 text-sm leading-snug text-amber-950;
+    }
+    .cr-match-spectator-pending {
+        @apply m-0 mt-2 text-xs font-medium text-graphite/70 sm:text-sm;
+    }
     .cr-match-setup-actions {
         @apply flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center;
     }

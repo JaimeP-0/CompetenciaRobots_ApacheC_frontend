@@ -116,6 +116,17 @@
             d.documentElement.classList.remove('cr-tablero-ultra-only');
 
             if (name === 'registro/registrar') {
+                var regSes = w.CRStaffSesion && w.CRStaffSesion.read();
+                if (
+                    regSes &&
+                    w.CRQueueRoutes &&
+                    typeof w.CRQueueRoutes.staffMayUseRegistro === 'function' &&
+                    !w.CRQueueRoutes.staffMayUseRegistro(regSes) &&
+                    typeof w.CRQueueRoutes.staffForbiddenRedirect === 'function'
+                ) {
+                    w.location.hash = w.CRQueueRoutes.staffForbiddenRedirect(regSes);
+                    return;
+                }
                 if (!RegistroLoader) {
                     Views.showError(outlet, new Error('Falta js/registro/cargar.js'));
                     return;
@@ -252,7 +263,10 @@
         }
         if (btn.hasAttribute('data-back')) {
             e.preventDefault();
-            var fallback = btn.getAttribute('data-back-fallback') || '/';
+            var fallback = btn.getAttribute('data-back-fallback') || '/inicio';
+            if (w.CRNavHistory && typeof w.CRNavHistory.resolveFallback === 'function') {
+                fallback = w.CRNavHistory.resolveFallback(fallback);
+            }
             if (w.CRNavHistory && typeof w.CRNavHistory.back === 'function') {
                 w.CRNavHistory.back(fallback);
             } else {

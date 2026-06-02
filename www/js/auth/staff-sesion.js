@@ -1,5 +1,5 @@
 /**
- * Sesión staff (jueces / árbitros) en sessionStorage.
+ * Sesión staff (árbitros; juez legacy solo consulta en partidas) en sessionStorage.
  */
 (function (w) {
     'use strict';

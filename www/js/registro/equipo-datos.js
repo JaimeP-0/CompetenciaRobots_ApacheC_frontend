@@ -20,7 +20,7 @@
     function fetchSugerenciasEquipo(query, root) {
         var q = String(query || '').trim();
         var categoryId = getRegFiltroCategoriaId(root);
-        if (!q || categoryId == null) {
+        if (categoryId == null) {
             return Promise.resolve([]);
         }
         if (w.CRApi && typeof w.CRApi.getRegistroSugerencias === 'function') {

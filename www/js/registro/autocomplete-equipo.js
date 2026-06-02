@@ -136,11 +136,11 @@
                 hideList();
                 return;
             }
-            var q = input.value.trim();
-            if (!q) {
+            if (input.disabled) {
                 hideList();
                 return;
             }
+            var q = input.value.trim();
             var mySeq = ++seq;
             Equipos.fetchSugerencias(q, root)
                 .then(function (items) {
@@ -165,11 +165,11 @@
         }
 
         function onFocus() {
-            if (input.value.trim()) {
-                runSearch();
-            } else {
+            if (input.disabled) {
                 hideList();
+                return;
             }
+            runSearch();
         }
 
         function onBlur() {

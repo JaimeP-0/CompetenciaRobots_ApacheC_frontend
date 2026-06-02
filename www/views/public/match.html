@@ -4,7 +4,7 @@
     data-cr-modulo="1-catalogo"
     aria-label="Iniciar partidas"
 >
-    <button type="button" data-back data-back-fallback="/" class="cr-catalog-back" aria-label="Volver">←</button>
+    <button type="button" data-back data-back-fallback="/inicio" class="cr-catalog-back" aria-label="Volver">←</button>
 
     <div id="cr-staff-bar" class="cr-staff-bar hidden" aria-label="Sesión personal">
         <span id="cr-staff-bar-label" class="cr-staff-bar-label"></span>
@@ -17,10 +17,12 @@
             <p class="cr-page-kicker">Árbitros</p>
             <h1 class="cr-page-title">Mesa de encuentros</h1>
             <p id="cr-match-sub" class="cr-page-lead">
-                Iniciar cola, registrar tiempos y resultados de cada encuentro (el juez valida robots por separado).
+                Cola, tiempos y resultados de cada encuentro.
             </p>
         </div>
     </header>
+
+    <p id="cr-match-spectator-banner" class="cr-match-spectator-banner hidden" role="status" aria-live="polite"></p>
 
     <section class="cr-match-setup-card" aria-label="Configuración de partida">
         <div class="cr-match-setup-grid">
@@ -41,16 +43,12 @@
             <div class="cr-match-field cr-match-field--scope">
                 <label class="cr-admin-label" for="cr-match-queue-scope">Cola</label>
                 <select id="cr-match-queue-scope" class="cr-admin-select" required>
-                    <option value="internal">Internos (UTNC / UT)</option>
+                    <option value="internal">Internos (UTNC)</option>
                     <option value="external">Externos</option>
                 </select>
                 <p id="cr-match-scope-locked-hint" class="cr-match-mode-hint hidden" aria-live="polite"></p>
             </div>
         </div>
-        <p id="cr-match-mode-hint" class="cr-match-mode-hint" aria-live="polite"></p>
-        <p id="cr-match-scope-hint" class="cr-match-mode-hint">
-            Interno si la escuela es exactamente «Universidad Tecnológica del Norte de Coahuila» o el acrónimo exacto UTNC o UT.
-        </p>
         <div class="cr-match-setup-actions">
             <button type="button" id="cr-match-iniciar" class="cr-app-btn cr-app-btn--primary cr-match-iniciar-btn" disabled>
                 Iniciar cola

@@ -501,11 +501,14 @@
         return Origin.normalizeQueueScope(opts.queueScope != null ? opts.queueScope : opts.queue_scope);
     }
 
-    function schoolMapFromTeams(teams) {
+    function teamMetaMapFromTeams(teams) {
         var map = {};
         (teams || []).forEach(function (t) {
             if (t && t.id != null) {
-                map[String(t.id)] = t.school != null ? String(t.school).trim() : '';
+                map[String(t.id)] = {
+                    school: t.school != null ? String(t.school).trim() : '',
+                    is_internal: t.is_internal
+                };
             }
         });
         return map;
@@ -528,7 +531,7 @@
         return Promise.all([Equipos.fetchRobots(), teamsPromise])
             .then(function (arr) {
                 var robots = arr[0];
-                var schoolByTeam = schoolMapFromTeams(arr[1]);
+                var metaByTeam = teamMetaMapFromTeams(arr[1]);
                 var ids = [];
                 var seen = {};
                 (robots || []).forEach(function (r) {
@@ -554,8 +557,8 @@
                         return;
                     }
                     if (scope && Origin) {
-                        var school = schoolByTeam[String(tid)] || '';
-                        if (Origin.classifySchool(school) !== scope) {
+                        var scoped = Origin.filterTeamIdsByQueueScope([tid], scope, metaByTeam);
+                        if (!scoped.length) {
                             return;
                         }
                     }
@@ -677,7 +680,7 @@
                 return Origin.filterTeamIdsByQueueScope(
                     normalizeTeamIdList(teamIds),
                     scope,
-                    schoolMapFromTeams(teams)
+                    teamMetaMapFromTeams(teams)
                 );
             })
             .catch(function () {

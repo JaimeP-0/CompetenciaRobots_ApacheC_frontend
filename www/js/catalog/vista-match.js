@@ -37,6 +37,11 @@
         var selCat = root.querySelector('#cr-match-cat');
         var pageTitleEl = root.querySelector('.cr-page-title');
         var scopeLockedHint = root.querySelector('#cr-match-scope-locked-hint');
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        var judgeSpectator =
+            w.CRQueueRoutes && typeof w.CRQueueRoutes.staffIsMatchSpectator === 'function'
+                ? w.CRQueueRoutes.staffIsMatchSpectator(ses)
+                : false;
         var lockedScope = !!routeParams.lockedScope;
         var routeScope = routeParams.queueScope || '';
         var selMode = root.querySelector('#cr-match-mode');
@@ -91,6 +96,44 @@
             if (pageTitleEl && routeParams.scopeLabel) {
                 pageTitleEl.textContent = 'Partidas — ' + routeParams.scopeLabel;
             }
+            applyJudgeSpectatorMode();
+        }
+
+        function applyJudgeSpectatorMode() {
+            if (!judgeSpectator) {
+                return;
+            }
+            var banner = root.querySelector('#cr-match-spectator-banner');
+            var setupCard = root.querySelector('.cr-match-setup-card');
+            if (setupCard) {
+                setupCard.classList.add('hidden');
+            }
+            if (selMode && modeWrap) {
+                modeWrap.classList.add('hidden');
+            }
+            updateSpectatorBanner();
+        }
+
+        function updateSpectatorBanner() {
+            if (!judgeSpectator) {
+                return;
+            }
+            var banner = root.querySelector('#cr-match-spectator-banner');
+            if (!banner) {
+                return;
+            }
+            var cat = selectedCategory();
+            var catName = cat && cat.name ? cat.name : 'tu categoría';
+            var scopeLbl =
+                w.CRTeamOrigin && typeof w.CRTeamOrigin.queueScopeLabel === 'function'
+                    ? w.CRTeamOrigin.queueScopeLabel(getQueueScope())
+                    : '';
+            banner.textContent =
+                'Solo consulta. El árbitro de ' +
+                catName +
+                (scopeLbl ? ' (' + scopeLbl + ')' : '') +
+                ' opera esta mesa.';
+            banner.classList.remove('hidden');
         }
 
         function persistQueueScope() {
@@ -144,28 +187,8 @@
             if (!hintEl) {
                 return;
             }
-            var cat = selectedCategory();
-            if (!cat) {
-                hintEl.textContent = '';
-                return;
-            }
-            var manual = selMode && selMode.value && modeWrap && !modeWrap.classList.contains('hidden');
-            if (manual === 'pairwise' || manual === 'shared') {
-                hintEl.textContent = 'Modo manual: ' + modeLabel(manual, cat.name) + '.';
-                return;
-            }
-            var inferred =
-                typeof w.CRApi.inferMatchMode === 'function'
-                    ? w.CRApi.inferMatchMode(cat.name)
-                    : 'shared';
-            var extra = '';
-            if (typeof w.CRApi.isFutbolCategory === 'function' && w.CRApi.isFutbolCategory(cat.name)) {
-                extra = ' Cada equipo necesita 2 robots validados.';
-            }
-            if (typeof w.CRApi.isMinisumoCategory === 'function' && w.CRApi.isMinisumoCategory(cat.name)) {
-                extra = ' Sin brackets: empareja 1v1 y usa «Generar más partidas» para la siguiente ronda.';
-            }
-            hintEl.textContent = modeLabel(inferred, cat.name) + '.' + extra;
+            hintEl.textContent = '';
+            hintEl.classList.add('hidden');
         }
 
         function syncMatchUiForCategory() {
@@ -499,6 +522,11 @@
             var kind = resultKindForCategory(match.category_id);
             if (isResultComplete(kind, resultado)) {
                 return renderResultSaved(kind, match, resultado, teamsById);
+            }
+            if (judgeSpectator) {
+                return (
+                    '<p class="cr-match-spectator-pending">Pendiente de registro por el árbitro.</p>'
+                );
             }
             return renderResultForm(kind, match, teamsById);
         }
@@ -1061,6 +1089,11 @@
         }
 
         function onListSubmit(e) {
+            if (judgeSpectator) {
+                e.preventDefault();
+                setStatus('Solo el árbitro puede registrar resultados.', true);
+                return;
+            }
             var form = e.target.closest('.cr-match-result-form');
             if (!form || !listEl.contains(form)) {
                 return;
@@ -1101,6 +1134,10 @@
         }
 
         function onIniciarClick() {
+            if (judgeSpectator) {
+                setStatus('Solo el árbitro puede iniciar la cola.', true);
+                return;
+            }
             var catId = selCat.value;
             if (!catId) {
                 setStatus('Elige una categoría.', true);
@@ -1260,6 +1297,9 @@
             if (role !== 'juez' && role !== 'arbitro' && role !== 'registro') {
                 return;
             }
+            if (judgeSpectator && pageTitleEl) {
+                pageTitleEl.textContent = 'Partidas — consulta';
+            }
             var catId =
                 w.CRStaffSesion && typeof w.CRStaffSesion.primaryCategoryId === 'function'
                     ? w.CRStaffSesion.primaryCategoryId(ses)
@@ -1285,6 +1325,7 @@
                 persistQueueScope();
             }
             syncMatchUiForCategory();
+            updateSpectatorBanner();
         }
 
         function fillCategorias(cats) {
@@ -1310,6 +1351,7 @@
             }
             syncMatchUiForCategory();
             setStatus('', false);
+            updateSpectatorBanner();
             loadPartidasList();
             refreshGenerarMasState();
         }
@@ -1337,6 +1379,18 @@
         }
 
         initQueueScopeSelect();
+
+        if (judgeSpectator && ses && w.CRQueueRoutes && typeof w.CRQueueRoutes.staffWorkspaceHash === 'function') {
+            var judgeTarget = w.CRQueueRoutes.staffWorkspaceHash(ses);
+            var current = w.CRRouter && w.CRRouter.normalize ? w.CRRouter.normalize(w.location.hash) : '';
+            if (judgeTarget && judgeTarget.indexOf('#') === 0) {
+                var judgeRoute = judgeTarget.replace(/^#/, '').split('?')[0];
+                if (current !== judgeRoute && !lockedScope) {
+                    w.location.hash = judgeTarget;
+                    return;
+                }
+            }
+        }
 
         selCat.addEventListener('change', onCatChange, false);
         if (selListFilter) {

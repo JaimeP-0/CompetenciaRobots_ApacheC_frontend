@@ -70,8 +70,9 @@
             return { cleanup: noop, onDetalleChange: noop, cancelPendingDetalle: noop };
         }
 
-        /** Tras cerrar el modal: inicio, o solo re-habilitar Registrar. */
+        /** Tras cerrar el modal: inicio, equipos de la categoría, o solo re-habilitar Registrar. */
         var modalPostIrAlInicio = false;
+        var modalPostRedirectEquiposCat = null;
         var modalConfirmOnAceptar = null;
         var cachedReglasCategoria = null;
         var cachedRestrictionRules = [];
@@ -186,6 +187,10 @@
         function showPostRegistroModal(opts) {
             opts = opts || {};
             modalPostIrAlInicio = !!opts.irAlInicio;
+            modalPostRedirectEquiposCat =
+                opts.redirectEquiposCategoryId != null && opts.redirectEquiposCategoryId !== ''
+                    ? opts.redirectEquiposCategoryId
+                    : null;
             modalPostTitulo.textContent = opts.titulo || 'Aviso';
             modalPostMensaje.textContent = opts.mensaje != null ? String(opts.mensaje) : '';
             modalPost.classList.remove('hidden');
@@ -196,8 +201,15 @@
 
         function onModalPostAceptar() {
             hidePostRegistroModal();
+            if (modalPostRedirectEquiposCat != null) {
+                w.location.hash =
+                    '#/categoria/' + encodeURIComponent(String(modalPostRedirectEquiposCat)) + '/equipos';
+                modalPostRedirectEquiposCat = null;
+                modalPostIrAlInicio = false;
+                return;
+            }
             if (modalPostIrAlInicio) {
-                w.location.hash = '#/';
+                w.location.hash = '#/visitante';
             } else {
                 btnReg.disabled = false;
             }
@@ -676,10 +688,16 @@
                           ' con ' +
                           (body.valid_rules ? body.valid_rules.length : 0) +
                           ' regla(s) aprobadas. Las reglas no marcadas quedan registradas como no cumplidas: el robot no está validado.';
+                    var catId = resolveChecklistCategoryId();
                     showPostRegistroModal({
                         titulo: titulo,
-                        mensaje: mensaje,
-                        irAlInicio: false
+                        mensaje:
+                            mensaje +
+                            (catId != null
+                                ? ' Busca otro equipo en la misma categoría.'
+                                : ''),
+                        irAlInicio: false,
+                        redirectEquiposCategoryId: catId
                     });
                 },
                 onErr: function (err) {

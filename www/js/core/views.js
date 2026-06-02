@@ -25,7 +25,8 @@
         if (!outlet) {
             return;
         }
-        document.documentElement.classList.remove('cr-registro-fit', 'cr-tablero-ultra-only');
+        document.documentElement.classList.remove('cr-registro-fit', 'cr-tablero-ultra-only', 'cr-view-dashboard', 'cr-view-diag');
+        document.body.classList.remove('cr-view-dashboard', 'cr-view-diag');
         outlet.removeAttribute('data-cr-outlet-mode');
         outlet.innerHTML =
             '<p class="p-4 text-center text-red-700">' + (err.message || String(err)) + '</p>';

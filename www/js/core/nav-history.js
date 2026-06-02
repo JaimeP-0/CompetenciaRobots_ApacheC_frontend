@@ -36,12 +36,31 @@
         current = nextRoute;
     }
 
+    function staffLoggedIn() {
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        return !!(ses && ses.username);
+    }
+
+    function resolveFallback(fallback) {
+        fallback = normalize(fallback || '/inicio');
+        if (fallback === '/') {
+            return staffLoggedIn() ? '/inicio' : '/login';
+        }
+        if (staffLoggedIn() && fallback === '/login') {
+            return '/inicio';
+        }
+        return fallback;
+    }
+
     function isBlockedBackTarget(route) {
+        route = normalize(route);
+        if (staffLoggedIn() && (route === '/login' || route === '/')) {
+            return true;
+        }
         var Admin = w.CRAdmin;
         if (!Admin) {
             return false;
         }
-        route = normalize(route);
         if (Admin.isLoggedIn && Admin.isLoggedIn()) {
             return route === '/admin/login';
         }
@@ -49,7 +68,7 @@
     }
 
     function back(fallback) {
-        fallback = normalize(fallback || '/');
+        fallback = resolveFallback(fallback);
         var target = stack.length ? stack.pop() : fallback;
         var guard = 0;
         while (isBlockedBackTarget(target) && guard < MAX) {

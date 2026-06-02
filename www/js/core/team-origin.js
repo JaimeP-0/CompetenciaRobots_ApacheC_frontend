@@ -1,13 +1,11 @@
 /**
  * Interno vs externo según escuela del equipo.
- * Interno: nombre completo exacto (sin acentos) o acrónimo exacto UTNC / UT (token o campo entero).
+ * Interno: nombre completo exacto (sin acentos) o campo de escuela exactamente UTNC o UT.
  */
 (function (w) {
     'use strict';
 
     var FULL_NAMES_NORMALIZED = ['universidad tecnologica del norte de coahuila'];
-
-    var TOKEN_INTERNAL = { utnc: true, ut: true };
 
     var STORAGE_KEY = 'cr-queue-scope';
     var GUEST_SCHOOL_KEY = 'cr-guest-school';
@@ -24,10 +22,6 @@
             .replace(/\s+/g, ' ');
     }
 
-    function schoolTokens(normalized) {
-        return normalized.split(/[\s,;/|&()]+/).filter(Boolean);
-    }
-
     function isInternalSchool(school) {
         var n = normalizeSchoolText(school);
         if (!n) {
@@ -39,16 +33,7 @@
                 return true;
             }
         }
-        if (n === 'utnc' || n === 'ut') {
-            return true;
-        }
-        var tokens = schoolTokens(n);
-        for (i = 0; i < tokens.length; i++) {
-            if (TOKEN_INTERNAL[tokens[i]]) {
-                return true;
-            }
-        }
-        return false;
+        return n === 'utnc' || n === 'ut';
     }
 
     function classifySchool(school) {
