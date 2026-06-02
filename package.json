@@ -32,6 +32,7 @@
     "vps:install": "python scripts/vps-install-only.py",
     "vps:schema": "python scripts/vps-apply-schema.py",
     "vps:seed": "python scripts/vps-seed.py",
+    "vps:update-users": "python scripts/vps-update-user-names.py",
     "vps:nginx-https": "python scripts/vps-nginx-https.py",
     "android:install-logcat": "node scripts/android-install-logcat.cjs"
   },
