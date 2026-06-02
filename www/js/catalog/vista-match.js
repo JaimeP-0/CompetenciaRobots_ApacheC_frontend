@@ -36,7 +36,6 @@
 
         var selCat = root.querySelector('#cr-match-cat');
         var pageTitleEl = root.querySelector('.cr-page-title');
-        var scopeLockedHint = root.querySelector('#cr-match-scope-locked-hint');
         var ses = w.CRStaffSesion && w.CRStaffSesion.read();
         var judgeSpectator =
             w.CRQueueRoutes && typeof w.CRQueueRoutes.staffIsMatchSpectator === 'function'
@@ -45,7 +44,6 @@
         var lockedScope = !!routeParams.lockedScope;
         var routeScope = routeParams.queueScope || '';
         var selMode = root.querySelector('#cr-match-mode');
-        var hintEl = root.querySelector('#cr-match-mode-hint');
         var btnIniciar = root.querySelector('#cr-match-iniciar');
         var statusEl = root.querySelector('#cr-match-status');
         var listEl = root.querySelector('#cr-match-list');
@@ -87,11 +85,6 @@
             if (lockedScope) {
                 selQueueScope.disabled = true;
                 selQueueScope.setAttribute('aria-disabled', 'true');
-                if (scopeLockedHint) {
-                    scopeLockedHint.textContent =
-                        'Cola fija para esta vista (' + (routeParams.scopeLabel || selQueueScope.value) + ').';
-                    scopeLockedHint.classList.remove('hidden');
-                }
             }
             if (pageTitleEl && routeParams.scopeLabel) {
                 pageTitleEl.textContent = 'Partidas — ' + routeParams.scopeLabel;
@@ -183,14 +176,6 @@
             return found || { id: Number(id, 10), name: '' };
         }
 
-        function updateModeHint() {
-            if (!hintEl) {
-                return;
-            }
-            hintEl.textContent = '';
-            hintEl.classList.add('hidden');
-        }
-
         function syncMatchUiForCategory() {
             var cat = selectedCategory();
             var isEvent =
@@ -216,7 +201,6 @@
                 btnVelocistaSiguiente.classList.toggle('hidden', !isVel);
             }
             btnIniciar.textContent = isVel ? 'Crear cola de carreras' : 'Iniciar cola';
-            updateModeHint();
             syncIniciarEnabled();
         }
 
@@ -1365,10 +1349,6 @@
             focusVelocistaEnPista();
         }
 
-        function onModeChange() {
-            updateModeHint();
-        }
-
         function onQueueScopeChange() {
             if (lockedScope) {
                 return;
@@ -1397,7 +1377,7 @@
             selListFilter.addEventListener('change', onListFilterChange, false);
         }
         if (selMode) {
-            selMode.addEventListener('change', onModeChange, false);
+            selMode.addEventListener('change', syncMatchUiForCategory, false);
         }
         if (selQueueScope) {
             selQueueScope.addEventListener('change', onQueueScopeChange, false);

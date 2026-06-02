@@ -11,9 +11,21 @@
         return (bp ? bp + '/' : '') + 'views/';
     }
 
+    function viewCacheBust() {
+        var cfg = w.CR_CONFIG || w.CR_APP || {};
+        var ov = w.CR_API_OVERRIDES || {};
+        var token = ov.viewCacheBust || cfg.viewCacheBust || '';
+        return token ? String(token) : '';
+    }
+
     function fetchView(name) {
         var path = String(name || '').replace(/^\//, '').replace(/\\/g, '/');
-        return fetch(viewsBase() + path + '.html', { cache: 'no-cache' }).then(function (res) {
+        var url = viewsBase() + path + '.html';
+        var bust = viewCacheBust();
+        if (bust) {
+            url += (url.indexOf('?') === -1 ? '?' : '&') + 'v=' + encodeURIComponent(bust);
+        }
+        return fetch(url, { cache: 'no-store' }).then(function (res) {
             if (!res.ok) {
                 throw new Error('No se pudo cargar la vista: ' + path);
             }

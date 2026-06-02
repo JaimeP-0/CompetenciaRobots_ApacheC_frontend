@@ -8,6 +8,7 @@
         apiProfile: 'vps',
         publicUrl: 'https://utarena.online',
         adminLoginMock: false,
-        diagFeedKey: 'cr-diag-utarena-x7k9m2'
+        diagFeedKey: 'cr-diag-utarena-x7k9m2',
+        viewCacheBust: 'dev'
     };
 })(window);

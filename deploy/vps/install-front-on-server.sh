@@ -30,13 +30,15 @@ if ! systemctl is-active --quiet nginx; then
 fi
 
 echo "==> config.local.js…"
+VIEW_BUST="$(git -C "$FRONT_ROOT" rev-parse --short HEAD 2>/dev/null || date +%s)"
 cat > "$FRONT_ROOT/www/js/config.local.js" <<EOF
 (function (w) {
     'use strict';
     w.CR_API_OVERRIDES = {
         apiProfile: 'vps',
         publicUrl: '${PUBLIC_URL}',
-        diagFeedKey: '${DIAG_KEY}'
+        diagFeedKey: '${DIAG_KEY}',
+        viewCacheBust: '${VIEW_BUST}'
     };
 })(window);
 EOF
