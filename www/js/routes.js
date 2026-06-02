@@ -28,6 +28,7 @@
             '/match/externos': 'public/match',
             '/visitante': 'public/visitante',
             '/dashboard': 'public/visitante',
+            '/pruebapdf': 'public/pruebapdf',
             '/ranking': 'public/ranking',
             '/admin': 'admin/panel',
             '/admin/login': 'admin/login',
@@ -95,6 +96,7 @@
             'public/validados': 'initValidados',
             'public/match': 'initMatch',
             'public/visitante': 'initVisitante',
+            'public/pruebapdf': 'initPruebaPdf',
             'public/login': 'initLoginStaff',
             'public/ranking': 'initRanking',
             'public/diag-feed': 'initDiagFeed'

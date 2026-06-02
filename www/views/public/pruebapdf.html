@@ -1,0 +1,38 @@
+<section id="cr-pruebapdf-root" class="cr-catalog-page cr-catalog-page--inner" aria-label="Prueba de PDF">
+    <button type="button" class="cr-catalog-back" data-back aria-label="Volver">
+        <span aria-hidden="true">&larr;</span>
+    </button>
+
+    <header class="cr-page-head">
+        <p class="cr-page-kicker">Herramienta</p>
+        <h1 class="cr-page-title">Prueba de PDF</h1>
+        <p class="cr-page-lead">Escribe 3 datos y genera un PDF de ejemplo.</p>
+    </header>
+
+    <section class="cr-card" aria-labelledby="cr-pruebapdf-title">
+        <div class="cr-card-head">
+            <h2 id="cr-pruebapdf-title" class="cr-card-title">Generador</h2>
+        </div>
+        <div class="cr-card-body">
+            <form id="cr-pruebapdf-form" class="grid gap-3">
+                <label class="cr-label" for="cr-pdf-campo-1">Campo 1</label>
+                <input id="cr-pdf-campo-1" class="cr-input" type="text" placeholder="Ej. Nombre del equipo" />
+
+                <label class="cr-label" for="cr-pdf-campo-2">Campo 2</label>
+                <input id="cr-pdf-campo-2" class="cr-input" type="text" placeholder="Ej. Categoría" />
+
+                <label class="cr-label" for="cr-pdf-campo-3">Campo 3</label>
+                <textarea
+                    id="cr-pdf-campo-3"
+                    class="cr-textarea"
+                    rows="4"
+                    placeholder="Ej. Observaciones"
+                ></textarea>
+
+                <button type="submit" class="cr-btn-primary">Generar PDF</button>
+            </form>
+
+            <p id="cr-pruebapdf-msg" class="mt-3 text-sm text-graphite"></p>
+        </div>
+    </section>
+</section>

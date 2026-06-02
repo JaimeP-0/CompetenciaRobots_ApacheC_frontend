@@ -16,6 +16,7 @@
         initValidados: V.validados,
         initMatch: V.match,
         initVisitante: V.visitante,
+        initPruebaPdf: V.pruebaPdf,
         initLoginStaff: V.loginStaff,
         initRanking: V.ranking,
         initDiagFeed: V.diagFeed
