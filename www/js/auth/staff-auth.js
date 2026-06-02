@@ -79,14 +79,15 @@
     function redirectAfterLogin(session) {
         var s = session || (Sesion && Sesion.read());
         if (!s) {
+            w.location.hash = '#/inicio';
+            return;
+        }
+        var role = String(s.role || '').toLowerCase();
+        if (role === 'visitante') {
             w.location.hash = '#/dashboard';
             return;
         }
-        if (QueueRoutes && typeof QueueRoutes.staffWorkspaceHash === 'function') {
-            w.location.hash = QueueRoutes.staffWorkspaceHash(s);
-            return;
-        }
-        w.location.hash = '#/dashboard';
+        w.location.hash = '#/inicio';
     }
 
     w.CRStaffAuth = {

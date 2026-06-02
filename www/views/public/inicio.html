@@ -4,6 +4,11 @@
     data-cr-modulo="1-catalogo"
     aria-label="Competencia de Robots"
 >
+    <div id="cr-staff-bar" class="cr-staff-bar hidden" aria-label="Sesión personal">
+        <span id="cr-staff-bar-label" class="cr-staff-bar-label"></span>
+        <button type="button" id="cr-staff-bar-logout" class="cr-staff-bar-logout">Cerrar sesión</button>
+    </div>
+
     <header class="cr-inicio-head">
         <p class="cr-inicio-kicker">Universidad Tecnológica del Norte de Coahuila</p>
         <h1 class="cr-inicio-title">Competencia de Robots</h1>
@@ -55,23 +60,6 @@
                     <span class="cr-inicio-comp-meta">Velocista · minisumo · fútbol 2v2</span>
                 </span>
                 <span class="cr-inicio-comp-arrow" aria-hidden="true">→</span>
-            </button>
-        </section>
-
-        <section class="cr-inicio-section" aria-label="Personal del evento">
-            <h2 class="cr-inicio-section-title">Personal del evento</h2>
-            <div class="cr-inicio-grid">
-                <button type="button" class="cr-inicio-mini-card" data-route="/login">
-                    <span class="cr-inicio-mini-icon" data-cr-icon="lock-closed" aria-hidden="true"></span>
-                    <span class="cr-inicio-mini-label">Iniciar sesión</span>
-                </button>
-            </div>
-        </section>
-
-        <section class="cr-inicio-section" aria-label="Administración">
-            <button type="button" class="cr-inicio-admin-btn" data-route="/admin/login">
-                <span class="cr-inicio-admin-btn-icon" data-cr-icon="shield-check" aria-hidden="true"></span>
-                <span class="cr-inicio-admin-btn-label">Administración</span>
             </button>
         </section>
     </nav>
