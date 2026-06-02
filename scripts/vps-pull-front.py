@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""En el VPS: git pull del front (solo este repo). No sube archivos por SFTP."""
+"""En el VPS: git fetch + reset del front (solo este repo). No SFTP."""
 import os
 import sys
 from pathlib import Path
@@ -33,20 +33,29 @@ def main() -> None:
     )
     branch = os.environ.get("CR_FRONT_BRANCH", "master")
 
-    cmd = (
-        f'export CR_FRONT_ROOT="{front}" CR_PUBLIC_URL="{public}" '
-        f'CR_FRONT_GIT_URL="{repo}" CR_FRONT_BRANCH="{branch}" && '
+    git_sync = (
         f'cd "{front}" && '
         f'if [ ! -d .git ]; then '
-        f'  echo "==> Primera vez: enlazando {front} con origin/{branch} …"; '
+        f'  echo "==> Primera vez: enlazando con origin/{branch} …"; '
         f'  git init && git remote add origin "{repo}" 2>/dev/null '
         f'    || git remote set-url origin "{repo}"; '
         f'  git fetch origin "{branch}" && '
         f'  git reset --hard "origin/{branch}" && git clean -fd; '
-        f'fi && '
-        f'chmod +x "{front}/deploy/vps/pull-front-on-server.sh" 2>/dev/null; '
+        f'else '
+        f'  echo "==> git fetch + reset --hard origin/{branch} …"; '
+        f'  git fetch origin "{branch}" && '
+        f'  git checkout "{branch}" 2>/dev/null '
+        f'    || git checkout -B "{branch}" "origin/{branch}"; '
+        f'  git reset --hard "origin/{branch}"; '
+        f'fi'
+    )
+
+    post = (
+        f'export CR_FRONT_ROOT="{front}" CR_PUBLIC_URL="{public}" && '
         f'bash "{front}/deploy/vps/pull-front-on-server.sh"'
     )
+
+    cmd = git_sync + " && " + post
 
     c = paramiko.SSHClient()
     c.set_missing_host_key_policy(paramiko.AutoAddPolicy())
