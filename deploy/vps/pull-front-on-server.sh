@@ -40,9 +40,10 @@ if command -v npm >/dev/null && [ -f package.json ]; then
     fi
 fi
 
-if [ -x "$FRONT_ROOT/deploy/vps/install-front-on-server.sh" ]; then
+INSTALL="$FRONT_ROOT/deploy/vps/install-front-on-server.sh"
+if [ -f "$INSTALL" ]; then
     export CR_FRONT_ROOT="$FRONT_ROOT" CR_PUBLIC_URL="$PUBLIC_URL"
-    bash "$FRONT_ROOT/deploy/vps/install-front-on-server.sh"
+    bash "$INSTALL"
 else
     echo "AVISO: falta install-front-on-server.sh; config.local.js no actualizado."
 fi
