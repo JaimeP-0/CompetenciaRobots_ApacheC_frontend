@@ -68,10 +68,11 @@
                 w.CRIcons.decorate(outlet);
             }
             d.documentElement.classList.toggle('cr-registro-fit', name === 'registro/registrar');
-            var isVisitante = name === 'public/visitante' || name === 'public/login';
+            var isLogin = name === 'public/login';
+            var isVisitante = name === 'public/visitante';
             var isDiag = name === 'public/diag-feed';
-            d.body.classList.toggle('cr-view-inicio', false);
-            d.body.classList.toggle('cr-view-inner', !isVisitante && !isDiag);
+            d.body.classList.toggle('cr-view-inicio', isLogin);
+            d.body.classList.toggle('cr-view-inner', !isVisitante && !isLogin && !isDiag);
             d.documentElement.classList.toggle('cr-view-dashboard', isVisitante);
             d.body.classList.toggle('cr-view-dashboard', isVisitante);
             d.documentElement.classList.toggle('cr-view-diag', isDiag);

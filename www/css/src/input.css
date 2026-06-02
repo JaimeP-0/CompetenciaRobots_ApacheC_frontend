@@ -1037,36 +1037,27 @@
     .cr-visitante-dash-foot-actions {
         @apply flex w-full max-w-md flex-wrap items-center justify-center gap-2;
     }
-    .cr-staff-login-page .cr-visitante-dash-main,
-    .cr-staff-login-main {
-        @apply flex flex-1 flex-col items-center justify-center px-4 py-8;
+  /* —— Login staff (#/login) — mismo lenguaje que catálogo / admin —— */
+    .cr-staff-login-page {
+        @apply mx-auto flex w-full max-w-md flex-col gap-5 py-2 sm:max-w-lg sm:gap-6;
+    }
+    .cr-staff-login-head {
+        @apply text-center sm:text-left;
+    }
+    .cr-staff-login-card {
+        @apply w-full;
     }
     .cr-staff-login-form {
-        @apply flex w-full max-w-sm flex-col gap-4;
-    }
-    .cr-staff-login-lead {
-        @apply m-0 text-center text-sm text-snow/60;
+        @apply mt-4 flex flex-col gap-4;
     }
     .cr-staff-login-field {
-        @apply flex flex-col gap-1;
+        @apply flex flex-col gap-1.5;
     }
-    .cr-staff-login-input {
-        @apply w-full min-w-0;
-    }
-    .cr-staff-login-error {
-        @apply m-0 rounded-lg border border-red-400/30 bg-red-500/10 px-3 py-2 text-center text-sm text-red-200;
-    }
-    .cr-staff-login-submit {
-        @apply w-full justify-center;
-    }
-    .cr-staff-login-foot {
-        @apply shrink-0 border-t border-white/10 px-4 py-4;
+    .cr-staff-login-skip-wrap {
+        @apply m-0 flex justify-center pt-1;
     }
     .cr-staff-login-skip {
-        @apply w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-center text-sm text-snow/70 transition hover:bg-white/10 hover:text-snow;
-    }
-    .cr-visitante-dash-back--placeholder {
-        @apply inline-block w-10 shrink-0;
+        @apply cursor-pointer border-0 bg-transparent p-2 text-center text-sm font-medium text-marine underline-offset-2 transition hover:text-navy hover:underline;
     }
 
     .cr-inicio-comp-card--live {
