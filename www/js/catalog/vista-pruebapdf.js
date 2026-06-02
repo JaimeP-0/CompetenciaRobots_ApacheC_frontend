@@ -40,92 +40,243 @@
         }
 
         var jsPDF = w.jspdf.jsPDF;
-        var pageW = 612;   /* letter pts */
-        var pageH = 792;
         var doc = new jsPDF({ unit: 'pt', format: 'letter' });
-        var cx = pageW / 2;
-        var y = 40;
+        var pageW = 612;
+        var pageH = 792;
+        var margin = 34;
+        var cardX = margin;
+        var cardY = 24;
+        var cardW = pageW - margin * 2;
+        var cardH = pageH - 48;
+        var contentX = cardX + 26;
+        var contentW = cardW - 52;
+        var y = 0;
+        var footerTop = pageH - 58;
+        var now = new Date();
+        var year = now.getFullYear();
+        var seq = String(Math.max(1, Math.floor(now.getTime() / 1000) % 1000000)).padStart(6, '0');
+        var folio = 'CR-' + year + '-' + seq;
+        var results = (campos || []).map(function (c, idx) {
+            return {
+                label: String(c && c.label ? c.label : 'Resultado ' + (idx + 1)),
+                value: String(c && c.value ? c.value : 'Sin captura')
+            };
+        });
+        var podium = [
+            { title: 'Primer Lugar', icon: '🥇', fill: [255, 243, 205], stroke: [245, 185, 52], value: results[0] ? results[0].value : 'Por definir' },
+            { title: 'Segundo Lugar', icon: '🥈', fill: [238, 242, 247], stroke: [160, 170, 182], value: results[1] ? results[1].value : 'Por definir' },
+            { title: 'Tercer Lugar', icon: '🥉', fill: [250, 233, 218], stroke: [201, 139, 82], value: results[2] ? results[2].value : 'Por definir' }
+        ];
 
-        /* ── Logo ── (proporción original 1252×1120 ≈ 1.12:1) */
-        if (logoDataUrl) {
-            var logoH = 72;
-            var logoW = Math.round(logoH * (1252 / 1120));
-            doc.addImage(logoDataUrl, 'PNG', cx - logoW / 2, y, logoW, logoH);
-            y += logoH + 12;
+        function footer() {
+            doc.setDrawColor(220, 226, 236);
+            doc.setLineWidth(1);
+            doc.line(contentX, footerTop - 10, contentX + contentW, footerTop - 10);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            doc.setTextColor(111, 116, 128);
+            doc.text(
+                'Documento generado automáticamente por el Sistema Competencia de Robots',
+                pageW / 2,
+                footerTop + 6,
+                { align: 'center' }
+            );
+            doc.setTextColor(27, 140, 122);
+            doc.text('UTNC · utarena.online', pageW / 2, footerTop + 20, { align: 'center' });
         }
 
-        /* ── Línea separadora ── */
-        doc.setDrawColor(27, 140, 122);
-        doc.setLineWidth(1.5);
-        doc.line(48, y, pageW - 48, y);
-        y += 14;
+        function baseSheet() {
+            doc.setFillColor(244, 246, 250);
+            doc.rect(0, 0, pageW, pageH, 'F');
 
-        /* ── Título ── */
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.setTextColor(15, 25, 50);
-        doc.text('Competencia de Robots', cx, y, { align: 'center' });
-        y += 22;
+            doc.setFillColor(224, 231, 241);
+            doc.roundedRect(cardX + 5, cardY + 7, cardW, cardH, 20, 20, 'F');
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(cardX, cardY, cardW, cardH, 20, 20, 'F');
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(80, 80, 80);
-        doc.text('Universidad Tecnológica del Norte de Coahuila', cx, y, { align: 'center' });
-        y += 28;
+            if (logoDataUrl) {
+                var wmW = cardW * 0.74;
+                var wmH = wmW * (1120 / 1252);
+                var wmX = pageW / 2 - wmW / 2;
+                var wmY = pageH / 2 - wmH / 2 + 8;
+                if (doc.GState && typeof doc.setGState === 'function') {
+                    doc.setGState(new doc.GState({ opacity: 0.06 }));
+                    doc.addImage(logoDataUrl, 'PNG', wmX, wmY, wmW, wmH);
+                    doc.setGState(new doc.GState({ opacity: 1 }));
+                } else {
+                    doc.addImage(logoDataUrl, 'PNG', wmX, wmY, wmW, wmH);
+                }
+            }
+            footer();
+        }
 
-        /* ── Fecha ── */
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(11);
-        doc.setTextColor(27, 140, 122);
-        doc.text(fechaLarga(), cx, y, { align: 'center' });
-        y += 28;
+        function simpleHeader() {
+            y = cardY + 34;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(0, 58, 140);
+            doc.text('Resultados Oficiales · Competencia de Robots', contentX, y);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9.5);
+            doc.setTextColor(95, 101, 116);
+            doc.text('UTNC · Folio ' + folio, contentX + contentW, y, { align: 'right' });
+            y += 16;
+            doc.setDrawColor(225, 232, 241);
+            doc.line(contentX, y, contentX + contentW, y);
+            y += 18;
+        }
 
-        /* ── Segunda línea separadora ── */
-        doc.setDrawColor(200, 200, 200);
-        doc.setLineWidth(0.5);
-        doc.line(48, y, pageW - 48, y);
-        y += 22;
+        function fullHeader() {
+            y = cardY + 28;
+            if (logoDataUrl) {
+                var logoH = 76;
+                var logoW = logoH * (1252 / 1120);
+                doc.addImage(logoDataUrl, 'PNG', pageW / 2 - logoW / 2, y, logoW, logoH);
+                y += logoH + 12;
+            }
 
-        /* ── Campos ── */
-        var fieldPad = 16;
-        var fieldW = pageW - 96;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(95, 101, 116);
+            doc.text('UNIVERSIDAD TECNOLÓGICA DEL NORTE DE COAHUILA', pageW / 2, y, { align: 'center' });
+            y += 20;
 
-        campos.forEach(function (campo) {
-            /* Etiqueta */
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(25);
+            doc.setTextColor(0, 58, 140);
+            doc.text('Resultados Oficiales', pageW / 2, y, { align: 'center' });
+            y += 24;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.setTextColor(27, 140, 122);
+            doc.text('Competencia de Robots', pageW / 2, y, { align: 'center' });
+            y += 18;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10.5);
+            doc.setTextColor(95, 101, 116);
+            doc.text('Registro, consulta y competencia en un solo lugar.', pageW / 2, y, { align: 'center' });
+            y += 22;
+
+            var infoY = y;
+            var gap = 14;
+            var boxW = (contentW - gap) / 2;
+            var boxH = 62;
+
+            doc.setFillColor(246, 249, 255);
+            doc.setDrawColor(222, 230, 240);
+            doc.roundedRect(contentX, infoY, boxW, boxH, 10, 10, 'FD');
+            doc.roundedRect(contentX + boxW + gap, infoY, boxW, boxH, 10, 10, 'FD');
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8.5);
+            doc.setTextColor(118, 124, 138);
+            doc.text('FECHA OFICIAL', contentX + 12, infoY + 17);
+            doc.text('FOLIO', contentX + boxW + gap + 12, infoY + 17);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(30, 30, 30);
+            doc.text(fechaLarga(), contentX + 12, infoY + 38);
+            doc.setTextColor(0, 58, 140);
+            doc.text(folio, contentX + boxW + gap + 12, infoY + 38);
+            y = infoY + boxH + 20;
+        }
+
+        function ensureSpace(h) {
+            if (y + h <= footerTop - 14) {
+                return;
+            }
+            doc.addPage();
+            baseSheet();
+            simpleHeader();
+        }
+
+        function resultCard(entry, idx) {
+            var labelW = contentW - 28;
+            var valueW = contentW - 28;
+            var valueLines = doc.splitTextToSize(entry.value, valueW);
+            var boxH = Math.max(84, 56 + valueLines.length * 17);
+            ensureSpace(boxH + 14);
+
+            doc.setFillColor(255, 255, 255);
+            doc.setDrawColor(223, 230, 239);
+            doc.roundedRect(contentX, y, contentW, boxH, 12, 12, 'FD');
+            doc.setFillColor(238, 242, 249);
+            doc.roundedRect(contentX + 12, y + 12, 92, 20, 9, 9, 'F');
+
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(9);
-            doc.setTextColor(100, 100, 100);
-            doc.text(campo.label.toUpperCase(), cx, y, { align: 'center' });
+            doc.setTextColor(96, 104, 118);
+            doc.text('RESULTADO ' + (idx + 1), contentX + 20, y + 25);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.8);
+            doc.setTextColor(112, 118, 130);
+            doc.text(entry.label.toUpperCase(), contentX + 14, y + 48, { maxWidth: labelW });
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(15);
+            doc.setTextColor(30, 30, 30);
+            doc.text(valueLines, contentX + 14, y + 71, { maxWidth: valueW });
+            y += boxH + 14;
+        }
+
+        function podiumSection() {
+            ensureSpace(184);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(13);
+            doc.setTextColor(0, 58, 140);
+            doc.text('Podio oficial por categoría', contentX, y);
+            y += 12;
+            doc.setDrawColor(27, 140, 122);
+            doc.setLineWidth(1);
+            doc.line(contentX, y, contentX + 210, y);
             y += 14;
 
-            /* Caja */
-            doc.setFillColor(247, 248, 251);
-            doc.setDrawColor(220, 220, 220);
-            doc.setLineWidth(0.5);
+            var gap = 10;
+            var boxW = (contentW - gap * 2) / 3;
+            var boxH = 130;
+            ensureSpace(boxH + 8);
+            podium.forEach(function (p, i) {
+                var bx = contentX + (boxW + gap) * i;
+                doc.setFillColor(p.fill[0], p.fill[1], p.fill[2]);
+                doc.setDrawColor(p.stroke[0], p.stroke[1], p.stroke[2]);
+                doc.roundedRect(bx, y, boxW, boxH, 12, 12, 'FD');
 
-            var valor = String(campo.value || '—');
-            var maxW = fieldW - fieldPad * 2;
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(12);
-            doc.setTextColor(20, 20, 20);
-            var lines = doc.splitTextToSize(valor, maxW);
-            var boxH = Math.max(32, lines.length * 16 + fieldPad * 1.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(18);
+                doc.setTextColor(80, 80, 80);
+                doc.text(p.icon, bx + boxW / 2, y + 30, { align: 'center' });
 
-            doc.roundedRect(48, y, fieldW, boxH, 4, 4, 'FD');
-            doc.text(lines, cx, y + fieldPad + 2, { align: 'center' });
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(10);
+                doc.setTextColor(75, 75, 75);
+                doc.text(p.title.toUpperCase(), bx + boxW / 2, y + 52, { align: 'center' });
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.setTextColor(30, 30, 30);
+                var podiumLines = doc.splitTextToSize(p.value, boxW - 18);
+                doc.text(podiumLines, bx + boxW / 2, y + 74, { align: 'center', maxWidth: boxW - 18 });
+            });
             y += boxH + 14;
-        });
+        }
 
-        /* ── Pie ── */
-        y = pageH - 36;
-        doc.setDrawColor(200, 200, 200);
-        doc.setLineWidth(0.5);
-        doc.line(48, y, pageW - 48, y);
-        y += 14;
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(8);
-        doc.setTextColor(160, 160, 160);
-        doc.text('Generado por el sistema de Competencia de Robots · utarena.online', cx, y, { align: 'center' });
+        baseSheet();
+        fullHeader();
+        podiumSection();
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(13);
+        doc.setTextColor(0, 58, 140);
+        doc.text('Resultados finales', contentX, y);
+        y += 18;
+
+        results.forEach(function (entry, idx) {
+            resultCard(entry, idx);
+        });
 
         return doc;
     }
