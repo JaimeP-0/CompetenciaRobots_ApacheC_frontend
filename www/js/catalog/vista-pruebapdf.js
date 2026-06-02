@@ -90,9 +90,9 @@
             doc.rect(0, 0, pageW, pageH, 'F');
 
             doc.setFillColor(224, 231, 241);
-            doc.roundedRect(cardX + 5, cardY + 7, cardW, cardH, 20, 20, 'F');
+            doc.rect(cardX + 5, cardY + 7, cardW, cardH, 'F');
             doc.setFillColor(255, 255, 255);
-            doc.roundedRect(cardX, cardY, cardW, cardH, 20, 20, 'F');
+            doc.rect(cardX, cardY, cardW, cardH, 'F');
 
             if (logoDataUrl) {
                 var wmW = cardW * 0.74;
@@ -194,32 +194,19 @@
         }
 
         function resultCard(entry, idx) {
-            var labelW = contentW - 28;
             var valueW = contentW - 28;
             var valueLines = doc.splitTextToSize(entry.value, valueW);
-            var boxH = Math.max(84, 56 + valueLines.length * 17);
+            var boxH = Math.max(64, 30 + valueLines.length * 17);
             ensureSpace(boxH + 14);
 
             doc.setFillColor(255, 255, 255);
             doc.setDrawColor(223, 230, 239);
             doc.roundedRect(contentX, y, contentW, boxH, 12, 12, 'FD');
-            doc.setFillColor(238, 242, 249);
-            doc.roundedRect(contentX + 12, y + 12, 92, 20, 9, 9, 'F');
-
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(9);
-            doc.setTextColor(96, 104, 118);
-            doc.text('RESULTADO ' + (idx + 1), contentX + 20, y + 25);
-
-            doc.setFont('helvetica', 'normal');
-            doc.setFontSize(8.8);
-            doc.setTextColor(112, 118, 130);
-            doc.text(entry.label.toUpperCase(), contentX + 14, y + 48, { maxWidth: labelW });
 
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(15);
             doc.setTextColor(30, 30, 30);
-            doc.text(valueLines, contentX + 14, y + 71, { maxWidth: valueW });
+            doc.text(valueLines, contentX + 14, y + 38, { maxWidth: valueW });
             y += boxH + 14;
         }
 
@@ -243,7 +230,7 @@
                 var bx = contentX + (boxW + gap) * i;
                 doc.setFillColor(p.fill[0], p.fill[1], p.fill[2]);
                 doc.setDrawColor(p.stroke[0], p.stroke[1], p.stroke[2]);
-                doc.rect(bx, y, boxW, boxH, 'FD');
+                doc.roundedRect(bx, y, boxW, boxH, 12, 12, 'FD');
 
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(10);
@@ -263,11 +250,7 @@
         fullHeader();
         podiumSection();
 
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(13);
-        doc.setTextColor(0, 58, 140);
-        doc.text('Resultados finales', contentX, y);
-        y += 18;
+        y += 4;
 
         results.forEach(function (entry, idx) {
             resultCard(entry, idx);
