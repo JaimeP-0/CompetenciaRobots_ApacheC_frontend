@@ -1477,6 +1477,18 @@
     .cr-inicio-nav {
         @apply flex w-full min-w-0 flex-col gap-5 sm:gap-6;
     }
+    .cr-inicio-staff-foot {
+        @apply mx-auto mt-6 flex w-full max-w-3xl flex-col items-center gap-2 border-t border-graphite/15 pt-4 text-center;
+    }
+    .cr-inicio-staff-foot--empty {
+        @apply hidden;
+    }
+    .cr-inicio-staff-foot-label {
+        @apply m-0 text-sm font-medium text-graphite/80;
+    }
+    .cr-inicio-staff-foot-logout {
+        @apply rounded-lg border border-graphite/25 bg-snow px-4 py-2 text-sm font-semibold text-graphite transition hover:border-graphite/40 hover:bg-mist/30;
+    }
     .cr-inicio-hero-card {
         @apply flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-2xl border border-marine/30 bg-gradient-to-br from-snow via-snow to-marine/[0.09] p-4 text-left shadow-md transition [-webkit-tap-highlight-color:transparent] hover:border-marine/45 hover:shadow-lg active:scale-[0.99] sm:gap-4 sm:p-5;
         font: inherit;

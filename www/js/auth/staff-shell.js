@@ -1,5 +1,5 @@
 /**
- * Barra de sesión staff (juez / árbitro) con cerrar sesión.
+ * Barra / pie de sesión staff (juez / árbitro) con cerrar sesión.
  */
 (function (w) {
     'use strict';
@@ -38,11 +38,51 @@
         return parts.join(' · ');
     }
 
+    function wireLogout(btn) {
+        if (!btn || btn.getAttribute('data-cr-staff-logout-bound') === '1') {
+            return;
+        }
+        btn.setAttribute('data-cr-staff-logout-bound', '1');
+        btn.addEventListener('click', function () {
+            if (w.CRStaffAuth && typeof w.CRStaffAuth.logoutAndLogin === 'function') {
+                w.CRStaffAuth.logoutAndLogin();
+            } else if (w.CRStaffAuth && typeof w.CRStaffAuth.logout === 'function') {
+                w.CRStaffAuth.logout();
+                w.location.hash = '#/login';
+            }
+        });
+    }
+
+    function bindStaffFoot(root) {
+        var foot = root.querySelector('#cr-inicio-staff-foot');
+        var labelEl = root.querySelector('#cr-inicio-staff-label');
+        var btnLogout = root.querySelector('#cr-inicio-staff-logout');
+        if (!foot || !btnLogout) {
+            return;
+        }
+
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        var logged = !!(ses && ses.username);
+
+        foot.classList.toggle('cr-inicio-staff-foot--empty', !logged);
+        if (labelEl) {
+            labelEl.textContent = logged ? sessionSummary(ses) : '';
+        }
+        btnLogout.classList.toggle('hidden', !logged);
+        wireLogout(btnLogout);
+    }
+
     function bindStaffBar(root) {
         root = root || w.document.getElementById('cr-outlet');
         if (!root) {
             return;
         }
+
+        if (root.querySelector('#cr-inicio-staff-foot')) {
+            bindStaffFoot(root);
+            return;
+        }
+
         var bar = root.querySelector('#cr-staff-bar');
         var labelEl = root.querySelector('#cr-staff-bar-label');
         var btnLogout = root.querySelector('#cr-staff-bar-logout');
@@ -57,19 +97,7 @@
         if (labelEl) {
             labelEl.textContent = logged ? sessionSummary(ses) : '';
         }
-
-        if (btnLogout.getAttribute('data-cr-staff-logout-bound') === '1') {
-            return;
-        }
-        btnLogout.setAttribute('data-cr-staff-logout-bound', '1');
-        btnLogout.addEventListener('click', function () {
-            if (w.CRStaffAuth && typeof w.CRStaffAuth.logoutAndLogin === 'function') {
-                w.CRStaffAuth.logoutAndLogin();
-            } else if (w.CRStaffAuth && typeof w.CRStaffAuth.logout === 'function') {
-                w.CRStaffAuth.logout();
-                w.location.hash = '#/login';
-            }
-        });
+        wireLogout(btnLogout);
     }
 
     w.CRStaffShell = {

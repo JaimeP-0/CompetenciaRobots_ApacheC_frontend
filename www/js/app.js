@@ -27,6 +27,34 @@
         return '#/match/internos';
     }
 
+    function staffLoggedIn() {
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        return !!(ses && ses.username);
+    }
+
+    function guardAuthEntry(route) {
+        var r = String(route || '').split('?')[0];
+        if (staffLoggedIn()) {
+            if (r === '/login' || r === '/') {
+                return '#/inicio';
+            }
+            return null;
+        }
+        if (r === '/' || r === '/inicio' || r === '/registro') {
+            return '#/login';
+        }
+        return null;
+    }
+
+    function stripLegacyQueryParams() {
+        if (!w.location.search) {
+            return;
+        }
+        try {
+            w.history.replaceState(null, '', w.location.pathname + (w.location.hash || ''));
+        } catch (ignore) {}
+    }
+
     function guardStaffRoute(route) {
         var ses = w.CRStaffSesion && w.CRStaffSesion.read();
         if (!ses || !w.CRQueueRoutes || typeof w.CRQueueRoutes.staffMayAccessRoute !== 'function') {
@@ -170,7 +198,13 @@
     }
 
     function renderCurrentRoute() {
+        stripLegacyQueryParams();
         var route = Router.normalize(w.location.hash);
+        var authRedirect = guardAuthEntry(route);
+        if (authRedirect) {
+            w.location.hash = authRedirect;
+            return;
+        }
         var redirect = Router.getRedirect(route);
         if (redirect) {
             if (redirect.indexOf('#') === 0) {
@@ -253,8 +287,10 @@
         if (!form || form.tagName !== 'FORM' || !outlet || !outlet.contains(form)) {
             return;
         }
-        if (form.id === 'f-staff-login') {
+        if (form.id === 'f-staff-login' || form.id === 'f-registro-equipo') {
             e.preventDefault();
+        }
+        if (form.id === 'f-staff-login') {
             var submitStaff =
                 w.CRCatalogViews && typeof w.CRCatalogViews.handleStaffLoginSubmit === 'function';
             if (submitStaff) {
@@ -275,7 +311,7 @@
         outlet.addEventListener('submit', onOutletSubmit, false);
         outlet.addEventListener('click', onOutletClick, false);
         if (!w.location.hash || w.location.hash === '#/') {
-            w.location.hash = '/inicio';
+            w.location.hash = staffLoggedIn() ? '/inicio' : '/login';
         }
         renderCurrentRoute();
     }
