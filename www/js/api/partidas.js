@@ -360,13 +360,10 @@
     }
 
     function inferMatchModeFromCategoryName(categoryName) {
-        var n = String(categoryName || '')
-            .trim()
-            .toLowerCase();
-        if (n.indexOf('sumo') !== -1) {
-            return 'pairwise';
+        if (w.CRCategoriasCompetencia) {
+            return w.CRCategoriasCompetencia.inferMatchModeFromCategoryName(categoryName);
         }
-        if (isSoloRaceCategoryName(categoryName)) {
+        if (isVelocistaCategoryName(categoryName)) {
             return 'solo';
         }
         return 'shared';
@@ -379,11 +376,29 @@
         return n.indexOf('velocista') !== -1 || n.indexOf('velocisra') !== -1 || n.indexOf('speedster') !== -1;
     }
 
-    function isSumoCategoryName(categoryName) {
+    function isMinisumoCategoryName(categoryName) {
+        if (w.CRCategoriasCompetencia) {
+            return w.CRCategoriasCompetencia.isMinisumoCategoryName(categoryName);
+        }
         var n = String(categoryName || '')
             .trim()
             .toLowerCase();
-        return n.indexOf('sumo') !== -1;
+        return n.indexOf('minisumo') !== -1 || n.indexOf('mini sumo') !== -1;
+    }
+
+    function isFutbolCategoryName(categoryName) {
+        if (w.CRCategoriasCompetencia) {
+            return w.CRCategoriasCompetencia.isFutbolCategoryName(categoryName);
+        }
+        var n = String(categoryName || '')
+            .trim()
+            .toLowerCase();
+        return n.indexOf('futbol') !== -1 || n.indexOf('football') !== -1;
+    }
+
+    /** @deprecated Usar isMinisumoCategoryName; no hay brackets. */
+    function isSumoCategoryName(categoryName) {
+        return isMinisumoCategoryName(categoryName);
     }
 
     function isLineFollowerCategoryName(categoryName) {
@@ -478,13 +493,42 @@
         });
     }
 
-    function fetchValidatedTeamIdsForCategory(categoryId) {
+    function queueScopeFromOpts(opts) {
+        var Origin = w.CRTeamOrigin;
+        if (!Origin || !opts) {
+            return '';
+        }
+        return Origin.normalizeQueueScope(opts.queueScope != null ? opts.queueScope : opts.queue_scope);
+    }
+
+    function schoolMapFromTeams(teams) {
+        var map = {};
+        (teams || []).forEach(function (t) {
+            if (t && t.id != null) {
+                map[String(t.id)] = t.school != null ? String(t.school).trim() : '';
+            }
+        });
+        return map;
+    }
+
+    function fetchValidatedTeamIdsForCategory(categoryId, opts) {
+        opts = opts || {};
+        var scope = queueScopeFromOpts(opts);
         var Equipos = w.CRApiEquiposRegistro;
+        var Origin = w.CRTeamOrigin;
         if (!Equipos || typeof Equipos.fetchRobots !== 'function') {
             return Promise.resolve([]);
         }
-        return Equipos.fetchRobots()
-            .then(function (robots) {
+        var teamsPromise =
+            scope && typeof Equipos.fetchTeamsByCategoryEnriched === 'function'
+                ? Equipos.fetchTeamsByCategoryEnriched(categoryId).catch(function () {
+                      return [];
+                  })
+                : Promise.resolve([]);
+        return Promise.all([Equipos.fetchRobots(), teamsPromise])
+            .then(function (arr) {
+                var robots = arr[0];
+                var schoolByTeam = schoolMapFromTeams(arr[1]);
                 var ids = [];
                 var seen = {};
                 (robots || []).forEach(function (r) {
@@ -506,10 +550,17 @@
                         return;
                     }
                     var tid = Number(r.team_id, 10);
-                    if (!isNaN(tid) && !seen[String(tid)]) {
-                        seen[String(tid)] = true;
-                        ids.push(tid);
+                    if (isNaN(tid) || seen[String(tid)]) {
+                        return;
                     }
+                    if (scope && Origin) {
+                        var school = schoolByTeam[String(tid)] || '';
+                        if (Origin.classifySchool(school) !== scope) {
+                            return;
+                        }
+                    }
+                    seen[String(tid)] = true;
+                    ids.push(tid);
                 });
                 ids.sort(function (a, b) {
                     return a - b;
@@ -590,6 +641,50 @@
             });
     }
 
+    function normalizeTeamIdList(raw) {
+        if (!Array.isArray(raw)) {
+            return [];
+        }
+        return raw
+            .map(function (id) {
+                return Number(id, 10);
+            })
+            .filter(function (n) {
+                return !isNaN(n) && n > 0;
+            });
+    }
+
+    function buildIniciarPayload(opts, teamIds) {
+        var payload = {};
+        if (opts.mode === 'pairwise' || opts.mode === 'shared') {
+            payload.mode = opts.mode;
+        }
+        var ids = normalizeTeamIdList(teamIds);
+        if (ids.length) {
+            payload.team_ids = ids;
+        }
+        return payload;
+    }
+
+    function filterTeamIdsForScope(categoryId, teamIds, scope) {
+        var Origin = w.CRTeamOrigin;
+        var Equipos = w.CRApiEquiposRegistro;
+        if (!scope || !Origin || !Equipos || typeof Equipos.fetchTeamsByCategoryEnriched !== 'function') {
+            return Promise.resolve(normalizeTeamIdList(teamIds));
+        }
+        return Equipos.fetchTeamsByCategoryEnriched(categoryId)
+            .then(function (teams) {
+                return Origin.filterTeamIdsByQueueScope(
+                    normalizeTeamIdList(teamIds),
+                    scope,
+                    schoolMapFromTeams(teams)
+                );
+            })
+            .catch(function () {
+                return normalizeTeamIdList(teamIds);
+            });
+    }
+
     function postPartidasIniciar(categoryId, opts) {
         opts = opts || {};
         var mode = opts.mode;
@@ -599,20 +694,30 @@
         if (mode === 'solo') {
             return postPartidasIniciarSolo(categoryId, opts);
         }
-        var payload = {};
-        if (opts.mode === 'pairwise' || opts.mode === 'shared') {
-            payload.mode = opts.mode;
-        }
-        var teamIds = opts.team_ids || opts.teamIds;
-        if (Array.isArray(teamIds) && teamIds.length) {
-            payload.team_ids = teamIds
-                .map(function (id) {
-                    return Number(id, 10);
-                })
-                .filter(function (n) {
-                    return !isNaN(n) && n > 0;
+        var scope = queueScopeFromOpts(opts);
+        var explicitIds = opts.team_ids || opts.teamIds;
+
+        if (scope) {
+            if (Array.isArray(explicitIds) && explicitIds.length) {
+                return filterTeamIdsForScope(categoryId, explicitIds, scope).then(function (filtered) {
+                    return request('POST', partidasIniciarPath(categoryId), {
+                        body: buildIniciarPayload(opts, filtered)
+                    }).then(normalizePartidasList);
                 });
+            }
+            return fetchValidatedTeamIdsForCategory(categoryId, opts).then(function (validatedIds) {
+                return fetchPartidasByCategory(categoryId).then(function (existing) {
+                    var pending = validatedIds.filter(function (tid) {
+                        return !teamInPartidaList(tid, existing);
+                    });
+                    return request('POST', partidasIniciarPath(categoryId), {
+                        body: buildIniciarPayload(opts, pending)
+                    }).then(normalizePartidasList);
+                });
+            });
         }
+
+        var payload = buildIniciarPayload(opts, explicitIds);
         return request('POST', partidasIniciarPath(categoryId), { body: payload }).then(normalizePartidasList);
     }
 
@@ -693,6 +798,8 @@
         isSoloRaceCategoryName: isSoloRaceCategoryName,
         isLineFollowerCategoryName: isLineFollowerCategoryName,
         isVelocistaCategoryName: isVelocistaCategoryName,
+        isMinisumoCategoryName: isMinisumoCategoryName,
+        isFutbolCategoryName: isFutbolCategoryName,
         isSumoCategoryName: isSumoCategoryName,
         buildResultadoPayload: buildResultadoPayload,
         normalizeResultTime: normalizeResultTime,
@@ -711,6 +818,9 @@
         fetchByCategory: fetchPartidasByCategory,
         fetchById: fetchPartidaById,
         create: createPartida,
+        queueScopeFromOpts: queueScopeFromOpts,
+        fetchValidatedTeamIdsForCategory: fetchValidatedTeamIdsForCategory,
+        teamInPartidaList: teamInPartidaList,
         postIniciar: postPartidasIniciar,
         fetchAllResultados: fetchAllResultados,
         fetchResultadoByMatchId: fetchResultadoByMatchId,

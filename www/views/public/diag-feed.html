@@ -1,0 +1,36 @@
+<section
+    id="cr-diag-root"
+    class="cr-diag-page"
+    data-cr-modulo="diag"
+    aria-label="Telemetría del API"
+>
+    <header class="cr-diag-bar">
+        <div class="cr-diag-bar-start">
+            <button type="button" data-back data-back-fallback="/" class="cr-diag-back" aria-label="Volver">←</button>
+            <div>
+                <p class="cr-diag-kicker">Solo operadores</p>
+                <h1 class="cr-diag-title">Telemetría API</h1>
+            </div>
+        </div>
+        <div class="cr-diag-bar-actions">
+            <label class="cr-diag-filter">
+                <span>Nivel</span>
+                <select id="cr-diag-level" class="cr-diag-select">
+                    <option value="">Todos</option>
+                    <option value="error">Errores</option>
+                    <option value="warn">Avisos</option>
+                    <option value="info">Info</option>
+                    <option value="log">Log</option>
+                </select>
+            </label>
+            <button type="button" id="cr-diag-refresh" class="cr-diag-btn">Actualizar</button>
+            <button type="button" id="cr-diag-clear" class="cr-diag-btn cr-diag-btn--ghost">Limpiar</button>
+        </div>
+    </header>
+
+    <p id="cr-diag-status" class="cr-diag-status" aria-live="polite"></p>
+
+    <div id="cr-diag-log" class="cr-diag-log" role="log" aria-live="polite" aria-relevant="additions">
+        <p class="cr-diag-msg">Conectando…</p>
+    </div>
+</section>

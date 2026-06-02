@@ -7,7 +7,10 @@
     var CRDom = w.CRDom;
     if (!CRDom) throw new Error('Carga core/escape-html y skeleton-html');
 
-    function modeLabel(mode) {
+    function modeLabel(mode, categoryName) {
+        if (w.CRCategoriasCompetencia && categoryName) {
+            return w.CRCategoriasCompetencia.matchModeLabel(mode, categoryName);
+        }
         if (mode === 'pairwise') {
             return 'Parejas (1 vs 1)';
         }
@@ -20,13 +23,18 @@
         return 'Automático';
     }
 
-    function initMatch(outlet) {
+    function initMatch(outlet, routeParams) {
+        routeParams = routeParams || {};
         var root = (outlet && outlet.querySelector('#cr-match-root')) || outlet;
         if (!root || !w.CRApi || typeof w.CRApi.getPartidas !== 'function') {
             return;
         }
 
         var selCat = root.querySelector('#cr-match-cat');
+        var pageTitleEl = root.querySelector('.cr-page-title');
+        var scopeLockedHint = root.querySelector('#cr-match-scope-locked-hint');
+        var lockedScope = !!routeParams.lockedScope;
+        var routeScope = routeParams.queueScope || '';
         var selMode = root.querySelector('#cr-match-mode');
         var hintEl = root.querySelector('#cr-match-mode-hint');
         var btnIniciar = root.querySelector('#cr-match-iniciar');
@@ -34,8 +42,59 @@
         var listEl = root.querySelector('#cr-match-list');
         var countEl = root.querySelector('#cr-match-list-count');
         var selListFilter = root.querySelector('#cr-match-list-filter');
+        var selQueueScope = root.querySelector('#cr-match-queue-scope');
+        var btnGenerarMas = root.querySelector('#cr-match-generar-mas');
+        var btnVelocistaSiguiente = root.querySelector('#cr-velocista-siguiente');
+        var listTitleEl = root.querySelector('#cr-match-list-title');
+        var modeWrap = root.querySelector('#cr-match-mode-wrap');
+        var lastPartidasLoadCtx = null;
         if (!selCat || !btnIniciar || !listEl) {
             return;
+        }
+
+        function getQueueScope() {
+            if (!selQueueScope) {
+                return '';
+            }
+            if (w.CRTeamOrigin && typeof w.CRTeamOrigin.normalizeQueueScope === 'function') {
+                return w.CRTeamOrigin.normalizeQueueScope(selQueueScope.value);
+            }
+            return String(selQueueScope.value || '').trim().toLowerCase();
+        }
+
+        function initQueueScopeSelect() {
+            if (!selQueueScope || !w.CRTeamOrigin) {
+                return;
+            }
+            if (routeScope) {
+                selQueueScope.value =
+                    w.CRTeamOrigin.normalizeQueueScope(routeScope) === 'external' ? 'external' : 'internal';
+            } else {
+                var stored = w.CRTeamOrigin.readStoredQueueScope();
+                if (stored) {
+                    selQueueScope.value = stored === 'external' ? 'external' : 'internal';
+                }
+            }
+            if (lockedScope) {
+                selQueueScope.disabled = true;
+                selQueueScope.setAttribute('aria-disabled', 'true');
+                if (scopeLockedHint) {
+                    scopeLockedHint.textContent =
+                        'Cola fija para esta vista (' + (routeParams.scopeLabel || selQueueScope.value) + ').';
+                    scopeLockedHint.classList.remove('hidden');
+                }
+            }
+            if (pageTitleEl && routeParams.scopeLabel) {
+                pageTitleEl.textContent = 'Partidas — ' + routeParams.scopeLabel;
+            }
+        }
+
+        function persistQueueScope() {
+            var scope = getQueueScope();
+            if (scope && w.CRTeamOrigin) {
+                w.CRTeamOrigin.storeQueueScope(scope);
+            }
+            return scope;
         }
 
         if (w.CRIcons) {
@@ -86,23 +145,72 @@
                 hintEl.textContent = '';
                 return;
             }
-            var manual = selMode && selMode.value;
+            var manual = selMode && selMode.value && modeWrap && !modeWrap.classList.contains('hidden');
             if (manual === 'pairwise' || manual === 'shared') {
-                hintEl.textContent = 'Modo manual: ' + modeLabel(manual) + '.';
+                hintEl.textContent = 'Modo manual: ' + modeLabel(manual, cat.name) + '.';
                 return;
             }
             var inferred =
                 typeof w.CRApi.inferMatchMode === 'function'
                     ? w.CRApi.inferMatchMode(cat.name)
                     : 'shared';
-            hintEl.textContent =
-                'Modo automático: ' +
-                modeLabel(inferred) +
-                (inferred === 'pairwise'
-                    ? ' (categorías tipo sumo).'
-                    : inferred === 'solo'
-                      ? ' (seguidor de línea, velocista). Una partida por equipo para medir tiempo.'
-                      : ' (concurso en cola). Solo equipos con robot válido.');
+            var extra = '';
+            if (typeof w.CRApi.isFutbolCategory === 'function' && w.CRApi.isFutbolCategory(cat.name)) {
+                extra = ' Cada equipo necesita 2 robots validados.';
+            }
+            if (typeof w.CRApi.isMinisumoCategory === 'function' && w.CRApi.isMinisumoCategory(cat.name)) {
+                extra = ' Sin brackets: empareja 1v1 y usa «Generar más partidas» para la siguiente ronda.';
+            }
+            hintEl.textContent = modeLabel(inferred, cat.name) + '.' + extra;
+        }
+
+        function syncMatchUiForCategory() {
+            var cat = selectedCategory();
+            var isEvent =
+                cat &&
+                w.CRCategoriasCompetencia &&
+                w.CRCategoriasCompetencia.isEventCategoryName(cat.name);
+            if (modeWrap) {
+                modeWrap.classList.toggle('hidden', !!isEvent);
+            }
+            if (btnGenerarMas) {
+                var showGen =
+                    cat &&
+                    ((typeof w.CRApi.isMinisumoCategory === 'function' &&
+                        w.CRApi.isMinisumoCategory(cat.name)) ||
+                        (typeof w.CRApi.isFutbolCategory === 'function' &&
+                            w.CRApi.isFutbolCategory(cat.name)));
+                btnGenerarMas.classList.toggle('hidden', !showGen);
+                btnGenerarMas.disabled = !selCat.value;
+            }
+            var isVel =
+                cat && typeof w.CRApi.isVelocistaCategory === 'function' && w.CRApi.isVelocistaCategory(cat.name);
+            if (btnVelocistaSiguiente) {
+                btnVelocistaSiguiente.classList.toggle('hidden', !isVel);
+            }
+            btnIniciar.textContent = isVel ? 'Crear cola de carreras' : 'Iniciar cola';
+            updateModeHint();
+            syncIniciarEnabled();
+        }
+
+        function refreshGenerarMasState() {
+            if (!btnGenerarMas || btnGenerarMas.classList.contains('hidden') || !selCat.value) {
+                return;
+            }
+            var cat = selectedCategory();
+            if (!cat) {
+                return;
+            }
+            var opts = {
+                queueScope: persistQueueScope(),
+                categoryName: cat.name
+            };
+            if (!w.CRApiMatchmaking || typeof w.CRApiMatchmaking.countPendingInScope !== 'function') {
+                return;
+            }
+            w.CRApiMatchmaking.countPendingInScope(selCat.value, opts).then(function (pending) {
+                btnGenerarMas.disabled = pending > 0;
+            });
         }
 
         function categoryLabel(catId) {
@@ -525,6 +633,11 @@
         }
 
         function renderPairwiseCard(match, teamsById, resultado) {
+            var catName = categoryLabel(match.category_id);
+            var badge = '1v1';
+            if (typeof w.CRApi.isFutbolCategory === 'function' && w.CRApi.isFutbolCategory(catName)) {
+                badge = '2v2';
+            }
             var teamA = teamFromMatch(match, 'a', teamsById);
             var teamB = teamFromMatch(match, 'b', teamsById);
             var body = '';
@@ -555,7 +668,9 @@
                 '<h3 class="cr-match-card-title">Partida #' +
                 CRDom.escapeHtml(String(match.id)) +
                 '</h3>' +
-                '<span class="cr-match-card-badge cr-match-card-badge--pair">Parejas</span></div>' +
+                '<span class="cr-match-card-badge cr-match-card-badge--pair">' +
+                CRDom.escapeHtml(badge) +
+                '</span></div>' +
                 '<p class="cr-match-card-line">' +
                 categoryChip(match.category_id) +
                 '</p>' +
@@ -626,7 +741,166 @@
             return map;
         }
 
+        function isVelocistaCategoryId(catId) {
+            if (!catId) {
+                return false;
+            }
+            return (
+                typeof w.CRApi.isVelocistaCategory === 'function' &&
+                w.CRApi.isVelocistaCategory(categoryLabel(catId))
+            );
+        }
+
+        function teamIdFromSoloPartida(partida) {
+            if (!partida) {
+                return null;
+            }
+            if (partida.queue && partida.queue.length) {
+                return partida.queue[0];
+            }
+            return partida.team_a_id != null ? partida.team_a_id : null;
+        }
+
+        function updateListSectionTitle(isVelocistaView) {
+            if (!listTitleEl) {
+                return;
+            }
+            listTitleEl.textContent = isVelocistaView ? 'Cola velocista' : 'Partidas pendientes';
+        }
+
+        function focusVelocistaEnPista() {
+            if (!listEl) {
+                return;
+            }
+            var wrap = listEl.querySelector('.cr-velocista-now-wrap');
+            if (wrap && wrap.scrollIntoView) {
+                wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+            var minInput = listEl.querySelector('#cr-velocista-now [name=time-min]');
+            if (minInput && minInput.focus) {
+                window.setTimeout(function () {
+                    minInput.focus();
+                }, 280);
+            }
+        }
+
+        function syncVelocistaSiguienteButton(pendingCount, hasCurrent) {
+            if (!btnVelocistaSiguiente) {
+                return;
+            }
+            var catId = selListFilter ? selListFilter.value : selCat.value;
+            var show =
+                isVelocistaCategoryId(catId) &&
+                (pendingCount > 0 || hasCurrent);
+            btnVelocistaSiguiente.classList.toggle('hidden', !show);
+            btnVelocistaSiguiente.disabled = !hasCurrent;
+        }
+
+        function renderVelocistaView(catId, allPartidas, resByMatch, teamsById, scope) {
+            teamsById = mergeTeamsFromPartidas(allPartidas || [], teamsById || {});
+            var runs = (allPartidas || []).filter(function (p) {
+                return p && String(p.category_id) === String(catId) && isSoloRaceMatch(p);
+            });
+            if (scope && w.CRTeamOrigin) {
+                runs = runs.filter(function (p) {
+                    return w.CRTeamOrigin.partidaMatchesQueueScope(p, scope, teamsById);
+                });
+            }
+            runs.sort(function (a, b) {
+                return Number(a.id) - Number(b.id);
+            });
+
+            var pendingRuns = runs.filter(function (p) {
+                return isPartidaPendiente(p, resByMatch);
+            });
+            var doneCount = runs.length - pendingRuns.length;
+            var current = pendingRuns.length ? pendingRuns[0] : null;
+
+            updateListSectionTitle(true);
+
+            if (!runs.length) {
+                if (countEl) {
+                    countEl.textContent = '';
+                }
+                renderEmptyList(true, false);
+                syncVelocistaSiguienteButton(0, false);
+                return Promise.resolve(0);
+            }
+
+            var queueHtml = runs
+                .map(function (p, idx) {
+                    var tid = teamIdFromSoloPartida(p);
+                    var res = resByMatch[String(p.id)] || p.result || null;
+                    var complete = !isPartidaPendiente(p, resByMatch);
+                    var isNow = current && String(p.id) === String(current.id);
+                    var state = complete ? 'done' : isNow ? 'now' : 'wait';
+                    var meta = complete
+                        ? formatResultTime(res && res.time ? res.time : null) || 'Listo'
+                        : isNow
+                          ? 'En pista'
+                          : 'En espera';
+                    return (
+                        '<li class="cr-velocista-queue-item cr-velocista-queue-item--' +
+                        state +
+                        '">' +
+                        '<span class="cr-velocista-queue-pos">' +
+                        (idx + 1) +
+                        '</span>' +
+                        '<span class="cr-velocista-queue-name">' +
+                        CRDom.escapeHtml(teamName(teamsById, tid)) +
+                        '</span>' +
+                        '<span class="cr-velocista-queue-meta">' +
+                        CRDom.escapeHtml(meta) +
+                        '</span></li>'
+                    );
+                })
+                .join('');
+
+            var nowHtml = current
+                ? '<div id="cr-velocista-now">' +
+                  renderSoloRaceCard(current, teamsById, resByMatch[String(current.id)], 'velocista') +
+                  '</div>'
+                : '<p class="cr-velocista-done-all">Cola terminada. Todos los tiempos están registrados.</p>';
+
+            if (countEl) {
+                countEl.textContent =
+                    pendingRuns.length > 0
+                        ? doneCount +
+                          ' de ' +
+                          runs.length +
+                          ' · ' +
+                          (pendingRuns.length === 1
+                              ? '1 en cola'
+                              : pendingRuns.length + ' en cola')
+                        : runs.length + ' carreras registradas';
+            }
+
+            listEl.innerHTML =
+                '<div class="cr-velocista-panel">' +
+                '<p class="cr-velocista-progress">' +
+                'Orden de salida: de arriba hacia abajo. Registra el tiempo del equipo <strong>en pista</strong> y pulsa «Siguiente en pista».' +
+                '</p>' +
+                '<ol class="cr-velocista-queue" aria-label="Orden de carrera">' +
+                queueHtml +
+                '</ol>' +
+                '<div class="cr-velocista-now-wrap">' +
+                '<h3 class="cr-velocista-now-title">En pista</h3>' +
+                nowHtml +
+                '</div></div>';
+
+            if (w.CRIcons) {
+                w.CRIcons.decorate(listEl);
+            }
+
+            syncVelocistaSiguienteButton(pendingRuns.length, !!current);
+            if (current) {
+                focusVelocistaEnPista();
+            }
+            return Promise.resolve(pendingRuns.length);
+        }
+
         function renderPartidasList(filtered, resByMatch, teamsById) {
+            updateListSectionTitle(false);
             teamsById = mergeTeamsFromPartidas(filtered, teamsById || {});
             var html = filtered
                 .map(function (m) {
@@ -669,43 +943,94 @@
                               return String(p.category_id) === String(catFilter);
                           })
                         : pendingAll;
-                    var todasCompletadas =
-                        !!catFilter &&
-                        !filtered.length &&
-                        all.some(function (p) {
-                            return String(p.category_id) === String(catFilter);
-                        });
-                    if (countEl) {
-                        countEl.textContent = filtered.length
-                            ? filtered.length === 1
-                                ? '1 pendiente'
-                                : filtered.length + ' pendientes'
-                            : '';
-                    }
-                    if (!filtered.length) {
-                        renderEmptyList(!!catFilter, todasCompletadas);
-                        return 0;
-                    }
-                    renderPartidasList(filtered, resByMatch, {});
-                    var catIds = [];
-                    var seen = {};
+                    var scope = getQueueScope();
+                    lastPartidasLoadCtx = {
+                        catFilter: catFilter,
+                        allPartidas: all,
+                        resByMatch: resByMatch,
+                        scope: scope
+                    };
+                    var catIdsScope = [];
+                    var seenScope = {};
                     filtered.forEach(function (p) {
-                        if (p.category_id != null && !seen[String(p.category_id)]) {
-                            seen[String(p.category_id)] = true;
-                            catIds.push(p.category_id);
+                        if (p.category_id != null && !seenScope[String(p.category_id)]) {
+                            seenScope[String(p.category_id)] = true;
+                            catIdsScope.push(p.category_id);
                         }
                     });
-                    if (!catIds.length) {
-                        return filtered.length;
-                    }
-                    return loadTeamsMaps(catIds)
-                        .then(function (extraTeams) {
-                            renderPartidasList(filtered, resByMatch, extraTeams);
-                            return filtered.length;
-                        })
-                        .catch(function () {
-                            return filtered.length;
+
+                    function renderFilteredList(list, teamsById) {
+                        if (catFilter && isVelocistaCategoryId(catFilter) && lastPartidasLoadCtx) {
+                            return renderVelocistaView(
+                                catFilter,
+                                lastPartidasLoadCtx.allPartidas,
+                                lastPartidasLoadCtx.resByMatch,
+                                teamsById,
+                                lastPartidasLoadCtx.scope
+                            );
+                        }
+                        var todasCompletadas =
+                            !!catFilter &&
+                            !list.length &&
+                            all.some(function (p) {
+                                return String(p.category_id) === String(catFilter);
+                            });
+                        if (countEl) {
+                            countEl.textContent = list.length
+                                ? list.length === 1
+                                    ? '1 pendiente'
+                                    : list.length + ' pendientes'
+                                : '';
+                        }
+                        if (!list.length) {
+                            renderEmptyList(!!catFilter, todasCompletadas);
+                            return Promise.resolve(0);
+                        }
+                        var catIds = [];
+                        var seen = {};
+                        list.forEach(function (p) {
+                            if (p.category_id != null && !seen[String(p.category_id)]) {
+                                seen[String(p.category_id)] = true;
+                                catIds.push(p.category_id);
+                            }
                         });
+                        if (!catIds.length) {
+                            renderPartidasList(list, resByMatch, teamsById || {});
+                            return Promise.resolve(list.length);
+                        }
+                        return loadTeamsMaps(catIds)
+                            .then(function (extraTeams) {
+                                var merged = teamsById || {};
+                                Object.keys(extraTeams || {}).forEach(function (k) {
+                                    merged[k] = extraTeams[k];
+                                });
+                                renderPartidasList(list, resByMatch, merged);
+                                return list.length;
+                            })
+                            .catch(function () {
+                                renderPartidasList(list, resByMatch, teamsById || {});
+                                return list.length;
+                            });
+                    }
+
+                    if (scope && w.CRTeamOrigin && catIdsScope.length) {
+                        return loadTeamsMaps(catIdsScope)
+                            .then(function (teamsById) {
+                                var scoped = filtered.filter(function (p) {
+                                    return w.CRTeamOrigin.partidaMatchesQueueScope(p, scope, teamsById);
+                                });
+                                return renderFilteredList(scoped, teamsById);
+                            })
+                            .then(function (n) {
+                                refreshGenerarMasState();
+                                return n;
+                            });
+                    }
+
+                    return renderFilteredList(filtered, {}).then(function (n) {
+                        refreshGenerarMasState();
+                        return n;
+                    });
                 })
                 .catch(function (err) {
                     if ((w.CR_APP || w.CR_CONFIG) && (w.CR_APP || w.CR_CONFIG).debugApi) {
@@ -753,10 +1078,15 @@
                 btn.disabled = true;
             }
             setStatus('Guardando resultado…', false);
+            var wasVelocista = isVelocistaCategoryId(selListFilter ? selListFilter.value : selCat.value);
             w.CRApi.postPartidaResultado(matchId, payload)
                 .then(function () {
-                    setStatus('Resultado guardado.', false);
-                    return loadPartidasList();
+                    setStatus('Tiempo guardado. Siguiente en pista…', false);
+                    return loadPartidasList().then(function () {
+                        if (wasVelocista) {
+                            focusVelocistaEnPista();
+                        }
+                    });
                 })
                 .catch(function (err) {
                     setStatus((err && err.message) || 'No se pudo guardar el resultado.', true);
@@ -773,7 +1103,10 @@
                 return;
             }
             var cat = selectedCategory();
-            var opts = { categoryName: cat && cat.name ? cat.name : '' };
+            var opts = {
+                categoryName: cat && cat.name ? cat.name : '',
+                queueScope: persistQueueScope()
+            };
             if (selMode && (selMode.value === 'pairwise' || selMode.value === 'shared')) {
                 opts.mode = selMode.value;
             }
@@ -784,7 +1117,7 @@
                     : 'shared');
 
             btnIniciar.disabled = true;
-            setStatus('Iniciando cola (' + modeLabel(usedMode) + ')…', false);
+            setStatus('Iniciando cola (' + modeLabel(usedMode, cat && cat.name ? cat.name : '') + ')…', false);
 
             w.CRApi.postPartidasIniciar(catId, opts)
                 .then(function (matches) {
@@ -793,7 +1126,19 @@
                     }
                     return loadPartidasList().then(function (pendingCount) {
                         var apiN = (matches || []).length;
-                        if (pendingCount > 0) {
+                        if (
+                            cat &&
+                            typeof w.CRApi.isVelocistaCategory === 'function' &&
+                            w.CRApi.isVelocistaCategory(cat.name) &&
+                            apiN > 0
+                        ) {
+                            setStatus(
+                                apiN === 1
+                                    ? 'Cola de 1 carrera creada. Registra el tiempo en pista.'
+                                    : 'Cola de ' + apiN + ' carreras creada. Uno tras otro en orden.',
+                                false
+                            );
+                        } else if (pendingCount > 0) {
                             setStatus(
                                 pendingCount === 1
                                     ? '1 partida pendiente lista para registrar.'
@@ -806,8 +1151,14 @@
                                 false
                             );
                         } else {
+                            var scopeLbl =
+                                w.CRTeamOrigin && opts.queueScope
+                                    ? w.CRTeamOrigin.queueScopeLabel(opts.queueScope)
+                                    : 'esta cola';
                             setStatus(
-                                'No hay equipos validados disponibles para nuevas partidas en esta categoría.',
+                                'No hay equipos validados en ' +
+                                    scopeLbl +
+                                    ' para nuevas partidas en esta categoría.',
                                 false
                             );
                         }
@@ -817,7 +1168,62 @@
                     setStatus((err && err.message) || 'No se pudo iniciar la cola.', true);
                 })
                 .finally(function () {
-                    syncIniciarEnabled();
+                    syncMatchUiForCategory();
+                    refreshGenerarMasState();
+                });
+        }
+
+        function onGenerarMasClick() {
+            var catId = selCat.value;
+            if (!catId) {
+                setStatus('Elige una categoría.', true);
+                return;
+            }
+            var cat = selectedCategory();
+            if (
+                !cat ||
+                ((typeof w.CRApi.isMinisumoCategory !== 'function' ||
+                    !w.CRApi.isMinisumoCategory(cat.name)) &&
+                    (typeof w.CRApi.isFutbolCategory !== 'function' ||
+                        !w.CRApi.isFutbolCategory(cat.name)))
+            ) {
+                setStatus('Solo minisumo y fútbol permiten generar más partidas.', true);
+                return;
+            }
+            var opts = {
+                categoryName: cat.name,
+                queueScope: persistQueueScope(),
+                mode: 'pairwise'
+            };
+            if (btnGenerarMas) {
+                btnGenerarMas.disabled = true;
+            }
+            setStatus('Generando emparejamientos…', false);
+            w.CRApi.postGenerarMasPartidas(catId, opts)
+                .then(function () {
+                    if (selListFilter) {
+                        selListFilter.value = catId;
+                    }
+                    return loadPartidasList();
+                })
+                .then(function (pendingCount) {
+                    if (pendingCount > 0) {
+                        setStatus(
+                            pendingCount === 1
+                                ? '1 partida nueva lista.'
+                                : pendingCount + ' partidas nuevas listas.',
+                            false
+                        );
+                    } else {
+                        setStatus('Cola generada. Revisa la lista de pendientes.', false);
+                    }
+                })
+                .catch(function (err) {
+                    setStatus((err && err.message) || 'No se pudieron generar más partidas.', true);
+                })
+                .finally(function () {
+                    syncMatchUiForCategory();
+                    refreshGenerarMasState();
                 });
         }
 
@@ -842,27 +1248,54 @@
         }
 
         function fillCategorias(cats) {
-            categorias = cats || [];
+            categorias =
+                typeof w.CRApi.filterEventCategories === 'function'
+                    ? w.CRApi.filterEventCategories(cats || [])
+                    : cats || [];
             fillCategoryOptions(selCat, false);
             fillCategoryOptions(selListFilter, true);
-            updateModeHint();
-            syncIniciarEnabled();
+            syncMatchUiForCategory();
             loadPartidasList();
         }
 
         function onCatChange() {
-            updateModeHint();
-            syncIniciarEnabled();
+            if (
+                selListFilter &&
+                selCat.value &&
+                isVelocistaCategoryId(selCat.value) &&
+                !selListFilter.value
+            ) {
+                selListFilter.value = selCat.value;
+            }
+            syncMatchUiForCategory();
             setStatus('', false);
+            loadPartidasList();
+            refreshGenerarMasState();
         }
 
         function onListFilterChange() {
+            syncMatchUiForCategory();
             loadPartidasList();
+        }
+
+        function onVelocistaSiguienteClick() {
+            focusVelocistaEnPista();
         }
 
         function onModeChange() {
             updateModeHint();
         }
+
+        function onQueueScopeChange() {
+            if (lockedScope) {
+                return;
+            }
+            persistQueueScope();
+            loadPartidasList();
+            refreshGenerarMasState();
+        }
+
+        initQueueScopeSelect();
 
         selCat.addEventListener('change', onCatChange, false);
         if (selListFilter) {
@@ -871,7 +1304,16 @@
         if (selMode) {
             selMode.addEventListener('change', onModeChange, false);
         }
+        if (selQueueScope) {
+            selQueueScope.addEventListener('change', onQueueScopeChange, false);
+        }
         btnIniciar.addEventListener('click', onIniciarClick, false);
+        if (btnGenerarMas) {
+            btnGenerarMas.addEventListener('click', onGenerarMasClick, false);
+        }
+        if (btnVelocistaSiguiente) {
+            btnVelocistaSiguiente.addEventListener('click', onVelocistaSiguienteClick, false);
+        }
         listEl.addEventListener('submit', onListSubmit, false);
 
         if (w.CRApi.fetchCategorias) {

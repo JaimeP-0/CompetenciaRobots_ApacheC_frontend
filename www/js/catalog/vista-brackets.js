@@ -18,6 +18,7 @@
         }
 
         var selCat = root.querySelector('#cr-brackets-cat');
+        var selQueueScope = root.querySelector('#cr-brackets-queue-scope');
         var tabWinner = root.querySelector('#cr-brackets-tab-winner');
         var tabLoser = root.querySelector('#cr-brackets-tab-loser');
         var btnGenerar = root.querySelector('#cr-brackets-generar');
@@ -45,6 +46,44 @@
         var view = null;
         var teamsById = {};
         var activeTab = 'winner';
+
+        function getQueueScope() {
+            if (!selQueueScope) {
+                return '';
+            }
+            if (w.CRTeamOrigin && typeof w.CRTeamOrigin.normalizeQueueScope === 'function') {
+                return w.CRTeamOrigin.normalizeQueueScope(selQueueScope.value);
+            }
+            return String(selQueueScope.value || '').trim().toLowerCase();
+        }
+
+        function bracketOpts(extra) {
+            var opts = { queueScope: getQueueScope() };
+            if (extra) {
+                Object.keys(extra).forEach(function (k) {
+                    opts[k] = extra[k];
+                });
+            }
+            return opts;
+        }
+
+        function initQueueScopeSelect() {
+            if (!selQueueScope || !w.CRTeamOrigin) {
+                return;
+            }
+            var stored = w.CRTeamOrigin.readStoredQueueScope();
+            if (stored) {
+                selQueueScope.value = stored;
+            }
+        }
+
+        function persistQueueScope() {
+            var scope = getQueueScope();
+            if (scope && w.CRTeamOrigin) {
+                w.CRTeamOrigin.storeQueueScope(scope);
+            }
+            return scope;
+        }
 
         function setStatus(msg, isError) {
             if (!statusEl) {
@@ -348,7 +387,7 @@
         }
 
         function refreshPairCounts(catId) {
-            return w.CRApi.getBracketPair(catId)
+            return w.CRApi.getBracketPair(catId, bracketOpts())
                 .then(updateTabCounts)
                 .catch(function () {
                     /* opcional */
@@ -365,7 +404,7 @@
                 return Promise.resolve();
             }
             var type = activeTab === 'loser' ? 'loser' : 'winner';
-            return w.CRApi.getBracket(catId, { bracketType: type })
+            return w.CRApi.getBracket(catId, bracketOpts({ bracketType: type }))
                 .then(function (data) {
                     return applyView(data);
                 })
@@ -382,7 +421,8 @@
             }
             btnGenerar.disabled = true;
             setStatus('Generando partidas…', false);
-            w.CRApi.postBracketIniciar(catId, {})
+            persistQueueScope();
+            w.CRApi.postBracketIniciar(catId, bracketOpts())
                 .then(function (v) {
                     activeTab = 'winner';
                     syncTabUi();
@@ -422,7 +462,7 @@
             }
             btnNextRound.disabled = true;
             setStatus('Creando siguiente ronda…', false);
-            BracketsApi.advanceBracketRound(catId)
+            BracketsApi.advanceBracketRound(catId, bracketOpts())
                 .then(function (v) {
                     setStatus('Siguiente ronda lista.', false);
                     return applyView(v);
@@ -451,7 +491,7 @@
             }
             btn.disabled = true;
             setStatus('Registrando ganador…', false);
-            w.CRApi.postBracketWinner(catId, view, matchKey, teamId)
+            w.CRApi.postBracketWinner(catId, view, matchKey, teamId, bracketOpts())
                 .then(function (updated) {
                     setStatus('Ganador registrado. El perdedor queda eliminado.', false);
                     return applyView(updated);
@@ -500,7 +540,15 @@
             loadView(selCat.value);
         }
 
+        initQueueScopeSelect();
+
         selCat.addEventListener('change', onCatChange, false);
+        if (selQueueScope) {
+            selQueueScope.addEventListener('change', function () {
+                persistQueueScope();
+                loadView(selCat.value);
+            });
+        }
         btnGenerar.addEventListener('click', onGenerar, false);
         if (btnRefresh) {
             btnRefresh.addEventListener('click', onRefresh, false);

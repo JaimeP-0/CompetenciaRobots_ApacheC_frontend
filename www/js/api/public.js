@@ -89,7 +89,21 @@ var app = w.CR_APP || w.CR_CONFIG;
             return Partidas.isVelocistaCategoryName(categoryName);
         },
         isSumoCategory: function (categoryName) {
-            return Partidas.isSumoCategoryName(categoryName);
+            return Partidas.isMinisumoCategoryName(categoryName);
+        },
+        isMinisumoCategory: function (categoryName) {
+            return Partidas.isMinisumoCategoryName(categoryName);
+        },
+        isFutbolCategory: function (categoryName) {
+            return Partidas.isFutbolCategoryName(categoryName);
+        },
+        usesBrackets: function () {
+            return w.CRCategoriasCompetencia ? w.CRCategoriasCompetencia.usesBrackets() : false;
+        },
+        filterEventCategories: function (categories) {
+            return w.CRCategoriasCompetencia
+                ? w.CRCategoriasCompetencia.filterEventCategories(categories)
+                : categories || [];
         },
         isSoloRaceCategory: function (categoryName) {
             return Partidas.isSoloRaceCategoryName(categoryName);
@@ -117,7 +131,17 @@ var app = w.CR_APP || w.CR_CONFIG;
             if (!opts.categoryName && opts.catName) {
                 opts.categoryName = opts.catName;
             }
+            if (w.CRApiMatchmaking && typeof w.CRApiMatchmaking.iniciarCola === 'function') {
+                return w.CRApiMatchmaking.iniciarCola(categoryId, opts);
+            }
             return Partidas.postIniciar(categoryId, opts);
+        },
+        postGenerarMasPartidas: function (categoryId, opts) {
+            opts = opts || {};
+            if (!w.CRApiMatchmaking) {
+                return Promise.reject(new Error('Matchmaking no cargado.'));
+            }
+            return w.CRApiMatchmaking.generarMasPartidas(categoryId, opts);
         },
         getPartidaResultados: function () {
             return Partidas.fetchAllResultados();
@@ -134,11 +158,11 @@ var app = w.CR_APP || w.CR_CONFIG;
             }
             return w.CRApiBrackets.fetch(categoryId, opts || {});
         },
-        getBracketPair: function (categoryId) {
+        getBracketPair: function (categoryId, opts) {
             if (!w.CRApiBrackets) {
                 return Promise.reject(new Error('Brackets no cargado.'));
             }
-            return w.CRApiBrackets.fetchPair(categoryId);
+            return w.CRApiBrackets.fetchPair(categoryId, opts || {});
         },
         postBracketIniciar: function (categoryId, opts) {
             if (!w.CRApiBrackets) {
@@ -146,11 +170,11 @@ var app = w.CR_APP || w.CR_CONFIG;
             }
             return w.CRApiBrackets.iniciar(categoryId, opts || {});
         },
-        postBracketWinner: function (categoryId, bracket, matchKey, winnerTeamId) {
+        postBracketWinner: function (categoryId, bracket, matchKey, winnerTeamId, opts) {
             if (!w.CRApiBrackets) {
                 return Promise.reject(new Error('Brackets no cargado.'));
             }
-            return w.CRApiBrackets.recordWinner(categoryId, bracket, matchKey, winnerTeamId);
+            return w.CRApiBrackets.recordWinner(categoryId, bracket, matchKey, winnerTeamId, opts || {});
         },
         resetBracket: function (categoryId) {
             if (!w.CRApiBrackets) {

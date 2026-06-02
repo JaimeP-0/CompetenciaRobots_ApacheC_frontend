@@ -297,31 +297,71 @@
         return Partidas.fetchByCategory(categoryId);
     }
 
+    function teamsByIdFromList(teams) {
+        var byId = {};
+        (teams || []).forEach(function (t) {
+            if (t && t.id != null) {
+                byId[String(t.id)] = t;
+            }
+        });
+        return byId;
+    }
+
+    function filterPartidasForQueueScope(categoryId, list, opts) {
+        opts = opts || {};
+        var scope = Partidas.queueScopeFromOpts(opts);
+        var Origin = w.CRTeamOrigin;
+        var Equipos = w.CRApiEquiposRegistro;
+        if (!scope || !Origin) {
+            return Promise.resolve(list || []);
+        }
+        if (!Equipos || typeof Equipos.fetchTeamsByCategoryEnriched !== 'function') {
+            return Promise.resolve(Origin.filterPartidasByQueueScope(list, scope, {}));
+        }
+        return Equipos.fetchTeamsByCategoryEnriched(categoryId)
+            .then(function (teams) {
+                return Origin.filterPartidasByQueueScope(list, scope, teamsByIdFromList(teams));
+            })
+            .catch(function () {
+                return Origin.filterPartidasByQueueScope(list, scope, {});
+            });
+    }
+
     function fetchBracket(categoryId, opts) {
         opts = opts || {};
         var bracketType = opts.bracketType || opts.type || 'winner';
         return loadPartidasForCategory(categoryId).then(function (list) {
-            if (bracketType === 'loser') {
-                return buildEliminatedList(categoryId, list);
-            }
-            var view = buildWinnerView(categoryId, list);
-            if (view.hasActiveCombats || view.canStartNextRound || view.champion || view.eliminatedCount > 0) {
-                return view;
-            }
-            if (view.aliveTeamIds.length) {
-                return view;
-            }
-            return null;
+            return filterPartidasForQueueScope(categoryId, list, opts).then(function (scoped) {
+                if (bracketType === 'loser') {
+                    return buildEliminatedList(categoryId, scoped);
+                }
+                var view = buildWinnerView(categoryId, scoped);
+                if (
+                    view.hasActiveCombats ||
+                    view.canStartNextRound ||
+                    view.champion ||
+                    view.eliminatedCount > 0
+                ) {
+                    return view;
+                }
+                if (view.aliveTeamIds.length) {
+                    return view;
+                }
+                return null;
+            });
         });
     }
 
-    function fetchBracketPair(categoryId) {
+    function fetchBracketPair(categoryId, opts) {
+        opts = opts || {};
         return loadPartidasForCategory(categoryId).then(function (list) {
-            return {
-                categoryId: Number(categoryId, 10),
-                winner: buildWinnerView(categoryId, list),
-                loser: buildEliminatedList(categoryId, list)
-            };
+            return filterPartidasForQueueScope(categoryId, list, opts).then(function (scoped) {
+                return {
+                    categoryId: Number(categoryId, 10),
+                    winner: buildWinnerView(categoryId, scoped),
+                    loser: buildEliminatedList(categoryId, scoped)
+                };
+            });
         });
     }
 
@@ -338,9 +378,12 @@
         return Partidas.createResultado(match.matchId, body);
     }
 
-    function reloadWinnerView(categoryId) {
+    function reloadWinnerView(categoryId, opts) {
+        opts = opts || {};
         return loadPartidasForCategory(categoryId).then(function (list) {
-            return buildWinnerView(categoryId, list);
+            return filterPartidasForQueueScope(categoryId, list, opts).then(function (scoped) {
+                return buildWinnerView(categoryId, scoped);
+            });
         });
     }
 
@@ -348,22 +391,33 @@
         opts = opts || {};
         return loadPartidasForCategory(categoryId)
             .then(function (list) {
-                var view = buildWinnerView(categoryId, list);
-                var payload = { mode: 'pairwise' };
-                var teamIds = opts.team_ids || opts.teamIds;
-                if (Array.isArray(teamIds) && teamIds.length) {
-                    payload.team_ids = teamIds;
-                } else if (view.unpairedWinners && view.unpairedWinners.length >= 2) {
-                    payload.team_ids = view.unpairedWinners.slice();
-                }
-                return Partidas.postIniciar(categoryId, payload);
+                return filterPartidasForQueueScope(categoryId, list, opts).then(function (scoped) {
+                    var view = buildWinnerView(categoryId, scoped);
+                    var teamIds = opts.team_ids || opts.teamIds;
+                    if (Array.isArray(teamIds) && teamIds.length) {
+                        teamIds = teamIds.slice();
+                    } else if (view.unpairedWinners && view.unpairedWinners.length >= 2) {
+                        teamIds = view.unpairedWinners.slice();
+                    } else {
+                        return Partidas.fetchValidatedTeamIdsForCategory(categoryId, opts).then(
+                            function (validatedIds) {
+                                teamIds = validatedIds.filter(function (tid) {
+                                    return !Partidas.teamInPartidaList(tid, scoped);
+                                });
+                                return Partidas.postIniciar(categoryId, Object.assign({}, opts, { team_ids: teamIds }));
+                            }
+                        );
+                    }
+                    return Partidas.postIniciar(categoryId, Object.assign({}, opts, { team_ids: teamIds }));
+                });
             })
             .then(function () {
-                return reloadWinnerView(categoryId);
+                return reloadWinnerView(categoryId, opts);
             });
     }
 
-    function recordWinner(categoryId, bracket, matchKey, winnerTeamId) {
+    function recordWinner(categoryId, bracket, matchKey, winnerTeamId, opts) {
+        opts = opts || {};
         if (!bracket || bracket.isList) {
             return Promise.reject(new Error('No hay cuadro activo.'));
         }
@@ -389,7 +443,7 @@
             return Promise.reject(new Error('El ganador debe ser uno de los equipos del combate.'));
         }
         return postPartidaResultado(match, winner).then(function () {
-            return reloadWinnerView(categoryId);
+            return reloadWinnerView(categoryId, opts);
         });
     }
 
@@ -420,8 +474,8 @@
         return !!bracket.canStartNextRound;
     }
 
-    function advanceBracketRound(categoryId) {
-        return iniciarBracket(categoryId, {});
+    function advanceBracketRound(categoryId, opts) {
+        return iniciarBracket(categoryId, opts || {});
     }
 
     w.CRApiBrackets = {

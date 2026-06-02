@@ -26,7 +26,17 @@
                     <option value="">— Elige categoría —</option>
                 </select>
             </div>
+            <div class="cr-brackets-field">
+                <label class="cr-admin-label" for="cr-brackets-queue-scope">Cola</label>
+                <select id="cr-brackets-queue-scope" class="cr-admin-select" required>
+                    <option value="internal">Internos (UTNC / UT)</option>
+                    <option value="external">Externos</option>
+                </select>
+            </div>
         </div>
+        <p class="cr-match-mode-hint">
+            Solo equipos de la cola elegida. Interno: escuela UTNC, UT o nombre completo exacto de la UTNC.
+        </p>
         <div class="cr-brackets-tabs" role="tablist" aria-label="Vista del torneo">
             <button
                 type="button"
