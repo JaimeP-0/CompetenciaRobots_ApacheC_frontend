@@ -91,16 +91,21 @@
         }
         if (role === 'juez' || role === 'registro') {
             return (
+                r === '/inicio' ||
+                r === '/login' ||
                 r === '/registro' ||
                 r.indexOf('/registro') === 0 ||
                 r === '/dashboard' ||
                 r === '/visitante' ||
                 r === '/validados' ||
+                r === '/categorias' ||
                 r.indexOf('/categoria/') === 0
             );
         }
         if (role === 'arbitro') {
             return (
+                r === '/inicio' ||
+                r === '/login' ||
                 r.indexOf('/match') === 0 ||
                 r === '/dashboard' ||
                 r === '/visitante' ||

@@ -69,10 +69,11 @@
             }
             d.documentElement.classList.toggle('cr-registro-fit', name === 'registro/registrar');
             var isLogin = name === 'public/login';
+            var isInicio = name === 'public/inicio';
             var isVisitante = name === 'public/visitante';
             var isDiag = name === 'public/diag-feed';
-            d.body.classList.toggle('cr-view-inicio', isLogin);
-            d.body.classList.toggle('cr-view-inner', !isVisitante && !isLogin && !isDiag);
+            d.body.classList.toggle('cr-view-inicio', isLogin || isInicio);
+            d.body.classList.toggle('cr-view-inner', !isVisitante && !isLogin && !isInicio && !isDiag);
             d.documentElement.classList.toggle('cr-view-dashboard', isVisitante);
             d.body.classList.toggle('cr-view-dashboard', isVisitante);
             d.documentElement.classList.toggle('cr-view-diag', isDiag);
@@ -273,8 +274,8 @@
         loaded = true;
         outlet.addEventListener('submit', onOutletSubmit, false);
         outlet.addEventListener('click', onOutletClick, false);
-        if (!w.location.hash || w.location.hash === '#/' || w.location.hash === '#/inicio') {
-            w.location.hash = '/login';
+        if (!w.location.hash || w.location.hash === '#/') {
+            w.location.hash = '/inicio';
         }
         renderCurrentRoute();
     }

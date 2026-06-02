@@ -16,8 +16,8 @@
 
     w.CR_ROUTES = {
         static: {
-            '/': 'public/login',
-            '/inicio': 'public/login',
+            '/': 'public/inicio',
+            '/inicio': 'public/inicio',
             '/login': 'public/login',
             '/registro': 'registro/registrar',
             '/categorias': 'public/categorias',

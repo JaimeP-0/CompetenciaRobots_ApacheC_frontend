@@ -40,14 +40,32 @@
 
         <section class="cr-inicio-section" aria-label="Competencia">
             <h2 class="cr-inicio-section-title">Competencia</h2>
+            <button type="button" class="cr-inicio-comp-card cr-inicio-comp-card--live" data-route="/visitante">
+                <span class="cr-inicio-comp-icon" data-cr-icon="signal" aria-hidden="true"></span>
+                <span class="cr-inicio-comp-text">
+                    <span class="cr-inicio-comp-title">Encuentros en vivo</span>
+                    <span class="cr-inicio-comp-meta">Dashboard público · sin login</span>
+                </span>
+                <span class="cr-inicio-comp-arrow" aria-hidden="true">→</span>
+            </button>
             <button type="button" class="cr-inicio-comp-card" data-route="/match">
                 <span class="cr-inicio-comp-icon" data-cr-icon="trophy" aria-hidden="true"></span>
                 <span class="cr-inicio-comp-text">
                     <span class="cr-inicio-comp-title">Partidas y resultados</span>
-                    <span class="cr-inicio-comp-meta">Match · ranking · brackets sumo</span>
+                    <span class="cr-inicio-comp-meta">Velocista · minisumo · fútbol 2v2</span>
                 </span>
                 <span class="cr-inicio-comp-arrow" aria-hidden="true">→</span>
             </button>
+        </section>
+
+        <section class="cr-inicio-section" aria-label="Personal del evento">
+            <h2 class="cr-inicio-section-title">Personal del evento</h2>
+            <div class="cr-inicio-grid">
+                <button type="button" class="cr-inicio-mini-card" data-route="/login">
+                    <span class="cr-inicio-mini-icon" data-cr-icon="lock-closed" aria-hidden="true"></span>
+                    <span class="cr-inicio-mini-label">Iniciar sesión</span>
+                </button>
+            </div>
         </section>
 
         <section class="cr-inicio-section" aria-label="Administración">
