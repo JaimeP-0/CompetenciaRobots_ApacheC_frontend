@@ -79,9 +79,9 @@
             doc.setFillColor(244, 246, 250);
             doc.rect(0, 0, pageW, pageH, 'F');
             doc.setFillColor(220, 228, 240);
-            doc.roundedRect(shellX + 4, shellY + 6, shellW, shellH, 18, 18, 'F');
+            doc.rect(shellX + 4, shellY + 6, shellW, shellH, 'F');
             doc.setFillColor(255, 255, 255);
-            doc.roundedRect(shellX, shellY, shellW, shellH, 18, 18, 'F');
+            doc.rect(shellX, shellY, shellW, shellH, 'F');
 
             if (logoDataUrl) {
                 var wmW = shellW * 0.72;
@@ -125,16 +125,21 @@
             doc.setFontSize(9);
             doc.setTextColor(90, 98, 112);
             doc.text('UNIVERSIDAD TECNOLÓGICA DEL NORTE DE COAHUILA', pageW / 2, y, { align: 'center' });
-            y += 16;
+            y += 26;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(20);
             doc.setTextColor(0, 58, 140);
             doc.text('Credenciales Oficiales', pageW / 2, y, { align: 'center' });
-            y += 18;
+            y += 24;
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(13);
             doc.setTextColor(27, 140, 122);
-            doc.text('Jueces y Árbitros · https://utarena.online/', pageW / 2, y, { align: 'center' });
+            doc.text('Jueces y Árbitros', pageW / 2, y, { align: 'center' });
+            y += 18;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(0, 38, 200);
+            doc.text('https://utarena.online/', pageW / 2, y, { align: 'center' });
             y += 16;
             doc.setDrawColor(216, 225, 237);
             doc.line(contentX, y, contentX + contentW, y);
