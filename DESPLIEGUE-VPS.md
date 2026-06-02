@@ -18,7 +18,14 @@ Internet :80
 
 1. Copia `.env.example` → `.env` y revisa `CR_PUBLIC_URL` / `CR_SSH_HOST`.
 
-2. Cambios locales → commit → push:
+2. Genera assets que el VPS no compila (no hay Node en el servidor):
+
+```powershell
+npm run build:vps
+git add -f www/css/app.css www/cordova.js www/cordova_plugins.js www/plugins
+```
+
+3. Commit → push:
 
 ```powershell
 git add …
@@ -26,7 +33,7 @@ git commit -m "…"
 git push origin master
 ```
 
-3. En el VPS, **git pull** del mismo repo (rápido; no usa SFTP):
+4. En el VPS, **git pull** del mismo repo (rápido; no usa SFTP):
 
 ```powershell
 $env:CR_SSH_PASSWORD = "tu-contraseña-root"

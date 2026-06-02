@@ -21,10 +21,10 @@ if [ ! -d .git ]; then
     git fetch origin "$BRANCH"
     git checkout -B "$BRANCH" "origin/$BRANCH"
 else
-    echo "==> git pull origin $BRANCH …"
+    echo "==> git fetch + reset --hard origin/$BRANCH …"
     git fetch origin "$BRANCH"
     git checkout "$BRANCH" 2>/dev/null || git checkout -B "$BRANCH" "origin/$BRANCH"
-    git pull --ff-only origin "$BRANCH"
+    git reset --hard "origin/$BRANCH"
 fi
 
 if command -v npm >/dev/null && [ -f package.json ]; then
