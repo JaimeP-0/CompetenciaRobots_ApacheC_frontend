@@ -1153,17 +1153,11 @@
         @apply pointer-events-none absolute inset-0 z-50 flex items-center justify-center bg-black/45 p-4;
     }
     .cr-visitante-qr-card {
-        @apply pointer-events-auto w-full max-w-md rounded-2xl bg-white p-4 text-center shadow-2xl sm:p-5;
-    }
-    .cr-visitante-qr-title {
-        @apply m-0 text-sm font-extrabold text-navy sm:text-base;
+        @apply pointer-events-none w-auto max-w-full bg-transparent p-0 text-center shadow-none;
     }
     .cr-visitante-qr-image {
-        @apply mx-auto mt-3 block h-auto w-auto max-w-full rounded-xl border border-graphite/10 bg-white p-2;
-        max-height: 80vh;
-    }
-    .cr-visitante-qr-url {
-        @apply m-0 mt-2 text-lg font-black tracking-wide text-navy;
+        @apply mx-auto block h-auto w-auto max-w-full rounded-xl border border-graphite/10 bg-white p-1;
+        max-height: 95vh;
     }
   /* —— Login staff (#/login) — mismo lenguaje que catálogo / admin —— */
     .cr-staff-login-page {
