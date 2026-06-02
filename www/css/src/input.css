@@ -1066,6 +1066,15 @@
     .cr-visitante-match-meta {
         @apply relative m-0 mt-2 text-center text-xs text-graphite/60 sm:text-sm;
     }
+    .cr-visitante-team-meta-wrap {
+        @apply mt-2 flex flex-col gap-1;
+    }
+    .cr-visitante-team-meta {
+        @apply m-0 truncate text-[0.68rem] text-center text-graphite/65 sm:text-xs;
+    }
+    .cr-visitante-team-meta--solo {
+        @apply mt-2;
+    }
 
     .cr-visitante-rail {
         @apply grid min-h-0 min-w-0 grid-rows-2 gap-3 sm:gap-4 lg:min-h-0;

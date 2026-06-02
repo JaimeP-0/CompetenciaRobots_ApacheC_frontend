@@ -283,6 +283,45 @@
             return 'Equipo #' + teamId;
         }
 
+        function teamMeta(teamId) {
+            if (teamId == null) {
+                return { school: '', tutor: '', captain: '' };
+            }
+            var t = teamsById[String(teamId)] || {};
+            var school = t.school != null ? String(t.school).trim() : '';
+            var tutorRaw =
+                t.teacher != null
+                    ? t.teacher
+                    : t.tutor != null
+                      ? t.tutor
+                      : t.asesor != null
+                        ? t.asesor
+                        : t.advisor;
+            var tutor = tutorRaw != null ? String(tutorRaw).trim() : '';
+            var captainRaw = t.captain_name != null ? t.captain_name : t.capitan;
+            var captain = captainRaw != null ? String(captainRaw).trim() : '';
+            return {
+                school: school,
+                tutor: tutor,
+                captain: captain
+            };
+        }
+
+        function formatTeamMetaLine(teamId) {
+            var meta = teamMeta(teamId);
+            var parts = [];
+            if (meta.school) {
+                parts.push('Escuela: ' + meta.school);
+            }
+            if (meta.tutor) {
+                parts.push('Tutor: ' + meta.tutor);
+            }
+            if (meta.captain) {
+                parts.push('Capitán: ' + meta.captain);
+            }
+            return parts.join(' · ');
+        }
+
         function indexResultados(resultados) {
             var map = {};
             (resultados || []).forEach(function (r) {
@@ -492,6 +531,10 @@
 
             if (matchup.type === 'pair') {
                 var parts = matchup.label.split(' vs ');
+                var ta = p.team_a_id || (p.team_a && p.team_a.id);
+                var tb = p.team_b_id || (p.team_b && p.team_b.id);
+                var metaA = formatTeamMetaLine(ta);
+                var metaB = formatTeamMetaLine(tb);
                 body =
                     '<div class="cr-visitante-match">' +
                     '<span class="cr-visitante-match-side">' +
@@ -502,14 +545,37 @@
                     CRDom.escapeHtml(parts[1] || '—') +
                     '</span>' +
                     '</div>' +
+                    '<div class="cr-visitante-team-meta-wrap">' +
+                    (metaA
+                        ? '<p class="cr-visitante-team-meta">' +
+                          CRDom.escapeHtml(parts[0] || '—') +
+                          ' · ' +
+                          CRDom.escapeHtml(metaA) +
+                          '</p>'
+                        : '') +
+                    (metaB
+                        ? '<p class="cr-visitante-team-meta">' +
+                          CRDom.escapeHtml(parts[1] || '—') +
+                          ' · ' +
+                          CRDom.escapeHtml(metaB) +
+                          '</p>'
+                        : '') +
+                    '</div>' +
                     '<p class="cr-visitante-match-meta">' +
                     CRDom.escapeHtml(matchup.sub) +
                     '</p>';
             } else {
+                var soloId = (p.queue && p.queue[0]) || p.team_a_id || (p.team_a && p.team_a.id);
+                var soloMeta = formatTeamMetaLine(soloId);
                 body =
                     '<p class="cr-visitante-match-solo">' +
                     CRDom.escapeHtml(matchup.label) +
                     '</p>' +
+                    (soloMeta
+                        ? '<p class="cr-visitante-team-meta cr-visitante-team-meta--solo">' +
+                          CRDom.escapeHtml(soloMeta) +
+                          '</p>'
+                        : '') +
                     '<p class="cr-visitante-match-meta">' +
                     CRDom.escapeHtml(matchup.sub) +
                     '</p>';
