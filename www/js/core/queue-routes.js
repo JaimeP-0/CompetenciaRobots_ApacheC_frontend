@@ -67,6 +67,23 @@
         return matchHashForScope(staffScope(session));
     }
 
+    function isPublicCatalogRoute(route) {
+        var r = String(route || '').split('?')[0];
+        return (
+            r === '/inicio' ||
+            r === '/login' ||
+            r === '/dashboard' ||
+            r === '/visitante' ||
+            r === '/ranking' ||
+            r === '/categorias' ||
+            r === '/equipos' ||
+            r === '/validados' ||
+            r.indexOf('/categoria/') === 0 ||
+            r.indexOf('/equipo/') === 0 ||
+            r.indexOf('/match') === 0
+        );
+    }
+
     /** Rutas staff permitidas según rol (prefijo de hash sin #). */
     function staffMayAccessRoute(route, session) {
         if (!session || !session.username) {
@@ -74,45 +91,55 @@
         }
         var r = String(route || '').split('?')[0];
         var role = String(session.role || '').toLowerCase();
+
         if (role === 'admin' || role === 'dev') {
             return true;
         }
+
         if (r.indexOf('/admin') === 0) {
             return false;
         }
+
         if (role === 'visitante') {
-            return (
-                r === '/dashboard' ||
-                r === '/visitante' ||
-                r === '/ranking' ||
-                r === '/categorias' ||
-                r.indexOf('/categoria/') === 0
-            );
+            return isPublicCatalogRoute(r) && r !== '/registro' && r.indexOf('/registro') !== 0;
+        }
+
+        if (role === 'juez' || role === 'registro') {
+            if (r.indexOf('/registro') === 0 || r === '/registro') {
+                return true;
+            }
+            return isPublicCatalogRoute(r);
+        }
+
+        if (role === 'arbitro') {
+            if (r.indexOf('/registro') === 0 || r === '/registro') {
+                return false;
+            }
+            return isPublicCatalogRoute(r);
+        }
+
+        return isPublicCatalogRoute(r) || r.indexOf('/registro') === 0;
+    }
+
+    /** A dónde mandar si la ruta no está permitida para el rol. */
+    function staffForbiddenRedirect(session) {
+        if (!session) {
+            return '#/login';
+        }
+        var role = String(session.role || '').toLowerCase();
+        if (role === 'admin' || role === 'dev') {
+            return '#/admin';
+        }
+        if (role === 'visitante') {
+            return '#/dashboard';
         }
         if (role === 'juez' || role === 'registro') {
-            return (
-                r === '/inicio' ||
-                r === '/login' ||
-                r === '/registro' ||
-                r.indexOf('/registro') === 0 ||
-                r === '/dashboard' ||
-                r === '/visitante' ||
-                r === '/validados' ||
-                r === '/categorias' ||
-                r.indexOf('/categoria/') === 0
-            );
+            return '#/registro';
         }
         if (role === 'arbitro') {
-            return (
-                r === '/inicio' ||
-                r === '/login' ||
-                r.indexOf('/match') === 0 ||
-                r === '/dashboard' ||
-                r === '/visitante' ||
-                r === '/ranking'
-            );
+            return matchHashForScope(staffScope(session));
         }
-        return true;
+        return '#/inicio';
     }
 
     w.CRQueueRoutes = {
