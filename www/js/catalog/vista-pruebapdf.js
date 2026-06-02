@@ -78,10 +78,6 @@
         function drawBase() {
             doc.setFillColor(244, 246, 250);
             doc.rect(0, 0, pageW, pageH, 'F');
-            doc.setFillColor(220, 228, 240);
-            doc.rect(shellX + 4, shellY + 6, shellW, shellH, 'F');
-            doc.setFillColor(255, 255, 255);
-            doc.rect(shellX, shellY, shellW, shellH, 'F');
 
             if (logoDataUrl) {
                 var wmW = shellW * 0.72;
