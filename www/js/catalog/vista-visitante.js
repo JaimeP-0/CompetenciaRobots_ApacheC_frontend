@@ -256,6 +256,7 @@
         var qrNextShowAt = 0;
         var qrHideAt = 0;
         var qrVisibleNow = false;
+        var qrCycleStartAt = 0;
         var tabId = 'tab-' + String(Date.now()) + '-' + String(Math.random()).slice(2, 9);
 
         function currentRoutePath() {
@@ -334,18 +335,20 @@
 
         function updateQrCountdownText() {
             var now = Date.now();
+            if (qrCycleStartAt > 0) {
+                var cycleElapsed = Math.max(0, now - qrCycleStartAt);
+                setQrHeaderProgress((cycleElapsed / QR_CYCLE_MS) * 100);
+            } else {
+                setQrHeaderProgress(0);
+            }
             if (qrVisibleNow && qrHideAt > 0) {
                 var hideSecs = Math.max(0, Math.ceil((qrHideAt - now) / 1000));
                 setQrHeaderCountdownText('');
-                setQrHeaderProgress(100);
                 setQrCountdownText(hideSecs > 0 ? 'QR desaparece en ' + hideSecs + '...' : '');
                 return;
             }
             if (qrNextShowAt > 0) {
                 var showSecs = Math.max(0, Math.ceil((qrNextShowAt - now) / 1000));
-                var hiddenMs = Math.max(1, QR_CYCLE_MS - QR_VISIBLE_MS);
-                var elapsedMs = Math.max(0, hiddenMs - (qrNextShowAt - now));
-                setQrHeaderProgress((elapsedMs / hiddenMs) * 100);
                 if (showSecs > 0 && showSecs <= 5) {
                     setQrHeaderCountdownText('Mostrando QR en ' + showSecs + '...');
                     setQrCountdownText('');
@@ -353,7 +356,6 @@
                 }
             }
             setQrHeaderCountdownText('');
-            setQrHeaderProgress(0);
             setQrCountdownText('');
         }
 
@@ -381,6 +383,7 @@
             qrNextShowAt = 0;
             qrHideAt = 0;
             qrVisibleNow = false;
+            qrCycleStartAt = 0;
             showQrOverlay(false);
             setQrHeaderCountdownText('');
             setQrHeaderProgress(0);
@@ -393,6 +396,7 @@
                 return;
             }
             function showPhase() {
+                qrCycleStartAt = Date.now();
                 qrVisibleNow = true;
                 showQrOverlay(true);
                 qrHideAt = Date.now() + QR_VISIBLE_MS;
