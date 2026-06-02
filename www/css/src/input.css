@@ -1058,10 +1058,10 @@
         @apply min-w-0 text-center;
     }
     .cr-visitante-match-title {
-        @apply block text-base font-bold leading-tight text-navy sm:text-xl lg:text-2xl;
+        @apply block text-lg font-extrabold leading-tight text-navy sm:text-2xl;
     }
     .cr-visitante-match-subtitle {
-        @apply mt-2 block text-[0.7rem] font-medium leading-snug text-graphite/70 sm:text-xs;
+        @apply mt-1.5 block text-[0.62rem] font-medium leading-snug text-graphite/60 sm:text-[0.68rem];
     }
     .cr-visitante-match-vs {
         @apply text-center text-[0.65rem] font-black tracking-[0.25em] text-[#C6D93D] sm:text-xs;
@@ -1070,7 +1070,7 @@
         @apply relative m-0 text-center text-2xl font-bold leading-tight text-snow sm:text-3xl;
     }
     .cr-visitante-match-meta {
-        @apply relative m-0 mt-2 text-center text-xs text-graphite/60 sm:text-sm;
+        @apply relative m-0 mt-3 text-center text-xs text-graphite/60 sm:text-sm;
     }
     .cr-visitante-team-meta-wrap {
         @apply mt-2 flex flex-col gap-1;
