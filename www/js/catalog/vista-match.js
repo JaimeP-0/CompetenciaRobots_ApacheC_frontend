@@ -933,19 +933,13 @@
         function loadPartidasList() {
             listEl.innerHTML = '<p class="cr-match-loading">Cargando partidas…</p>';
             var catFilter = selListFilter ? selListFilter.value : '';
-            return Promise.all([
-                w.CRApi.getPartidas(),
-                typeof w.CRApi.getPartidaResultados === 'function'
-                    ? w.CRApi.getPartidaResultados().catch(function () {
-                          return [];
-                      })
-                    : Promise.resolve([])
-            ])
-                .then(function (arr) {
-                    var all = (arr[0] || []).slice().sort(function (a, b) {
+            return w.CRApi
+                .getPartidas()
+                .then(function (data) {
+                    var all = (data || []).slice().sort(function (a, b) {
                         return Number(b.id) - Number(a.id);
                     });
-                    var resByMatch = indexResultados(arr[1]);
+                    var resByMatch = {};
                     all.forEach(function (p) {
                         if (p && p.result && p.id != null) {
                             resByMatch[String(p.id)] = p.result;
