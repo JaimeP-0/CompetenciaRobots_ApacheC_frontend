@@ -116,6 +116,7 @@
         var recentEl = root.querySelector('#cr-visitante-recent');
         var officialControls = root.querySelector('#cr-visitante-official-controls');
         var qrToggle = root.querySelector('#cr-visitante-qr-enabled');
+        var qrHeaderCountdownEl = root.querySelector('#cr-visitante-qr-header-countdown');
         var qrCountdownEl = root.querySelector('#cr-visitante-qr-countdown');
         var qrOverlay = root.querySelector('#cr-visitante-qr-overlay');
         if (!selCat || !liveEl || !upcomingEl || !recentEl) {
@@ -307,6 +308,13 @@
             qrOverlay.setAttribute('aria-hidden', show ? 'false' : 'true');
         }
 
+        function setQrHeaderCountdownText(text) {
+            if (!qrHeaderCountdownEl) {
+                return;
+            }
+            qrHeaderCountdownEl.textContent = String(text || '');
+        }
+
         function setQrCountdownText(text) {
             if (!qrCountdownEl) {
                 return;
@@ -318,12 +326,19 @@
             var now = Date.now();
             if (qrVisibleNow && qrHideAt > 0) {
                 var hideSecs = Math.max(0, Math.ceil((qrHideAt - now) / 1000));
+                setQrHeaderCountdownText('');
                 setQrCountdownText(hideSecs > 0 ? 'QR desaparece en ' + hideSecs + '...' : '');
                 return;
             }
             if (qrNextShowAt > 0) {
-                /* En modo oficial no mostramos contador previo en el header. */
+                var showSecs = Math.max(0, Math.ceil((qrNextShowAt - now) / 1000));
+                if (showSecs > 0 && showSecs <= 5) {
+                    setQrHeaderCountdownText('Mostrando QR en ' + showSecs + '...');
+                    setQrCountdownText('');
+                    return;
+                }
             }
+            setQrHeaderCountdownText('');
             setQrCountdownText('');
         }
 
@@ -352,6 +367,7 @@
             qrHideAt = 0;
             qrVisibleNow = false;
             showQrOverlay(false);
+            setQrHeaderCountdownText('');
             setQrCountdownText('');
         }
 
@@ -388,6 +404,7 @@
             officialControls.classList.toggle('hidden', !(officialMode && ownerTab));
             qrToggle.checked = readQrEnabled();
             if (!officialMode || !ownerTab) {
+                setQrHeaderCountdownText('');
                 setQrCountdownText('');
             } else {
                 showQrOverlay(false);
