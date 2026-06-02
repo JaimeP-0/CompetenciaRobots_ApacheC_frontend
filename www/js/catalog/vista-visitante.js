@@ -116,6 +116,7 @@
         var recentEl = root.querySelector('#cr-visitante-recent');
         var officialControls = root.querySelector('#cr-visitante-official-controls');
         var qrToggle = root.querySelector('#cr-visitante-qr-enabled');
+        var qrCountdownEl = root.querySelector('#cr-visitante-qr-countdown');
         var qrOverlay = root.querySelector('#cr-visitante-qr-overlay');
         if (!selCat || !liveEl || !upcomingEl || !recentEl) {
             return;
@@ -248,6 +249,10 @@
         var ownerTouchTimer = null;
         var qrCycleTimer = null;
         var qrHideTimer = null;
+        var qrTickTimer = null;
+        var qrNextShowAt = 0;
+        var qrHideAt = 0;
+        var qrVisibleNow = false;
         var tabId = 'tab-' + String(Date.now()) + '-' + String(Math.random()).slice(2, 9);
 
         function currentRoutePath() {
@@ -302,6 +307,38 @@
             qrOverlay.setAttribute('aria-hidden', show ? 'false' : 'true');
         }
 
+        function setQrCountdownText(text) {
+            if (!qrCountdownEl) {
+                return;
+            }
+            qrCountdownEl.textContent = String(text || '');
+        }
+
+        function updateQrCountdownText() {
+            var now = Date.now();
+            if (qrVisibleNow && qrHideAt > 0) {
+                var hideSecs = Math.max(0, Math.ceil((qrHideAt - now) / 1000));
+                setQrCountdownText(hideSecs > 0 ? 'QR desaparece en ' + hideSecs + '...' : '');
+                return;
+            }
+            if (qrNextShowAt > 0) {
+                var showSecs = Math.max(0, Math.ceil((qrNextShowAt - now) / 1000));
+                if (showSecs > 0 && showSecs <= 5) {
+                    setQrCountdownText('Mostrando QR en ' + showSecs + '...');
+                    return;
+                }
+            }
+            setQrCountdownText('');
+        }
+
+        function startQrTick() {
+            if (qrTickTimer) {
+                clearInterval(qrTickTimer);
+            }
+            qrTickTimer = setInterval(updateQrCountdownText, 250);
+            updateQrCountdownText();
+        }
+
         function stopQrTimers() {
             if (qrCycleTimer) {
                 clearTimeout(qrCycleTimer);
@@ -311,7 +348,15 @@
                 clearTimeout(qrHideTimer);
                 qrHideTimer = null;
             }
+            if (qrTickTimer) {
+                clearInterval(qrTickTimer);
+                qrTickTimer = null;
+            }
+            qrNextShowAt = 0;
+            qrHideAt = 0;
+            qrVisibleNow = false;
             showQrOverlay(false);
+            setQrCountdownText('');
         }
 
         function scheduleQrCycle() {
@@ -319,13 +364,25 @@
             if (!officialMode || !readQrEnabled()) {
                 return;
             }
-            showQrOverlay(true);
-            qrHideTimer = setTimeout(function () {
-                showQrOverlay(false);
-            }, QR_VISIBLE_MS);
-            qrCycleTimer = setTimeout(function () {
-                scheduleQrCycle();
-            }, QR_CYCLE_MS);
+            function showPhase() {
+                qrVisibleNow = true;
+                showQrOverlay(true);
+                qrHideAt = Date.now() + QR_VISIBLE_MS;
+                qrNextShowAt = 0;
+                updateQrCountdownText();
+                qrHideTimer = setTimeout(function () {
+                    var hiddenMs = Math.max(0, QR_CYCLE_MS - QR_VISIBLE_MS);
+                    qrVisibleNow = false;
+                    qrHideAt = 0;
+                    qrNextShowAt = Date.now() + hiddenMs;
+                    updateQrCountdownText();
+                    showQrOverlay(false);
+                    qrCycleTimer = setTimeout(showPhase, hiddenMs);
+                }, QR_VISIBLE_MS);
+            }
+
+            showPhase();
+            startQrTick();
         }
 
         function updateOfficialControlsUi() {
@@ -334,6 +391,12 @@
             }
             officialControls.classList.toggle('hidden', !(officialMode && ownerTab));
             qrToggle.checked = readQrEnabled();
+            if (!officialMode || !ownerTab) {
+                setQrCountdownText('');
+            } else {
+                showQrOverlay(false);
+                updateQrCountdownText();
+            }
         }
 
         function touchOwner() {
