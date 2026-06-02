@@ -1062,6 +1062,15 @@
     .cr-staff-login-skip {
         @apply cursor-pointer border-0 bg-transparent p-2 text-center text-sm font-medium text-marine underline-offset-2 transition hover:text-navy hover:underline;
     }
+    .cr-staff-bar {
+        @apply mx-auto flex w-full max-w-3xl flex-wrap items-center justify-end gap-2 px-1 pb-2 pt-1;
+    }
+    .cr-staff-bar-label {
+        @apply text-xs font-medium text-graphite/75 sm:text-sm;
+    }
+    .cr-staff-bar-logout {
+        @apply rounded-lg border border-graphite/25 bg-snow px-3 py-1.5 text-xs font-semibold text-graphite transition hover:border-graphite/40 hover:bg-mist/30 sm:text-sm;
+    }
 
     .cr-inicio-comp-card--live {
         @apply border-emerald-500/30 bg-gradient-to-br from-emerald-500/[0.08] to-snow/95;

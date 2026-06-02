@@ -85,9 +85,14 @@
         }
         if (btnLogout) {
             btnLogout.onclick = function () {
+                if (w.CRStaffAuth && typeof w.CRStaffAuth.logoutAndLogin === 'function') {
+                    w.CRStaffAuth.logoutAndLogin();
+                    return;
+                }
                 if (w.CRStaffAuth && typeof w.CRStaffAuth.logout === 'function') {
                     w.CRStaffAuth.logout();
                 }
+                w.location.hash = '#/login';
                 bindStaffFooter(root);
             };
         }

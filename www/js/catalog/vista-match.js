@@ -30,6 +30,10 @@
             return;
         }
 
+        if (w.CRStaffShell && typeof w.CRStaffShell.bind === 'function') {
+            w.CRStaffShell.bind(root);
+        }
+
         var selCat = root.querySelector('#cr-match-cat');
         var pageTitleEl = root.querySelector('.cr-page-title');
         var scopeLockedHint = root.querySelector('#cr-match-scope-locked-hint');

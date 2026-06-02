@@ -60,6 +60,20 @@
         if (Sesion) {
             Sesion.clear();
         }
+        if (w.CRAdminSesion && typeof w.CRAdminSesion.clear === 'function') {
+            w.CRAdminSesion.clear();
+        }
+        try {
+            w.sessionStorage.removeItem('cr-queue-scope');
+        } catch (ignore) {}
+    }
+
+    function logoutAndLogin() {
+        logout();
+        if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+            w.CRNavHistory.reset();
+        }
+        w.location.hash = '#/login';
     }
 
     function redirectAfterLogin(session) {
@@ -78,6 +92,7 @@
     w.CRStaffAuth = {
         login: login,
         logout: logout,
+        logoutAndLogin: logoutAndLogin,
         redirectAfterLogin: redirectAfterLogin
     };
 })(window);

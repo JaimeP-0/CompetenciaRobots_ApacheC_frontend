@@ -140,6 +140,9 @@
                             }
                             detalleHook.fn = null;
                         };
+                        if (w.CRStaffShell && typeof w.CRStaffShell.bind === 'function') {
+                            w.CRStaffShell.bind(outlet);
+                        }
                     });
                 });
             }

@@ -1,0 +1,80 @@
+/**
+ * Barra de sesión staff (juez / árbitro) con cerrar sesión.
+ */
+(function (w) {
+    'use strict';
+
+    function roleLabel(role) {
+        var r = String(role || '').toLowerCase();
+        if (r === 'juez') {
+            return 'Juez';
+        }
+        if (r === 'registro') {
+            return 'Registro';
+        }
+        if (r === 'arbitro') {
+            return 'Árbitro';
+        }
+        if (r === 'admin') {
+            return 'Admin';
+        }
+        if (r === 'dev') {
+            return 'Desarrollo';
+        }
+        return r || 'Personal';
+    }
+
+    function sessionSummary(ses) {
+        if (!ses || !ses.username) {
+            return '';
+        }
+        var parts = [ses.display_name || ses.username, roleLabel(ses.role)];
+        if (w.CRStaffSesion && typeof w.CRStaffSesion.assignmentSummary === 'function') {
+            var assign = w.CRStaffSesion.assignmentSummary(ses);
+            if (assign) {
+                parts.push(assign);
+            }
+        }
+        return parts.join(' · ');
+    }
+
+    function bindStaffBar(root) {
+        root = root || w.document.getElementById('cr-outlet');
+        if (!root) {
+            return;
+        }
+        var bar = root.querySelector('#cr-staff-bar');
+        var labelEl = root.querySelector('#cr-staff-bar-label');
+        var btnLogout = root.querySelector('#cr-staff-bar-logout');
+        if (!bar || !btnLogout) {
+            return;
+        }
+
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        var logged = !!(ses && ses.username);
+
+        bar.classList.toggle('hidden', !logged);
+        if (labelEl) {
+            labelEl.textContent = logged ? sessionSummary(ses) : '';
+        }
+
+        if (btnLogout.getAttribute('data-cr-staff-logout-bound') === '1') {
+            return;
+        }
+        btnLogout.setAttribute('data-cr-staff-logout-bound', '1');
+        btnLogout.addEventListener('click', function () {
+            if (w.CRStaffAuth && typeof w.CRStaffAuth.logoutAndLogin === 'function') {
+                w.CRStaffAuth.logoutAndLogin();
+            } else if (w.CRStaffAuth && typeof w.CRStaffAuth.logout === 'function') {
+                w.CRStaffAuth.logout();
+                w.location.hash = '#/login';
+            }
+        });
+    }
+
+    w.CRStaffShell = {
+        bind: bindStaffBar,
+        roleLabel: roleLabel,
+        sessionSummary: sessionSummary
+    };
+})(window);
