@@ -382,6 +382,9 @@
             if (status === 'ready' || status === 'pending' || status === 'queued' || status === 'in_progress') {
                 return true;
             }
+            if (status === 'completed' || status === 'done' || status === 'cancelled' || status === 'canceled') {
+                return false;
+            }
             if (!res) {
                 return true;
             }
