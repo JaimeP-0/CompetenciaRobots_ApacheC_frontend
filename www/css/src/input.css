@@ -1012,11 +1012,15 @@
     }
 
     .cr-visitante-live-grid {
-        @apply grid min-h-0 flex-1 auto-rows-fr gap-3 overflow-y-auto p-3 sm:grid-cols-2 sm:gap-4 sm:p-4;
+        @apply grid min-h-0 flex-1 auto-rows-fr gap-3 overflow-y-auto p-3 sm:gap-4 sm:p-4;
+        grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
     }
     .cr-visitante-live-card {
         @apply relative flex min-h-[9rem] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-marine/20 p-4 sm:min-h-[10.5rem] sm:p-5;
         background: linear-gradient(145deg, rgba(27, 140, 122, 0.08) 0%, rgba(255, 255, 255, 1) 60%);
+    }
+    .cr-visitante-live-grid > .cr-visitante-live-card:only-child {
+        @apply w-full;
     }
     .cr-visitante-live-card::before {
         content: '';
