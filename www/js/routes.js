@@ -28,6 +28,7 @@
             '/match/externos': 'public/match',
             '/visitante': 'public/visitante',
             '/dashboard': 'public/visitante',
+            '/dashboard-oficial': 'public/visitante',
             '/pruebapdf': 'public/pruebapdf',
             '/cr-doc-credenciales-1xuso-9k2m': 'public/pruebapdf',
             '/ranking': 'public/ranking',
@@ -43,6 +44,7 @@
             '/dashboard': '/visitante',
             '/tablero-normal': '/visitante',
             '/tablero-ultra': '/visitante',
+            '/tablero-oficial': '/dashboard-oficial',
             '/competencias': '/categorias',
             '/buscar': '/equipos',
             '/registro/completado': '/visitante',
@@ -84,6 +86,13 @@
                         lockedScope: true,
                         scopeLabel: seg === 'externos' ? 'Externos' : 'Internos (UTNC)'
                     };
+                }
+            },
+            {
+                re: /^\/dashboard-oficial\/?$/,
+                view: 'public/visitante',
+                params: function () {
+                    return { officialMode: true };
                 }
             }
         ],

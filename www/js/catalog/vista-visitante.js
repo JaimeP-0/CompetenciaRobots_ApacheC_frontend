@@ -5,10 +5,14 @@
     'use strict';
 
     var CRDom = w.CRDom;
-    var POLL_MS = 12000;
-    var RECENT_LIMIT = 2;
-    var UPCOMING_LIMIT = 1;
+    var POLL_MS = 5000;
     var LIVE_PAIRWISE_MAX = 6;
+    var QR_CYCLE_MS = 45000;
+    var QR_VISIBLE_MS = 7000;
+    var QR_ENABLED_KEY = 'cr-dashboard-official-qr-enabled';
+    var QR_OWNER_KEY = 'cr-dashboard-official-qr-owner';
+    var QR_OWNER_TOUCH_MS = 8000;
+    var QR_OWNER_STALE_MS = 20000;
 
     if (!CRDom) {
         throw new Error('Carga core/escape-html antes de vista-visitante.js');
@@ -110,6 +114,9 @@
         var liveEl = root.querySelector('#cr-visitante-live');
         var upcomingEl = root.querySelector('#cr-visitante-upcoming');
         var recentEl = root.querySelector('#cr-visitante-recent');
+        var officialControls = root.querySelector('#cr-visitante-official-controls');
+        var qrToggle = root.querySelector('#cr-visitante-qr-enabled');
+        var qrOverlay = root.querySelector('#cr-visitante-qr-overlay');
         if (!selCat || !liveEl || !upcomingEl || !recentEl) {
             return;
         }
@@ -235,6 +242,136 @@
         var teamsById = {};
         var pollTimer = null;
         var loadInflight = false;
+        var routePath = '';
+        var officialMode = false;
+        var ownerTab = false;
+        var ownerTouchTimer = null;
+        var qrCycleTimer = null;
+        var qrHideTimer = null;
+        var tabId = 'tab-' + String(Date.now()) + '-' + String(Math.random()).slice(2, 9);
+
+        function currentRoutePath() {
+            var hash = String(w.location.hash || '').replace(/^#/, '');
+            if (!hash) {
+                return '/';
+            }
+            if (hash.charAt(0) !== '/') {
+                hash = '/' + hash;
+            }
+            return hash.split('?')[0];
+        }
+
+        function readJsonStorage(key) {
+            try {
+                var raw = w.localStorage.getItem(key);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function writeJsonStorage(key, value) {
+            try {
+                w.localStorage.setItem(key, JSON.stringify(value));
+            } catch (e) {
+                /* ignore */
+            }
+        }
+
+        function readQrEnabled() {
+            try {
+                return w.localStorage.getItem(QR_ENABLED_KEY) === '1';
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function writeQrEnabled(enabled) {
+            try {
+                w.localStorage.setItem(QR_ENABLED_KEY, enabled ? '1' : '0');
+            } catch (e) {
+                /* ignore */
+            }
+        }
+
+        function showQrOverlay(show) {
+            if (!qrOverlay) {
+                return;
+            }
+            qrOverlay.classList.toggle('hidden', !show);
+            qrOverlay.setAttribute('aria-hidden', show ? 'false' : 'true');
+        }
+
+        function stopQrTimers() {
+            if (qrCycleTimer) {
+                clearTimeout(qrCycleTimer);
+                qrCycleTimer = null;
+            }
+            if (qrHideTimer) {
+                clearTimeout(qrHideTimer);
+                qrHideTimer = null;
+            }
+            showQrOverlay(false);
+        }
+
+        function scheduleQrCycle() {
+            stopQrTimers();
+            if (!officialMode || !readQrEnabled()) {
+                return;
+            }
+            showQrOverlay(true);
+            qrHideTimer = setTimeout(function () {
+                showQrOverlay(false);
+            }, QR_VISIBLE_MS);
+            qrCycleTimer = setTimeout(function () {
+                scheduleQrCycle();
+            }, QR_CYCLE_MS);
+        }
+
+        function updateOfficialControlsUi() {
+            if (!officialControls || !qrToggle) {
+                return;
+            }
+            officialControls.classList.toggle('hidden', !(officialMode && ownerTab));
+            qrToggle.checked = readQrEnabled();
+        }
+
+        function touchOwner() {
+            if (!officialMode || !ownerTab) {
+                return;
+            }
+            writeJsonStorage(QR_OWNER_KEY, { tabId: tabId, ts: Date.now() });
+        }
+
+        function stopOwnerTouch() {
+            if (ownerTouchTimer) {
+                clearInterval(ownerTouchTimer);
+                ownerTouchTimer = null;
+            }
+        }
+
+        function ensureOfficialOwner() {
+            if (!officialMode) {
+                ownerTab = false;
+                stopOwnerTouch();
+                updateOfficialControlsUi();
+                return;
+            }
+            var rec = readJsonStorage(QR_OWNER_KEY);
+            var now = Date.now();
+            var stale = !rec || !rec.ts || now - Number(rec.ts) > QR_OWNER_STALE_MS;
+            if (stale || rec.tabId === tabId) {
+                ownerTab = true;
+                touchOwner();
+                if (!ownerTouchTimer) {
+                    ownerTouchTimer = setInterval(touchOwner, QR_OWNER_TOUCH_MS);
+                }
+            } else {
+                ownerTab = false;
+                stopOwnerTouch();
+            }
+            updateOfficialControlsUi();
+        }
 
         if (root._crVisitantePoll) {
             clearInterval(root._crVisitantePoll);
@@ -246,6 +383,8 @@
                 clearInterval(pollTimer);
                 pollTimer = null;
             }
+            stopQrTimers();
+            stopOwnerTouch();
         }
 
         function startPoll() {
@@ -540,10 +679,52 @@
                 live = live.slice(0, 1);
             }
 
+            function categoryOrderMap() {
+                var order = {};
+                var idx = 0;
+                categorias.forEach(function (c) {
+                    if (!c || c.id == null || !isEventCategoryName(c.name)) {
+                        return;
+                    }
+                    var key = String(c.id);
+                    if (order[key] == null) {
+                        order[key] = idx;
+                        idx++;
+                    }
+                });
+                return order;
+            }
+
+            function pickOnePerCategory(list) {
+                var order = categoryOrderMap();
+                var pickedByCat = {};
+                (list || []).forEach(function (p) {
+                    if (!p || p.category_id == null) {
+                        return;
+                    }
+                    var key = String(p.category_id);
+                    if (!pickedByCat[key]) {
+                        pickedByCat[key] = p;
+                    }
+                });
+                return Object.keys(pickedByCat)
+                    .sort(function (a, b) {
+                        var oa = order[a] != null ? order[a] : 999;
+                        var ob = order[b] != null ? order[b] : 999;
+                        if (oa !== ob) {
+                            return oa - ob;
+                        }
+                        return Number(a) - Number(b);
+                    })
+                    .map(function (key) {
+                        return pickedByCat[key];
+                    });
+            }
+
             return {
                 live: live,
-                upcoming: upcoming.slice(0, UPCOMING_LIMIT),
-                recent: completed.slice(0, RECENT_LIMIT)
+                upcoming: pickOnePerCategory(upcoming),
+                recent: pickOnePerCategory(completed)
             };
         }
 
@@ -870,6 +1051,44 @@
         }
 
         selCat.addEventListener('change', onFilterChange, false);
+        routePath = currentRoutePath();
+        officialMode = !!(routePath === '/dashboard-oficial' || routePath === '/tablero-oficial');
+        if (officialMode) {
+            ensureOfficialOwner();
+            if (qrToggle) {
+                qrToggle.checked = readQrEnabled();
+                qrToggle.addEventListener(
+                    'change',
+                    function () {
+                        writeQrEnabled(!!qrToggle.checked);
+                        scheduleQrCycle();
+                    },
+                    false
+                );
+            }
+            w.addEventListener(
+                'storage',
+                function (ev) {
+                    if (!ev) {
+                        return;
+                    }
+                    if (ev.key === QR_OWNER_KEY) {
+                        ensureOfficialOwner();
+                    }
+                    if (ev.key === QR_ENABLED_KEY) {
+                        updateOfficialControlsUi();
+                        scheduleQrCycle();
+                    }
+                },
+                false
+            );
+            scheduleQrCycle();
+        } else {
+            showQrOverlay(false);
+            if (officialControls) {
+                officialControls.classList.add('hidden');
+            }
+        }
 
         if (w.CRApi.fetchCategorias) {
             w.CRApi.fetchCategorias()

@@ -50,6 +50,12 @@
             </label>
             <p id="cr-visitante-school-hint" class="cr-visitante-toolbar-hint" aria-live="polite"></p>
         </div>
+
+        <div id="cr-visitante-official-controls" class="cr-visitante-official-controls hidden" aria-label="Controles oficial">
+            <label class="cr-visitante-qr-toggle">
+                <input id="cr-visitante-qr-enabled" type="checkbox" />
+            </label>
+        </div>
     </header>
 
     <main class="cr-visitante-body">
@@ -84,5 +90,17 @@
             </section>
         </aside>
     </main>
+
+    <div id="cr-visitante-qr-overlay" class="cr-visitante-qr-overlay hidden" aria-live="polite" aria-hidden="true">
+        <div class="cr-visitante-qr-card">
+            <p class="cr-visitante-qr-title">Escanea para ver la competencia en tiempo real</p>
+            <img
+                class="cr-visitante-qr-image"
+                src="img/qbrandr-whgeP8Pu.png"
+                alt="QR para abrir utarena.online/visitante"
+            />
+            <p class="cr-visitante-qr-url">utarena.online</p>
+        </div>
+    </div>
 
 </section>
