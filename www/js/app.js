@@ -244,6 +244,16 @@
         } catch (ignore) {}
     }
 
+    function blockNativeLoginSubmit(e) {
+        var form = e.target;
+        if (!form || form.tagName !== 'FORM') {
+            return;
+        }
+        if (form.id === 'f-staff-login' || form.id === 'f-admin-login') {
+            e.preventDefault();
+        }
+    }
+
     function boot() {
         if (loaded) {
             return;
@@ -253,6 +263,7 @@
             return;
         }
         loaded = true;
+        d.addEventListener('submit', blockNativeLoginSubmit, true);
         outlet.addEventListener('click', onOutletClick, false);
         if (!w.location.hash || w.location.hash === '#/' || w.location.hash === '#/inicio') {
             w.location.hash = '/login';

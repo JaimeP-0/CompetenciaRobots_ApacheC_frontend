@@ -21,6 +21,7 @@
         var errEl = outlet.querySelector('#staff-login-error');
         var btn = outlet.querySelector('#btn-staff-login');
 
+        form.setAttribute('action', '');
         form.addEventListener('submit', function (e) {
             e.preventDefault();
             var usuario =
