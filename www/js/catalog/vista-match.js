@@ -376,6 +376,15 @@
                 return false;
             }
             var res = resByMatch[String(partida.id)] || partida.result || null;
+            var status = String(partida.status || '')
+                .trim()
+                .toLowerCase();
+            if (status === 'ready' || status === 'pending' || status === 'queued' || status === 'in_progress') {
+                return true;
+            }
+            if (!res) {
+                return true;
+            }
             var catName = categoryLabel(partida.category_id);
             if (typeof w.CRApi.isPartidaResultComplete === 'function') {
                 return !w.CRApi.isPartidaResultComplete(res, catName);
