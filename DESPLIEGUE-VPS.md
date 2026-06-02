@@ -1,0 +1,91 @@
+# App en el VPS (front + backend juntos)
+
+En el servidor **no hace falta tu PC**. Nginx sirve el Cordova (`www`) y reenvía `/categorias`, `/partidas`, etc. al API Go en `127.0.0.1:8080`.
+
+## Arquitectura
+
+```text
+Internet :80
+    └── nginx (/var/www/competencia-robots/www)
+            ├── /*.html, js, css  → archivos estáticos
+            └── /categorias, /partidas, … → proxy → Go :8080
+    └── robot-api (systemd) + Postgres (docker)
+```
+
+**URL de la app:** http://2.25.159.127/
+
+## Desde tu PC (flujo habitual — solo front)
+
+1. Copia `.env.example` → `.env` y revisa `CR_PUBLIC_URL` / `CR_SSH_HOST`.
+
+2. Cambios locales → commit → push:
+
+```powershell
+git add …
+git commit -m "…"
+git push origin master
+```
+
+3. En el VPS, **git pull** del mismo repo (rápido; no usa SFTP):
+
+```powershell
+$env:CR_SSH_PASSWORD = "tu-contraseña-root"
+npm run vps:pull
+```
+
+Eso hace `git pull` en `/var/www/competencia-robots`, opcionalmente `build:css` si hay Node en el servidor, y `install-front-on-server.sh` (nginx + `config.local.js`).
+
+El backend Go vive en **otro repo** (`/var/www/robot`); no lo actualiza este comando.
+
+### Despliegue completo por SFTP (solo si hace falta)
+
+Primera vez o sin git en el VPS:
+
+```powershell
+npm run deploy:vps
+```
+
+Sube `www/` + `deploy/` por SFTP (más lento que `vps:pull`).
+
+## Solo en el VPS (sin PC)
+
+Solo front (este proyecto):
+
+```bash
+bash /var/www/competencia-robots/deploy/vps/install-front-on-server.sh
+```
+
+API + Postgres (otro repo, **manual** en el servidor):
+
+```bash
+bash /var/www/competencia-robots/deploy/vps/install-on-server.sh
+```
+
+## Base de datos (schema)
+
+El esquema está en `deploy/vps/schema.sql`. Para aplicarlo (o reaplicarlo) en el VPS:
+
+```powershell
+$env:CR_SSH_PASSWORD = "tu-contraseña"
+npm run vps:schema
+```
+
+Eso aplica el SQL en Postgres (no sube otros repos).
+
+## Comandos útiles en el VPS
+
+```bash
+systemctl status robot-api nginx
+systemctl restart robot-api
+curl -s http://127.0.0.1:8080/categorias | head
+curl -s http://127.0.0.1/categorias | head
+docker compose -f /var/www/robot/docker-compose.yml ps
+```
+
+## APK Android
+
+El perfil `vps` en `config.local.js` usa `publicUrl: http://2.25.159.127` (sin puerto 8080). Tras cambiar la IP, vuelve a `npm run deploy:vps` o edita en el servidor `www/js/config.local.js`.
+
+## Desarrollo en PC (opcional)
+
+En `www/js/config.local.js` pon `apiProfile: 'local'` y usa `npm run local:stack`.
