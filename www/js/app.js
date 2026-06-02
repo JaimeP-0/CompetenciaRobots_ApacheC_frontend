@@ -63,7 +63,10 @@
         if (w.CRQueueRoutes.staffMayAccessRoute(route, ses)) {
             return null;
         }
-        return w.CRQueueRoutes.staffWorkspaceHash(ses);
+        if (typeof w.CRQueueRoutes.staffForbiddenRedirect === 'function') {
+            return w.CRQueueRoutes.staffForbiddenRedirect(ses);
+        }
+        return '#/inicio';
     }
 
     function guardAdminRoute(viewName) {
