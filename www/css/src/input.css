@@ -860,7 +860,7 @@
         @apply h-full;
     }
     html.cr-view-dashboard body {
-        @apply min-h-dvh bg-[#070d1a] p-0 text-snow;
+        @apply min-h-dvh bg-[#f5f7fb] p-0 text-graphite;
     }
     html.cr-view-dashboard #cr-site-header {
         @apply hidden;
@@ -872,179 +872,244 @@
         @apply flex min-h-dvh w-full min-w-0 flex-1 flex-col;
     }
 
+    /* —— Dashboard UT Arena (#/dashboard, #/visitante) —— */
     .cr-visitante-dash {
-        @apply flex min-h-dvh w-full min-w-0 flex-col bg-[#070d1a] text-snow;
+        @apply relative flex min-h-dvh w-full min-w-0 flex-col overflow-x-hidden bg-[#f5f7fb] text-graphite;
     }
-    .cr-visitante-dash-bar {
-        @apply flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-navy/95 px-3 py-2.5 shadow-lg backdrop-blur-sm sm:gap-4 sm:px-5 sm:py-3 lg:px-6;
-        padding-top: max(0.65rem, env(safe-area-inset-top, 0px));
+    .cr-visitante-hero {
+        @apply relative z-[1] shrink-0 border-b border-graphite/10 bg-snow;
+        padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
         padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
         padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
     }
-    .cr-visitante-dash-bar-start {
-        @apply flex min-w-0 items-center gap-2 sm:gap-3;
+    .cr-visitante-hero-glow {
+        @apply pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-marine/10 to-transparent opacity-80;
     }
-    .cr-visitante-dash-back {
-        @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-lg text-snow/90 transition hover:bg-white/10 active:scale-[0.97];
-        font: inherit;
+    .cr-visitante-hero-row {
+        @apply relative flex flex-wrap items-end justify-between gap-4 px-3 pb-3 pt-2 sm:px-5 sm:pb-4 lg:px-6;
     }
-    .cr-visitante-dash-brand {
-        @apply min-w-0;
+    .cr-visitante-hero-brand {
+        @apply min-w-0 flex-1;
     }
-    .cr-visitante-dash-kicker {
-        @apply m-0 inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.16em] text-emerald-300/90 sm:text-xs;
+    .cr-visitante-hero-kicker {
+        @apply m-0 inline-flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.2em] text-marine sm:text-xs;
     }
     .cr-visitante-live-dot {
-        @apply inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)];
+        @apply inline-block h-2 w-2 shrink-0 animate-pulse rounded-full bg-marine;
     }
-    .cr-visitante-dash-title {
-        @apply m-0 text-lg font-bold leading-tight tracking-tight text-snow sm:text-xl md:text-2xl;
+    .cr-visitante-hero-title {
+        @apply m-0 mt-1 font-black leading-none tracking-tight text-navy;
+        font-size: clamp(1.75rem, 5vw, 2.5rem);
     }
-    .cr-visitante-dash-bar-filters {
-        @apply flex min-w-0 flex-1 flex-wrap items-end gap-2 sm:gap-3 lg:justify-center;
+    .cr-visitante-hero-lead {
+        @apply m-0 mt-1 max-w-md text-sm text-graphite/70 sm:text-[0.95rem];
     }
-    .cr-visitante-dash-filter {
-        @apply flex min-w-[7.5rem] flex-1 flex-col gap-1 sm:min-w-[9rem] sm:max-w-[11rem];
+    .cr-visitante-hero-tools {
+        @apply flex w-full min-w-0 flex-col items-stretch gap-2 sm:w-auto sm:items-end;
     }
-    .cr-visitante-dash-filter-label {
-        @apply text-[0.6rem] font-semibold uppercase tracking-wider text-snow/50 sm:text-[0.65rem];
+    .cr-visitante-hero-sync {
+        @apply m-0 text-right text-[0.65rem] tabular-nums text-snow/45 sm:text-xs;
+    }
+    .cr-visitante-hero-btns {
+        @apply flex items-center justify-end gap-2;
+    }
+    .cr-visitante-icon-btn {
+        @apply flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-white/15 bg-white/[0.06] text-snow transition hover:border-[#C6D93D]/40 hover:bg-white/10 active:scale-[0.96];
+        font: inherit;
+    }
+    .cr-visitante-icon-btn-glyph .cr-icon {
+        @apply h-5 w-5 text-[#C6D93D];
+    }
+    .cr-visitante-hero-btn {
+        @apply inline-flex cursor-pointer items-center justify-center rounded-xl border-2 border-[#C6D93D]/70 bg-[#1B8C7A] px-4 py-2 text-sm font-semibold text-snow shadow-[0_4px_20px_rgba(27,140,122,0.35)] transition hover:bg-[#1B8C7A]/90 active:scale-[0.98];
+        font: inherit;
+    }
+
+    .cr-visitante-staff-bar {
+        @apply relative mx-3 mb-3 sm:mx-5 lg:mx-6;
+    }
+    .cr-visitante-staff-bar-inner {
+        @apply flex min-w-0 items-center gap-3 rounded-2xl border border-[#C6D93D]/25 bg-gradient-to-r from-[#1B8C7A]/20 via-white/[0.04] to-transparent px-3 py-2.5 sm:px-4;
+    }
+    .cr-visitante-staff-avatar {
+        @apply flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#C6D93D] text-sm font-black text-navy;
+    }
+    .cr-visitante-staff-text {
+        @apply m-0 min-w-0 flex-1 leading-snug;
+    }
+    .cr-visitante-staff-text strong {
+        @apply block truncate text-sm font-bold text-snow sm:text-base;
+    }
+    .cr-visitante-staff-text span {
+        @apply block truncate text-xs text-snow/55;
+    }
+    .cr-visitante-staff-link {
+        @apply shrink-0 cursor-pointer rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs font-semibold text-snow/90 transition hover:bg-white/10;
+        font: inherit;
+    }
+
+    .cr-visitante-toolbar {
+        @apply relative mx-3 mb-3 flex flex-wrap items-end gap-2 rounded-2xl border border-graphite/15 bg-snow p-3 shadow-sm sm:mx-5 sm:gap-3 sm:p-4 lg:mx-6;
+    }
+    .cr-visitante-field {
+        @apply flex min-w-[min(100%,10rem)] flex-1 flex-col gap-1 sm:min-w-[9rem] sm:max-w-[14rem];
     }
     .cr-visitante-dash-filter--school {
-        @apply min-w-[min(100%,11rem)] flex-1 sm:min-w-[12rem];
+        @apply min-w-[min(100%,12rem)] flex-[1.2] sm:min-w-[13rem];
     }
     .cr-visitante-dash-school-input {
         @apply w-full;
     }
-    .cr-visitante-dash-school-hint {
-        @apply m-0 w-full basis-full text-center text-[0.65rem] leading-snug text-snow/50 sm:text-xs;
+    .cr-visitante-field-label {
+        @apply text-[0.6rem] font-bold uppercase tracking-[0.14em] text-graphite/60;
     }
-    .cr-visitante-dash-select {
-        @apply w-full min-w-0 cursor-pointer rounded-lg border border-white/15 bg-white/10 px-2.5 py-2 text-sm font-medium text-snow outline-none transition focus:border-marine/60 focus:ring-2 focus:ring-marine/30;
+    .cr-visitante-field-control {
+        @apply w-full min-w-0 rounded-xl border border-graphite/20 bg-snow px-3 py-2.5 text-sm font-medium text-graphite outline-none transition placeholder:text-graphite/35 focus:border-[#1B8C7A] focus:ring-2 focus:ring-[#1B8C7A]/30;
+    }
+    select.cr-visitante-field-control {
+        @apply cursor-pointer pr-9;
         appearance: none;
         -webkit-appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%23ffffff'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%23C6D93D'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
-        background-position: right 0.5rem center;
-        background-size: 0.85rem;
-        padding-right: 1.75rem;
+        background-position: right 0.65rem center;
+        background-size: 0.9rem;
     }
-    .cr-visitante-dash-select option {
-        @apply bg-navy text-snow;
+    select.cr-visitante-field-control option {
+        @apply bg-snow text-graphite;
     }
-    .cr-visitante-dash-bar-end {
-        @apply flex w-full min-w-0 flex-wrap items-center justify-end gap-2 sm:w-auto;
-    }
-    .cr-visitante-dash-updated {
-        @apply m-0 w-full text-right text-[0.65rem] text-snow/55 sm:w-auto sm:text-xs;
-    }
-    .cr-visitante-dash-btn {
-        @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border border-marine/50 bg-marine px-3 py-2 text-xs font-semibold text-snow transition hover:bg-marine/90 active:scale-[0.98] sm:text-sm;
-        font: inherit;
-    }
-    .cr-visitante-dash-btn--ghost {
-        @apply border-white/20 bg-white/5 text-snow/90 hover:bg-white/10;
+    .cr-visitante-toolbar-hint {
+        @apply m-0 w-full basis-full text-center text-[0.65rem] leading-snug text-graphite/60 sm:text-left sm:text-xs;
     }
 
-    .cr-visitante-dash-main {
-        @apply grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 p-3 sm:gap-4 sm:p-4 lg:grid-cols-[minmax(0,1.65fr)_minmax(18rem,1fr)] lg:gap-5 lg:p-5 xl:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)];
+    .cr-visitante-body {
+        @apply relative z-[1] grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 px-3 pb-3 sm:gap-4 sm:px-5 sm:pb-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(17rem,1fr)] lg:px-6 lg:pb-5 xl:grid-cols-[minmax(0,2fr)_minmax(19rem,1fr)];
         padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
     }
-    .cr-visitante-dash-zone {
-        @apply flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04];
+    .cr-visitante-panel {
+        @apply flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-graphite/15 bg-snow shadow-sm;
     }
-    .cr-visitante-dash-zone--live {
-        @apply min-h-[min(52vh,28rem)] lg:min-h-0;
+    .cr-visitante-panel--live {
+        @apply min-h-[min(50vh,26rem)] lg:min-h-0;
     }
-    .cr-visitante-dash-zone-title {
-        @apply m-0 flex shrink-0 items-center gap-2 border-b border-white/10 px-3 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-snow/70 sm:px-4 sm:py-3 sm:text-sm;
+    .cr-visitante-panel-head {
+        @apply flex shrink-0 items-center justify-between gap-2 border-b border-graphite/10 px-3 py-2.5 sm:px-4 sm:py-3;
     }
-    .cr-visitante-dash-zone-icon {
-        @apply flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/15;
+    .cr-visitante-panel-title {
+        @apply m-0 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-navy sm:text-sm;
     }
-    .cr-visitante-dash-zone-icon .cr-icon {
-        @apply h-4 w-4 text-emerald-300;
+    .cr-visitante-panel-icon {
+        @apply flex h-8 w-8 items-center justify-center rounded-lg bg-[#C6D93D]/15;
     }
-    .cr-visitante-dash-live-grid {
-        @apply grid min-h-0 flex-1 auto-rows-fr gap-3 overflow-y-auto p-3 sm:grid-cols-2 sm:gap-4 sm:p-4 xl:grid-cols-2;
+    .cr-visitante-panel-icon .cr-icon {
+        @apply h-4 w-4 text-[#C6D93D];
     }
-    .cr-visitante-dash-live-card {
-        @apply flex min-h-[8.5rem] min-w-0 flex-col justify-between rounded-xl border border-emerald-400/30 bg-gradient-to-br from-emerald-500/15 via-emerald-500/[0.06] to-transparent p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:min-h-[10rem] sm:p-5;
+    .cr-visitante-panel-count {
+        @apply inline-flex min-w-[1.75rem] items-center justify-center rounded-full bg-[#1B8C7A] px-2 py-0.5 text-xs font-bold tabular-nums text-snow;
     }
-    .cr-visitante-dash-live-head {
-        @apply mb-3 flex flex-wrap items-center justify-between gap-2;
+    .cr-visitante-panel-count--zero {
+        @apply bg-mist text-graphite/45;
     }
-    .cr-visitante-dash-live-cat {
-        @apply text-[0.65rem] font-bold uppercase tracking-[0.12em] text-emerald-200/90 sm:text-xs;
+
+    .cr-visitante-live-grid {
+        @apply grid min-h-0 flex-1 auto-rows-fr gap-3 overflow-y-auto p-3 sm:grid-cols-2 sm:gap-4 sm:p-4;
     }
-    .cr-visitante-dash-live-badge {
-        @apply rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-emerald-200 sm:text-[0.65rem];
+    .cr-visitante-live-card {
+        @apply relative flex min-h-[9rem] min-w-0 flex-col justify-between overflow-hidden rounded-2xl border border-marine/20 p-4 sm:min-h-[10.5rem] sm:p-5;
+        background: linear-gradient(145deg, rgba(27, 140, 122, 0.08) 0%, rgba(255, 255, 255, 1) 60%);
     }
-    .cr-visitante-dash-versus {
-        @apply grid flex-1 items-center gap-2 sm:gap-3;
+    .cr-visitante-live-card::before {
+        content: '';
+        @apply pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-marine/10 blur-2xl;
+    }
+    .cr-visitante-live-card-top {
+        @apply relative mb-3 flex flex-wrap items-center justify-between gap-2;
+    }
+    .cr-visitante-tag {
+        @apply inline-flex rounded-full px-2.5 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide sm:text-[0.65rem];
+    }
+    .cr-visitante-tag--cat {
+        @apply bg-marine/10 text-marine;
+    }
+    .cr-visitante-tag--live {
+        @apply bg-[#C6D93D]/20 text-[#C6D93D];
+        animation: cr-visitante-pulse-tag 2s ease-in-out infinite;
+    }
+    @keyframes cr-visitante-pulse-tag {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.65;
+        }
+    }
+    .cr-visitante-tag--badge {
+        @apply shrink-0 bg-white/10 text-snow/55;
+    }
+    .cr-visitante-queue-item--done .cr-visitante-tag--badge {
+        @apply bg-[#1B8C7A]/25 text-emerald-200;
+    }
+    .cr-visitante-match {
+        @apply relative grid flex-1 items-center gap-2;
         grid-template-columns: 1fr auto 1fr;
     }
-    .cr-visitante-dash-team {
-        @apply text-center text-base font-bold leading-tight text-snow sm:text-xl md:text-2xl lg:text-[1.65rem];
+    .cr-visitante-match-side {
+        @apply text-center text-base font-bold leading-tight text-navy sm:text-xl lg:text-2xl;
     }
-    .cr-visitante-dash-vs {
-        @apply text-center text-xs font-black tracking-[0.2em] text-emerald-300/80 sm:text-sm;
+    .cr-visitante-match-vs {
+        @apply text-center text-[0.65rem] font-black tracking-[0.25em] text-[#C6D93D] sm:text-xs;
     }
-    .cr-visitante-dash-solo-name {
-        @apply m-0 text-center text-2xl font-bold leading-tight text-snow sm:text-3xl md:text-4xl;
+    .cr-visitante-match-solo {
+        @apply relative m-0 text-center text-2xl font-bold leading-tight text-snow sm:text-3xl;
     }
-    .cr-visitante-dash-live-sub {
-        @apply m-0 mt-2 text-center text-xs text-snow/55 sm:text-sm;
+    .cr-visitante-match-meta {
+        @apply relative m-0 mt-2 text-center text-xs text-graphite/60 sm:text-sm;
     }
 
-    .cr-visitante-dash-side {
+    .cr-visitante-rail {
         @apply grid min-h-0 min-w-0 grid-rows-2 gap-3 sm:gap-4 lg:min-h-0;
     }
-    .cr-visitante-dash-zone--queue,
-    .cr-visitante-dash-zone--results {
-        @apply min-h-[12rem] lg:min-h-0;
+    .cr-visitante-panel--queue,
+    .cr-visitante-panel--results {
+        @apply min-h-[11rem] lg:min-h-0;
     }
-    .cr-visitante-dash-list {
+    .cr-visitante-queue {
         @apply flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2 sm:p-3;
     }
-    .cr-visitante-dash-row {
-        @apply flex min-w-0 items-start justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 sm:px-3.5 sm:py-3;
+    .cr-visitante-queue-item {
+        @apply flex min-w-0 items-start gap-2.5 rounded-xl border border-graphite/15 bg-snow px-2.5 py-2.5 transition hover:border-marine/30 sm:px-3 sm:py-3;
     }
-    .cr-visitante-dash-row--result {
-        @apply border-emerald-400/20 bg-emerald-500/[0.06];
+    .cr-visitante-queue-item--done {
+        @apply border-[#1B8C7A]/25 bg-[#1B8C7A]/[0.08];
     }
-    .cr-visitante-dash-row-main {
+    .cr-visitante-queue-item--done .cr-visitante-queue-title {
+        @apply text-emerald-200/95;
+    }
+    .cr-visitante-queue-pos {
+        @apply mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-white/10 text-xs font-black tabular-nums text-snow/70;
+    }
+    .cr-visitante-queue-body {
         @apply min-w-0 flex-1;
     }
-    .cr-visitante-dash-row-cat {
-        @apply text-[0.6rem] font-bold uppercase tracking-[0.1em] text-marine/90 sm:text-[0.65rem];
+    .cr-visitante-queue-title {
+        @apply m-0 mt-1 text-sm font-semibold leading-snug text-navy sm:text-[0.95rem];
     }
-    .cr-visitante-dash-row-title {
-        @apply m-0 mt-0.5 text-sm font-semibold leading-snug text-snow sm:text-base;
+    .cr-visitante-queue-sub {
+        @apply m-0 mt-0.5 truncate text-xs text-graphite/55;
     }
-    .cr-visitante-dash-row--result .cr-visitante-dash-row-title {
-        @apply text-emerald-200;
+
+    .cr-visitante-empty {
+        @apply col-span-full m-0 flex flex-1 items-center justify-center p-8 text-center text-sm leading-relaxed text-graphite/55;
     }
-    .cr-visitante-dash-row-sub {
-        @apply m-0 mt-0.5 truncate text-xs text-snow/50;
-    }
-    .cr-visitante-dash-row-badge {
-        @apply shrink-0 rounded-full bg-white/10 px-2 py-0.5 text-[0.55rem] font-bold uppercase tracking-wide text-snow/60 sm:text-[0.6rem];
-    }
-    .cr-visitante-dash-row--result .cr-visitante-dash-row-badge {
-        @apply bg-emerald-500/15 text-emerald-200/90;
-    }
-    .cr-visitante-dash-msg {
-        @apply col-span-full m-0 flex flex-1 items-center justify-center p-6 text-center text-sm text-snow/50;
-    }
-    .cr-visitante-dash-foot {
-        @apply flex shrink-0 flex-col items-center gap-2 border-t border-white/10 bg-[#0f172a]/95 px-4 py-3;
+
+    .cr-visitante-guest-foot {
+        @apply relative z-[1] shrink-0 border-t border-white/[0.06] px-4 py-3 text-center;
         padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
     }
-    .cr-visitante-dash-foot-label {
-        @apply m-0 max-w-full truncate text-center text-xs text-snow/55;
-    }
-    .cr-visitante-dash-foot-actions {
-        @apply flex w-full max-w-md flex-wrap items-center justify-center gap-2;
+    .cr-visitante-guest-login {
+        @apply mx-auto w-full max-w-md cursor-pointer rounded-xl border border-dashed border-white/20 bg-transparent px-4 py-2.5 text-xs font-medium text-snow/55 transition hover:border-[#C6D93D]/40 hover:text-snow/80 sm:text-sm;
+        font: inherit;
     }
   /* —— Login staff (#/login) — mismo lenguaje que catálogo / admin —— */
     .cr-staff-login-page {

@@ -14,13 +14,11 @@
     }
 
     function bindStaffFooter(root) {
+        var staffBar = root.querySelector('#cr-visitante-staff-bar');
         var label = root.querySelector('#cr-visitante-staff-label');
-        var btnLogin = root.querySelector('#cr-visitante-staff-login');
-        var btnWorkspace = root.querySelector('#cr-visitante-staff-workspace');
+        var avatar = root.querySelector('.cr-visitante-staff-avatar');
         var btnLogout = root.querySelector('#cr-visitante-staff-logout');
-        if (!btnLogin) {
-            return;
-        }
+        var guestFoot = root.querySelector('.cr-visitante-guest-foot');
 
         var sesion = w.CRStaffSesion && w.CRStaffSesion.read();
         var logged = !!(sesion && sesion.username);
@@ -48,41 +46,42 @@
             return r || 'Staff';
         }
 
+        if (staffBar) {
+            staffBar.classList.toggle('hidden', !logged);
+        }
+        if (guestFoot) {
+            guestFoot.classList.toggle('hidden', logged);
+        }
+
         if (label) {
             if (logged) {
                 var assign =
                     w.CRStaffSesion && typeof w.CRStaffSesion.assignmentSummary === 'function'
                         ? w.CRStaffSesion.assignmentSummary(sesion)
                         : '';
-                label.textContent =
-                    (sesion.display_name || sesion.username) +
-                    ' · ' +
-                    roleLabel(sesion.role) +
-                    (assign ? ' · ' + assign : '');
-                label.classList.remove('hidden');
+                var name = sesion.display_name || sesion.username || '';
+                label.innerHTML =
+                    '<strong>' +
+                    CRDom.escapeHtml(name) +
+                    '</strong>' +
+                    '<span>' +
+                    CRDom.escapeHtml(roleLabel(sesion.role) + (assign ? ' · ' + assign : '')) +
+                    '</span>';
+                if (avatar) {
+                    avatar.textContent = name ? String(name).charAt(0).toUpperCase() : '?';
+                }
             } else {
                 label.textContent = '';
-                label.classList.add('hidden');
+                if (avatar) {
+                    avatar.textContent = '';
+                }
             }
         }
 
-        btnLogin.classList.toggle('hidden', logged);
-        if (btnWorkspace) {
-            btnWorkspace.classList.toggle('hidden', !logged);
-        }
         if (btnLogout) {
             btnLogout.classList.toggle('hidden', !logged);
         }
 
-        if (btnWorkspace && logged) {
-            btnWorkspace.onclick = function () {
-                if (w.CRQueueRoutes && typeof w.CRQueueRoutes.staffWorkspaceHash === 'function') {
-                    w.location.hash = w.CRQueueRoutes.staffWorkspaceHash(sesion);
-                } else if (w.CRStaffAuth && typeof w.CRStaffAuth.redirectAfterLogin === 'function') {
-                    w.CRStaffAuth.redirectAfterLogin(sesion);
-                }
-            };
-        }
         if (btnLogout) {
             btnLogout.onclick = function () {
                 if (w.CRStaffAuth && typeof w.CRStaffAuth.logoutAndLogin === 'function') {
@@ -107,8 +106,6 @@
         var selCat = root.querySelector('#cr-visitante-cat');
         var inputSchool = root.querySelector('#cr-visitante-school');
         var schoolHint = root.querySelector('#cr-visitante-school-hint');
-        var btnRefresh = root.querySelector('#cr-visitante-refresh');
-        var updatedEl = root.querySelector('#cr-visitante-updated');
         var liveEl = root.querySelector('#cr-visitante-live');
         var upcomingEl = root.querySelector('#cr-visitante-upcoming');
         var recentEl = root.querySelector('#cr-visitante-recent');
@@ -228,13 +225,6 @@
                 function () {
                     persistGuestSchool();
                     refresh(true);
-                },
-                false
-            );
-            inputSchool.addEventListener(
-                'blur',
-                function () {
-                    persistGuestSchool();
                 },
                 false
             );
@@ -491,7 +481,7 @@
         }
 
         function renderEmptyBlock(msg, extraClass) {
-            var cls = 'cr-visitante-dash-msg' + (extraClass ? ' ' + extraClass : '');
+            var cls = 'cr-visitante-empty' + (extraClass ? ' ' + extraClass : '');
             return '<p class="' + cls + '">' + CRDom.escapeHtml(msg) + '</p>';
         }
 
@@ -503,44 +493,44 @@
             if (matchup.type === 'pair') {
                 var parts = matchup.label.split(' vs ');
                 body =
-                    '<div class="cr-visitante-dash-versus">' +
-                    '<span class="cr-visitante-dash-team">' +
+                    '<div class="cr-visitante-match">' +
+                    '<span class="cr-visitante-match-side">' +
                     CRDom.escapeHtml(parts[0] || '—') +
                     '</span>' +
-                    '<span class="cr-visitante-dash-vs">VS</span>' +
-                    '<span class="cr-visitante-dash-team">' +
+                    '<span class="cr-visitante-match-vs">VS</span>' +
+                    '<span class="cr-visitante-match-side">' +
                     CRDom.escapeHtml(parts[1] || '—') +
                     '</span>' +
                     '</div>' +
-                    '<p class="cr-visitante-dash-live-sub">' +
+                    '<p class="cr-visitante-match-meta">' +
                     CRDom.escapeHtml(matchup.sub) +
                     '</p>';
             } else {
                 body =
-                    '<p class="cr-visitante-dash-solo-name">' +
+                    '<p class="cr-visitante-match-solo">' +
                     CRDom.escapeHtml(matchup.label) +
                     '</p>' +
-                    '<p class="cr-visitante-dash-live-sub">' +
+                    '<p class="cr-visitante-match-meta">' +
                     CRDom.escapeHtml(matchup.sub) +
                     '</p>';
             }
 
             return (
-                '<article class="cr-visitante-dash-live-card">' +
-                '<div class="cr-visitante-dash-live-head">' +
-                '<span class="cr-visitante-dash-live-cat">' +
+                '<article class="cr-visitante-live-card">' +
+                '<div class="cr-visitante-live-card-top">' +
+                '<span class="cr-visitante-tag cr-visitante-tag--cat">' +
                 CRDom.escapeHtml(catName) +
                 '</span>' +
-                '<span class="cr-visitante-dash-live-badge">En pista</span>' +
+                '<span class="cr-visitante-tag cr-visitante-tag--live">En pista</span>' +
                 '</div>' +
                 body +
                 '</article>'
             );
         }
 
-        function renderQueueRow(p, resByMatch, variant) {
+        function renderQueueRow(p, resByMatch, variant, index) {
             var catName = categoryLabel(p.category_id);
-            var badge = variant === 'upcoming' ? 'Próximo' : 'Resultado';
+            var badge = variant === 'upcoming' ? 'En cola' : 'Final';
             var main = '';
             var sub = '';
 
@@ -554,56 +544,52 @@
                 sub = matchup.sub;
             }
 
+            var pos =
+                variant === 'upcoming' && index != null
+                    ? '<span class="cr-visitante-queue-pos" aria-hidden="true">' + (index + 1) + '</span>'
+                    : '';
+
             return (
-                '<article class="cr-visitante-dash-row' +
-                (variant === 'recent' ? ' cr-visitante-dash-row--result' : '') +
+                '<article class="cr-visitante-queue-item' +
+                (variant === 'recent' ? ' cr-visitante-queue-item--done' : '') +
                 '">' +
-                '<div class="cr-visitante-dash-row-main">' +
-                '<span class="cr-visitante-dash-row-cat">' +
+                pos +
+                '<div class="cr-visitante-queue-body">' +
+                '<span class="cr-visitante-tag cr-visitante-tag--cat">' +
                 CRDom.escapeHtml(catName) +
                 '</span>' +
-                '<p class="cr-visitante-dash-row-title">' +
+                '<p class="cr-visitante-queue-title">' +
                 CRDom.escapeHtml(main) +
                 '</p>' +
                 (sub
-                    ? '<p class="cr-visitante-dash-row-sub">' + CRDom.escapeHtml(sub) + '</p>'
+                    ? '<p class="cr-visitante-queue-sub">' + CRDom.escapeHtml(sub) + '</p>'
                     : '') +
                 '</div>' +
-                '<span class="cr-visitante-dash-row-badge">' +
+                '<span class="cr-visitante-tag cr-visitante-tag--badge">' +
                 CRDom.escapeHtml(badge) +
                 '</span>' +
                 '</article>'
             );
         }
 
-        function renderCard(p, resByMatch, variant) {
+        function renderCard(p, resByMatch, variant, index) {
             if (variant === 'live') {
                 return renderLiveCard(p, resByMatch);
             }
-            return renderQueueRow(p, resByMatch, variant);
+            return renderQueueRow(p, resByMatch, variant, index);
+        }
+
+        function setPanelCount(id, n) {
+            var el = root.querySelector(id);
+            if (!el) {
+                return;
+            }
+            el.textContent = String(n);
+            el.classList.toggle('cr-visitante-panel-count--zero', !n);
         }
 
         function setUpdatedLabel(manual) {
-            if (!updatedEl) {
-                return;
-            }
-            var d = new Date();
-            var hh = d.getHours();
-            var mm = d.getMinutes();
-            var ss = d.getSeconds();
-            var pad = function (n) {
-                return n < 10 ? '0' + n : String(n);
-            };
-            updatedEl.textContent =
-                (manual ? 'Actualizado ' : 'Última actualización ') +
-                pad(hh) +
-                ':' +
-                pad(mm) +
-                ':' +
-                pad(ss) +
-                ' · cada ' +
-                Math.round(POLL_MS / 1000) +
-                ' s';
+            return manual;
         }
 
         function loadTeamsForPartidas(partidas) {
@@ -640,10 +626,64 @@
                         teamsById[String(p.team_b.id)] = p.team_b;
                     }
                 });
+                populateSchoolSelect();
             });
         }
 
+        function populateSchoolSelect() {
+            if (!inputSchool) {
+                return;
+            }
+            var current = String(inputSchool.value || '').trim();
+            var set = {};
+            var schools = [];
+
+            function addSchool(raw) {
+                var s = String(raw || '').trim();
+                if (!s) {
+                    return;
+                }
+                var key = s.toLowerCase();
+                if (set[key]) {
+                    return;
+                }
+                set[key] = true;
+                schools.push(s);
+            }
+
+            addSchool('Universidad Tecnológica del Norte de Coahuila');
+            addSchool('UTNC');
+            Object.keys(teamsById).forEach(function (id) {
+                var t = teamsById[id];
+                if (t && t.school != null) {
+                    addSchool(t.school);
+                }
+            });
+
+            schools.sort(function (a, b) {
+                return a.localeCompare(b, 'es', { sensitivity: 'base' });
+            });
+
+            var html = '<option value="">Selecciona tu escuela</option>';
+            schools.forEach(function (s) {
+                html +=
+                    '<option value="' +
+                    CRDom.escapeHtml(s) +
+                    '">' +
+                    CRDom.escapeHtml(s) +
+                    '</option>';
+            });
+            inputSchool.innerHTML = html;
+            if (current && set[current.toLowerCase()]) {
+                inputSchool.value = current;
+            }
+        }
+
         function renderDashboard(parts, resByMatch) {
+            setPanelCount('#cr-visitante-live-count', parts.live.length);
+            setPanelCount('#cr-visitante-upcoming-count', parts.upcoming.length);
+            setPanelCount('#cr-visitante-recent-count', parts.recent.length);
+
             liveEl.innerHTML = parts.live.length
                 ? parts.live
                       .map(function (p) {
@@ -654,16 +694,16 @@
 
             upcomingEl.innerHTML = parts.upcoming.length
                 ? parts.upcoming
-                      .map(function (p) {
-                          return renderCard(p, resByMatch, 'upcoming');
+                      .map(function (p, i) {
+                          return renderCard(p, resByMatch, 'upcoming', i);
                       })
                       .join('')
                 : renderEmptyBlock('No hay encuentros en cola de espera.');
 
             recentEl.innerHTML = parts.recent.length
                 ? parts.recent
-                      .map(function (p) {
-                          return renderCard(p, resByMatch, 'recent');
+                      .map(function (p, i) {
+                          return renderCard(p, resByMatch, 'recent', i);
                       })
                       .join('')
                 : renderEmptyBlock('Aún no hay resultados registrados.');
@@ -675,7 +715,7 @@
             }
             loadInflight = true;
             if (manual) {
-                liveEl.innerHTML = '<p class="cr-visitante-dash-msg">Actualizando…</p>';
+                liveEl.innerHTML = '<p class="cr-visitante-empty">Actualizando…</p>';
             }
             var catFilter = selCat.value || '';
             var scope = queueScope();
@@ -719,7 +759,7 @@
                 typeof w.CRApi.filterEventCategories === 'function'
                     ? w.CRApi.filterEventCategories(cats || [])
                     : cats || [];
-            var html = '<option value="">Todas</option>';
+            var html = '<option value="">Todas las categorías</option>';
             categorias.forEach(function (c) {
                 if (c && c.id != null && c.name) {
                     html +=
@@ -732,17 +772,13 @@
             });
             selCat.innerHTML = html;
             applyStaffSessionUi();
+            bindStaffFooter(root);
         }
 
         function onFilterChange() {
             refresh(true);
         }
 
-        if (btnRefresh) {
-            btnRefresh.addEventListener('click', function () {
-                refresh(true);
-            });
-        }
         selCat.addEventListener('change', onFilterChange, false);
 
         if (w.CRApi.fetchCategorias) {
