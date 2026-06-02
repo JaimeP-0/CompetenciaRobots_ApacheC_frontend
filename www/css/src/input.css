@@ -1159,7 +1159,8 @@
         @apply m-0 text-sm font-extrabold text-navy sm:text-base;
     }
     .cr-visitante-qr-image {
-        @apply mx-auto mt-3 block h-auto w-full max-w-[18rem] rounded-xl border border-graphite/10 bg-white p-2;
+        @apply mx-auto mt-3 block h-auto w-auto max-w-full rounded-xl border border-graphite/10 bg-white p-2;
+        max-height: 80vh;
     }
     .cr-visitante-qr-url {
         @apply m-0 mt-2 text-lg font-black tracking-wide text-navy;
