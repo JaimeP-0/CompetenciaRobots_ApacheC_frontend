@@ -35,7 +35,20 @@
     function guardAuthEntry(route) {
         var r = String(route || '').split('?')[0];
         if (staffLoggedIn()) {
-            if (r === '/login' || r === '/') {
+            var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+            var role = ses && ses.role ? String(ses.role).toLowerCase() : '';
+            if (role === 'registro') {
+                if (r === '/login' || r === '/' || r === '/inicio') {
+                    return '#/registro';
+                }
+                if (r === '/match' || r.indexOf('/match/') === 0) {
+                    return '#/registro';
+                }
+            }
+            if (r === '/login' || r === '/' || r === '/inicio') {
+                if (w.CRQueueRoutes && typeof w.CRQueueRoutes.staffWorkspaceHash === 'function') {
+                    return w.CRQueueRoutes.staffWorkspaceHash(ses);
+                }
                 return '#/inicio';
             }
             return null;
@@ -59,6 +72,11 @@
         var ses = w.CRStaffSesion && w.CRStaffSesion.read();
         if (!ses || !w.CRQueueRoutes || typeof w.CRQueueRoutes.staffMayAccessRoute !== 'function') {
             return null;
+        }
+        var r = String(route || '').split('?')[0];
+        var role = String(ses.role || '').toLowerCase();
+        if (role === 'registro' && (r === '/match' || r.indexOf('/match/') === 0)) {
+            return '#/registro';
         }
         if (w.CRQueueRoutes.staffMayAccessRoute(route, ses)) {
             return null;
@@ -211,8 +229,28 @@
         });
     }
 
+    function enforceRegistroHome() {
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        if (!ses || String(ses.role || '').toLowerCase() !== 'registro') {
+            return null;
+        }
+        var r = Router.normalize(w.location.hash);
+        if (r === '/registro' || r.indexOf('/registro/') === 0) {
+            return null;
+        }
+        if (r === '/match' || r.indexOf('/match/') === 0 || r === '/login' || r === '/' || r === '/inicio') {
+            return '#/registro';
+        }
+        return null;
+    }
+
     function renderCurrentRoute() {
         stripLegacyQueryParams();
+        var registroRedirect = enforceRegistroHome();
+        if (registroRedirect) {
+            w.location.hash = registroRedirect;
+            return;
+        }
         var route = Router.normalize(w.location.hash);
         var authRedirect = guardAuthEntry(route);
         if (authRedirect) {
@@ -227,9 +265,6 @@
                 w.location.hash = '#' + redirect;
             }
             return;
-        }
-        if (w.CRNavHistory && typeof w.CRNavHistory.onNavigate === 'function') {
-            w.CRNavHistory.onNavigate(route);
         }
         var resolved = Router.resolve(route);
         if (!resolved) {
@@ -250,6 +285,9 @@
         if (staffRedirect) {
             w.location.hash = staffRedirect;
             return;
+        }
+        if (w.CRNavHistory && typeof w.CRNavHistory.onNavigate === 'function') {
+            w.CRNavHistory.onNavigate(route);
         }
         renderView(resolved.view, resolved.params).catch(function (err) {
             Views.showError(outlet, err);
@@ -279,11 +317,15 @@
             return;
         }
         var normalized = Router.normalize(targetRoute);
+        var matchJump = guardMatchRoute(normalized);
+        if (matchJump) {
+            normalized = Router.normalize(matchJump);
+        }
         if (Router.normalize(w.location.hash) === normalized) {
             renderCurrentRoute();
             return;
         }
-        w.location.hash = normalized;
+        w.location.hash = normalized.charAt(0) === '#' ? normalized : '#' + normalized;
     }
 
     function applyStatusBarLayout() {
@@ -328,7 +370,17 @@
         outlet.addEventListener('submit', onOutletSubmit, false);
         outlet.addEventListener('click', onOutletClick, false);
         if (!w.location.hash || w.location.hash === '#/') {
-            w.location.hash = staffLoggedIn() ? '/inicio' : '/login';
+            if (!staffLoggedIn()) {
+                w.location.hash = '/login';
+            } else if (
+                w.CRQueueRoutes &&
+                typeof w.CRQueueRoutes.staffWorkspaceHash === 'function'
+            ) {
+                var bootSes = w.CRStaffSesion && w.CRStaffSesion.read();
+                w.location.hash = w.CRQueueRoutes.staffWorkspaceHash(bootSes);
+            } else {
+                w.location.hash = '/inicio';
+            }
         }
         renderCurrentRoute();
     }

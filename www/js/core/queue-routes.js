@@ -51,11 +51,7 @@
         if (!session) {
             return '';
         }
-        var role = String(session.role || '').toLowerCase();
-        if (role === 'registro') {
-            return 'arbitro';
-        }
-        return role;
+        return String(session.role || '').toLowerCase();
     }
 
     function staffWorkspaceHash(session) {
@@ -69,6 +65,9 @@
         if (role === 'visitante') {
             return '#/dashboard';
         }
+        if (role === 'registro') {
+            return '#/registro';
+        }
         if (role === 'juez' || role === 'arbitro') {
             return matchHashForScope(staffScope(session));
         }
@@ -76,7 +75,7 @@
     }
 
     function staffMayUseRegistro(session) {
-        return staffRole(session) === 'arbitro';
+        return staffRole(session) === 'registro';
     }
 
     function staffIsMatchSpectator(session) {
@@ -124,14 +123,15 @@
             return r === '/match' || r.indexOf('/match/') === 0;
         }
 
-        if (role === 'arbitro') {
-            if (r.indexOf('/registro') === 0 || r === '/registro') {
-                return true;
-            }
-            return isPublicCatalogRoute(r);
+        if (role === 'registro') {
+            return r === '/registro' || r.indexOf('/registro') === 0;
         }
 
-        return isPublicCatalogRoute(r) || r.indexOf('/registro') === 0;
+        if (role === 'arbitro') {
+            return r === '/match' || r.indexOf('/match/') === 0;
+        }
+
+        return isPublicCatalogRoute(r);
     }
 
     /** A dónde mandar si la ruta no está permitida para el rol. */
@@ -145,6 +145,9 @@
         }
         if (role === 'visitante') {
             return '#/dashboard';
+        }
+        if (role === 'registro') {
+            return '#/registro';
         }
         if (role === 'juez' || role === 'arbitro') {
             return matchHashForScope(staffScope(session));
