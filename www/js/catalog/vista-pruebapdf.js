@@ -43,12 +43,19 @@
         var doc = new jsPDF({ unit: 'pt', format: 'letter' });
         var pageW = 612;
         var pageH = 792;
-        var margin = 20;
-        var tableX = margin;
-        var tableW = pageW - margin * 2;
-        var y = 34;
-        var headH = 30;
-        var rowH = 30;
+        var margin = 32;
+        var shellX = margin;
+        var shellY = 24;
+        var shellW = pageW - margin * 2;
+        var shellH = pageH - 48;
+        var contentX = shellX + 24;
+        var contentW = shellW - 48;
+        var tableX = contentX;
+        var tableW = contentW;
+        var y = 40;
+        var headH = 28;
+        var rowH = 28;
+        var footerY = pageH - 54;
         var colNameW = Math.round(tableW * 0.52);
         var colUserW = Math.round(tableW * 0.28);
         var colPassW = tableW - colNameW - colUserW;
@@ -64,57 +71,119 @@
             ['Ing. Juan Jaime Serrano Torres', 'juan.serrano', '29471'],
             ['Zertuche Ramírez Manuel Alonso', 'manuel.zertuche', '65013'],
             ['Silva García Ximena', 'ximena.silva', '38256'],
-            ['Macías López Félix Emmanuel', 'felix.macias', '91740']
+            ['Macías López Félix Emmanuel', 'felix.macias', '91740'],
+            ['Equipo de Registro', 'teamregistro', '41683']
         ];
 
-        function drawTop() {
-            y = 34;
+        function drawBase() {
+            doc.setFillColor(244, 246, 250);
+            doc.rect(0, 0, pageW, pageH, 'F');
+            doc.setFillColor(220, 228, 240);
+            doc.roundedRect(shellX + 4, shellY + 6, shellW, shellH, 18, 18, 'F');
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(shellX, shellY, shellW, shellH, 18, 18, 'F');
+
             if (logoDataUrl) {
-                var logoH = 74;
+                var wmW = shellW * 0.72;
+                var wmH = wmW * (1120 / 1252);
+                var wmX = pageW / 2 - wmW / 2;
+                var wmY = pageH / 2 - wmH / 2 + 28;
+                if (doc.GState && typeof doc.setGState === 'function') {
+                    doc.setGState(new doc.GState({ opacity: 0.055 }));
+                    doc.addImage(logoDataUrl, 'PNG', wmX, wmY, wmW, wmH);
+                    doc.setGState(new doc.GState({ opacity: 1 }));
+                }
+            }
+        }
+
+        function drawFooter() {
+            doc.setDrawColor(221, 229, 240);
+            doc.setLineWidth(1);
+            doc.line(contentX, footerY - 12, contentX + contentW, footerY - 12);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            doc.setTextColor(110, 117, 128);
+            doc.text(
+                'Documento generado automáticamente por el Sistema Competencia de Robots',
+                pageW / 2,
+                footerY + 2,
+                { align: 'center' }
+            );
+            doc.setTextColor(27, 140, 122);
+            doc.text('UTNC · utarena.online', pageW / 2, footerY + 16, { align: 'center' });
+        }
+
+        function drawTop() {
+            y = shellY + 22;
+            if (logoDataUrl) {
+                var logoH = 66;
                 var logoW = logoH * (1252 / 1120);
                 doc.addImage(logoDataUrl, 'PNG', pageW / 2 - logoW / 2, y, logoW, logoH);
-                y += logoH + 10;
+                y += logoH + 8;
             }
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(18);
-            doc.setTextColor(0, 38, 200);
-            doc.text('https://utarena.online/', pageW / 2, y, { align: 'center' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.setTextColor(90, 98, 112);
+            doc.text('UNIVERSIDAD TECNOLÓGICA DEL NORTE DE COAHUILA', pageW / 2, y, { align: 'center' });
             y += 16;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            doc.setTextColor(0, 58, 140);
+            doc.text('Credenciales Oficiales', pageW / 2, y, { align: 'center' });
+            y += 18;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(13);
+            doc.setTextColor(27, 140, 122);
+            doc.text('Jueces y Árbitros · https://utarena.online/', pageW / 2, y, { align: 'center' });
+            y += 16;
+            doc.setDrawColor(216, 225, 237);
+            doc.line(contentX, y, contentX + contentW, y);
+            y += 10;
         }
 
         function drawTableHeader() {
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(1);
+            doc.setDrawColor(183, 198, 220);
+            doc.setLineWidth(0.9);
+            doc.setFillColor(238, 244, 255);
             doc.rect(tableX, y, tableW, headH);
             doc.line(tableX + colNameW, y, tableX + colNameW, y + headH);
             doc.line(tableX + colNameW + colUserW, y, tableX + colNameW + colUserW, y + headH);
+            doc.rect(tableX, y, tableW, headH, 'F');
+            doc.rect(tableX, y, tableW, headH);
 
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.text('Jueces/Arbitros', tableX + colNameW / 2, y + 19, { align: 'center' });
-            doc.text('Usuario', tableX + colNameW + colUserW / 2, y + 19, { align: 'center' });
-            doc.text('Contraseña', tableX + colNameW + colUserW + colPassW / 2, y + 19, { align: 'center' });
+            doc.setFontSize(11);
+            doc.setTextColor(39, 58, 92);
+            doc.text('Jueces / Árbitros', tableX + colNameW / 2, y + 18, { align: 'center' });
+            doc.text('Usuario', tableX + colNameW + colUserW / 2, y + 18, { align: 'center' });
+            doc.text('Contraseña', tableX + colNameW + colUserW + colPassW / 2, y + 18, { align: 'center' });
             y += headH;
         }
 
         function drawRow(row) {
-            if (y + rowH > pageH - 24) {
+            if (y + rowH > footerY - 18) {
                 doc.addPage();
+                drawBase();
                 drawTop();
                 drawTableHeader();
+                drawFooter();
             }
-            doc.setDrawColor(0, 0, 0);
-            doc.setLineWidth(1);
+            doc.setDrawColor(198, 210, 228);
+            doc.setLineWidth(0.8);
+            if (Math.floor((y - headH) / rowH) % 2 === 0) {
+                doc.setFillColor(250, 252, 255);
+                doc.rect(tableX, y, tableW, rowH, 'F');
+            }
             doc.rect(tableX, y, tableW, rowH);
             doc.line(tableX + colNameW, y, tableX + colNameW, y + rowH);
             doc.line(tableX + colNameW + colUserW, y, tableX + colNameW + colUserW, y + rowH);
 
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(11.5);
-            doc.setTextColor(0, 0, 0);
-            doc.text(row[0], tableX + colNameW / 2, y + 20, { align: 'center', maxWidth: colNameW - 8 });
-            doc.text(row[1], tableX + colNameW + colUserW / 2, y + 20, { align: 'center', maxWidth: colUserW - 8 });
+            doc.setFontSize(10.3);
+            doc.setTextColor(30, 30, 30);
+            doc.text(row[0], tableX + colNameW / 2, y + 18, { align: 'center', maxWidth: colNameW - 8 });
+            doc.text(row[1], tableX + colNameW + colUserW / 2, y + 18, { align: 'center', maxWidth: colUserW - 8 });
+            doc.setFont('helvetica', 'bold');
             doc.text(row[2], tableX + colNameW + colUserW + colPassW / 2, y + 20, {
                 align: 'center',
                 maxWidth: colPassW - 8
@@ -122,8 +191,10 @@
             y += rowH;
         }
 
+        drawBase();
         drawTop();
         drawTableHeader();
+        drawFooter();
         creds.forEach(drawRow);
         return doc;
     }
