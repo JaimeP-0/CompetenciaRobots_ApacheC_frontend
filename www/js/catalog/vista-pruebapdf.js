@@ -194,20 +194,16 @@
         }
 
         function resultCard(entry, idx) {
-            var valueW = contentW - 28;
+            var valueW = contentW - 4;
             var valueLines = doc.splitTextToSize(entry.value, valueW);
-            var boxH = Math.max(64, 30 + valueLines.length * 17);
-            ensureSpace(boxH + 14);
-
-            doc.setFillColor(255, 255, 255);
-            doc.setDrawColor(223, 230, 239);
-            doc.roundedRect(contentX, y, contentW, boxH, 12, 12, 'FD');
+            var blockH = Math.max(24, valueLines.length * 17);
+            ensureSpace(blockH + 10);
 
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(15);
             doc.setTextColor(30, 30, 30);
-            doc.text(valueLines, contentX + 14, y + 38, { maxWidth: valueW });
-            y += boxH + 14;
+            doc.text(valueLines, contentX, y + 16, { maxWidth: valueW });
+            y += blockH + 10;
         }
 
         function podiumSection() {
