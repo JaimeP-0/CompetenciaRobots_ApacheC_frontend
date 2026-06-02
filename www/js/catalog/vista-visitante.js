@@ -7,7 +7,7 @@
     var CRDom = w.CRDom;
     var POLL_MS = 12000;
     var RECENT_LIMIT = 2;
-    var UPCOMING_LIMIT = 8;
+    var UPCOMING_LIMIT = 1;
     var LIVE_PAIRWISE_MAX = 6;
 
     if (!CRDom) {
