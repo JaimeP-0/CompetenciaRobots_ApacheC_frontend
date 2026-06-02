@@ -849,18 +849,21 @@
         @apply mt-4;
     }
 
-    /* —— Dashboard visitante (#/visitante) — pantalla completa —— */
+    /* —— Dashboard visitante (#/visitante, #/dashboard) — pantalla completa —— */
+    html.cr-view-dashboard {
+        @apply h-full;
+    }
     html.cr-view-dashboard body {
-        @apply min-h-dvh bg-[#070d1a] p-0 pt-0 pb-0 text-snow;
+        @apply min-h-dvh bg-[#070d1a] p-0 text-snow;
     }
     html.cr-view-dashboard #cr-site-header {
         @apply hidden;
     }
     html.cr-view-dashboard #cr-outlet {
-        @apply mx-0 h-full min-h-0 max-w-none flex-1 p-0;
+        @apply mx-0 flex h-full min-h-0 max-h-none w-full max-w-none flex-1 flex-col p-0;
     }
-    html.cr-view-dashboard body.cr-view-inner {
-        @apply pt-0;
+    html.cr-view-dashboard .cr-visitante-dash {
+        @apply flex min-h-dvh w-full min-w-0 flex-1 flex-col;
     }
 
     .cr-visitante-dash {
@@ -1552,8 +1555,17 @@
     #cr-site-logo {
         @apply transition-[max-width] duration-200 ease-out;
     }
+    body.cr-view-inicio {
+        @apply bg-[#f5f7fb] px-3 pb-3 pt-[max(2rem,env(safe-area-inset-top,0px))] text-[#1f2937] sm:px-5 sm:pb-5 sm:pt-[max(2rem,env(safe-area-inset-top,0px))] lg:px-8 lg:pb-8;
+    }
+    body.cr-view-inicio #cr-outlet {
+        @apply mx-auto max-w-full sm:max-w-[min(100%,1100px)] sm:px-2 lg:px-4;
+    }
     body.cr-view-inner {
-        @apply pt-[max(0.5rem,env(safe-area-inset-top,0px))] sm:pt-[max(0.65rem,env(safe-area-inset-top,0px))];
+        @apply bg-[#f5f7fb] px-3 pb-3 pt-[max(0.5rem,env(safe-area-inset-top,0px))] text-[#1f2937] sm:px-5 sm:pb-5 sm:pt-[max(0.65rem,env(safe-area-inset-top,0px))] lg:px-8 lg:pb-8;
+    }
+    body.cr-view-inner #cr-outlet {
+        @apply mx-auto max-w-full sm:max-w-[min(100%,1100px)] sm:px-2 lg:px-4;
     }
     body.cr-view-inner #cr-site-header {
         @apply pb-0 pt-0 sm:pb-0.5;
