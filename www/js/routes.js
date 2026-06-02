@@ -16,28 +16,38 @@
 
     w.CR_ROUTES = {
         static: {
-            '/': 'public/inicio',
-            '/inicio': 'public/inicio',
+            '/': 'public/login',
+            '/inicio': 'public/login',
+            '/login': 'public/login',
             '/registro': 'registro/registrar',
             '/categorias': 'public/categorias',
             '/equipos': 'public/equipos',
             '/validados': 'public/validados',
             '/match': 'public/match',
+            '/match/internos': 'public/match',
+            '/match/externos': 'public/match',
+            '/visitante': 'public/visitante',
+            '/dashboard': 'public/visitante',
             '/ranking': 'public/ranking',
-            '/brackets': 'public/brackets',
             '/admin': 'admin/panel',
             '/admin/login': 'admin/login',
             '/admin/categorias': 'admin/categorias',
-            '/admin/equipos': 'admin/equipos'
+            '/admin/equipos': 'admin/equipos',
+            '/cr-pit-arena-x7k9m2': 'public/diag-feed'
         },
 
         redirects: {
-            '/tablero': '/',
-            '/tablero-normal': '/',
-            '/tablero-ultra': '/',
+            '/tablero': '/dashboard',
+            '/dashboard': '/visitante',
+            '/tablero-normal': '/visitante',
+            '/tablero-ultra': '/visitante',
             '/competencias': '/categorias',
             '/buscar': '/equipos',
-            '/registro/completado': '/'
+            '/registro/completado': '/visitante',
+            '/brackets': '/match/internos',
+            '/brackets/internos': '/match/internos',
+            '/brackets/externos': '/match/externos',
+            '/tablero-en-vivo': '/visitante'
         },
 
         patterns: [
@@ -61,6 +71,18 @@
                 params: function (m) {
                     return { teamId: decodeURIComponent(m[1]) };
                 }
+            },
+            {
+                re: /^\/match\/(internos|externos)\/?$/,
+                view: 'public/match',
+                params: function (m) {
+                    var seg = String(m[1] || '').toLowerCase();
+                    return {
+                        queueScope: seg === 'externos' ? 'external' : 'internal',
+                        lockedScope: true,
+                        scopeLabel: seg === 'externos' ? 'Externos' : 'Internos (UTNC)'
+                    };
+                }
             }
         ],
 
@@ -72,8 +94,10 @@
             'public/equipo-detalle': 'initEquipoDetalle',
             'public/validados': 'initValidados',
             'public/match': 'initMatch',
+            'public/visitante': 'initVisitante',
+            'public/login': 'initLoginStaff',
             'public/ranking': 'initRanking',
-            'public/brackets': 'initBrackets'
+            'public/diag-feed': 'initDiagFeed'
         }
     };
 })(window);

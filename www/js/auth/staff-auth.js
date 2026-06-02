@@ -25,12 +25,32 @@
             }
             var uname = String((body.username || body.usuario || u)).trim();
             var role = body.role ? String(body.role).toLowerCase() : uname.toLowerCase();
+            if (role === 'arbitro' || role === 'árbitro') {
+                role = 'arbitro';
+            }
+            var scope = body.scope ? String(body.scope) : '';
+            if (!scope && body.is_internal != null && w.CRTeamOrigin) {
+                scope = w.CRTeamOrigin.scopeFromIsInternal(body.is_internal) || '';
+            }
+            var category =
+                body.category != null
+                    ? String(body.category)
+                    : body.category_name != null
+                      ? String(body.category_name)
+                      : '';
+            var categoryId =
+                body.category_id != null
+                    ? String(body.category_id)
+                    : body.categoryId != null
+                      ? String(body.categoryId)
+                      : '';
             var session = {
                 username: uname,
                 display_name: String(body.name || body.display_name || body.nombre || uname).trim(),
                 role: role,
-                scope: body.scope ? String(body.scope) : '',
-                category: body.category ? String(body.category) : '',
+                scope: scope,
+                category: category,
+                category_id: categoryId,
                 token: body.token
                     ? String(body.token)
                     : 'sess:' + String(body.id != null ? body.id : uname)

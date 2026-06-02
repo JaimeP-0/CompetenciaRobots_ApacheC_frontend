@@ -1,0 +1,55 @@
+<section
+    id="cr-staff-login-root"
+    class="cr-visitante-dash cr-staff-login-page"
+    aria-label="Inicio de sesión personal"
+>
+    <header class="cr-visitante-dash-bar">
+        <div class="cr-visitante-dash-bar-start">
+            <span class="cr-visitante-dash-back cr-visitante-dash-back--placeholder" aria-hidden="true"></span>
+            <div class="cr-visitante-dash-brand">
+                <p class="cr-visitante-dash-kicker">Competencia de Robots</p>
+                <h1 class="cr-visitante-dash-title">Acceso personal</h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="cr-staff-login-main">
+        <form id="f-staff-login" class="cr-staff-login-form" action="#" method="post" autocomplete="on" novalidate>
+            <p class="cr-staff-login-lead">Jueces y árbitros: usa el usuario que te asignaron.</p>
+            <label class="cr-staff-login-field">
+                <span class="cr-visitante-dash-filter-label">Usuario</span>
+                <input
+                    id="staff-usuario"
+                    name="usuario"
+                    type="text"
+                    class="cr-visitante-dash-select cr-staff-login-input"
+                    autocomplete="username"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    required
+                />
+            </label>
+            <label class="cr-staff-login-field">
+                <span class="cr-visitante-dash-filter-label">Contraseña</span>
+                <input
+                    id="staff-password"
+                    name="password"
+                    type="password"
+                    class="cr-visitante-dash-select cr-staff-login-input"
+                    autocomplete="current-password"
+                    required
+                />
+            </label>
+            <p id="staff-login-error" class="cr-staff-login-error hidden" role="alert" aria-live="assertive"></p>
+            <button id="btn-staff-login" type="submit" class="cr-visitante-dash-btn cr-staff-login-submit">
+                Entrar
+            </button>
+        </form>
+    </main>
+
+    <footer class="cr-staff-login-foot">
+        <button type="button" id="btn-staff-skip-login" class="cr-staff-login-skip" data-route="/dashboard">
+            Continuar sin iniciar sesión — ver dashboard público
+        </button>
+    </footer>
+</section>

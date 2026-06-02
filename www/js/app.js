@@ -16,6 +16,28 @@
         throw new Error('Faltan módulos core (router, views) o routes.js');
     }
 
+    function guardMatchRoute(route) {
+        if (route !== '/match') {
+            return null;
+        }
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        if (ses && ses.scope && w.CRQueueRoutes && typeof w.CRQueueRoutes.matchHashForScope === 'function') {
+            return w.CRQueueRoutes.matchHashForScope(ses.scope);
+        }
+        return '#/match/internos';
+    }
+
+    function guardStaffRoute(route) {
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        if (!ses || !w.CRQueueRoutes || typeof w.CRQueueRoutes.staffMayAccessRoute !== 'function') {
+            return null;
+        }
+        if (w.CRQueueRoutes.staffMayAccessRoute(route, ses)) {
+            return null;
+        }
+        return w.CRQueueRoutes.staffWorkspaceHash(ses);
+    }
+
     function guardAdminRoute(viewName) {
         if (!Admin) {
             return null;
@@ -46,9 +68,14 @@
                 w.CRIcons.decorate(outlet);
             }
             d.documentElement.classList.toggle('cr-registro-fit', name === 'registro/registrar');
-            var isInicio = name === 'public/inicio';
-            d.body.classList.toggle('cr-view-inicio', isInicio);
-            d.body.classList.toggle('cr-view-inner', !isInicio);
+            var isVisitante = name === 'public/visitante' || name === 'public/login';
+            var isDiag = name === 'public/diag-feed';
+            d.body.classList.toggle('cr-view-inicio', false);
+            d.body.classList.toggle('cr-view-inner', !isVisitante && !isDiag);
+            d.documentElement.classList.toggle('cr-view-dashboard', isVisitante);
+            d.body.classList.toggle('cr-view-dashboard', isVisitante);
+            d.documentElement.classList.toggle('cr-view-diag', isDiag);
+            d.body.classList.toggle('cr-view-diag', isDiag);
             var isAdminView =
                 (Admin && Admin.isAdminLoginView(name)) || (Admin && Admin.isAdminView(name));
             d.documentElement.classList.toggle('cr-admin-active', isAdminView);
@@ -156,9 +183,19 @@
             Views.showError(outlet, new Error('Ruta no encontrada: ' + route));
             return;
         }
+        var matchRedirect = guardMatchRoute(route);
+        if (matchRedirect) {
+            w.location.hash = matchRedirect;
+            return;
+        }
         var adminRedirect = guardAdminRoute(resolved.view);
         if (adminRedirect) {
             w.location.hash = adminRedirect;
+            return;
+        }
+        var staffRedirect = guardStaffRoute(route);
+        if (staffRedirect) {
+            w.location.hash = staffRedirect;
             return;
         }
         renderView(resolved.view, resolved.params).catch(function (err) {
@@ -216,8 +253,8 @@
         }
         loaded = true;
         outlet.addEventListener('click', onOutletClick, false);
-        if (!w.location.hash) {
-            w.location.hash = '/';
+        if (!w.location.hash || w.location.hash === '#/' || w.location.hash === '#/inicio') {
+            w.location.hash = '/login';
         }
         renderCurrentRoute();
     }

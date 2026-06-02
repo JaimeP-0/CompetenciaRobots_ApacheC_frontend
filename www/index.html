@@ -30,7 +30,8 @@
             class="mx-auto flex w-full min-h-0 min-w-0 max-w-full flex-1 flex-col px-0 sm:max-w-[min(100%,1100px)] sm:px-2 lg:px-4"
         ></div>
         <script src="cordova.js"></script>
-        <!-- Config y rutas -->
+        <!-- Overrides locales primero; luego config principal -->
+        <script src="js/config.local.js"></script>
         <script src="js/config.js"></script>
         <script src="js/routes.js"></script>
         <!-- API (orden fijo) -->
@@ -40,9 +41,11 @@
         <script src="js/api/equipos-registro-cache.js"></script>
         <script src="js/api/catalog-remoto-get.js"></script>
         <script src="js/api/request.js"></script>
+        <script src="js/core/team-origin.js"></script>
+        <script src="js/core/queue-routes.js"></script>
+        <script src="js/core/categorias-competencia.js"></script>
         <script src="js/api/partidas.js"></script>
-        <script src="js/brackets/bracket-engine.js"></script>
-        <script src="js/api/brackets.js"></script>
+        <script src="js/api/matchmaking.js"></script>
         <script src="js/api/public.js"></script>
         <script src="js/api/admin-remoto.js"></script>
         <script src="js/admin/almacen.js"></script>
@@ -57,8 +60,12 @@
         <script src="js/catalog/vista-equipo-detalle.js"></script>
         <script src="js/catalog/vista-validados.js"></script>
         <script src="js/catalog/vista-match.js"></script>
+        <script src="js/auth/staff-sesion.js"></script>
+        <script src="js/auth/staff-auth.js"></script>
+        <script src="js/catalog/vista-visitante.js"></script>
+        <script src="js/catalog/vista-login-staff.js"></script>
+        <script src="js/catalog/vista-diag-feed.js"></script>
         <script src="js/catalog/vista-ranking.js"></script>
-        <script src="js/catalog/vista-brackets.js"></script>
         <script src="js/catalog/catalog.js"></script>
         <!-- Núcleo app -->
         <script src="js/core/nav-history.js"></script>

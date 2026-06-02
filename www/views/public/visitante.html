@@ -1,0 +1,96 @@
+<section
+    id="cr-visitante-root"
+    class="cr-visitante-dash"
+    data-cr-modulo="1-catalogo"
+    aria-label="Dashboard en vivo"
+>
+    <header class="cr-visitante-dash-bar">
+        <div class="cr-visitante-dash-bar-start">
+            <div class="cr-visitante-dash-brand">
+                <p class="cr-visitante-dash-kicker">
+                    <span class="cr-visitante-live-dot" aria-hidden="true"></span>
+                    En vivo
+                </p>
+                <h1 class="cr-visitante-dash-title">Encuentros</h1>
+            </div>
+        </div>
+
+        <div class="cr-visitante-dash-bar-filters" aria-label="Filtros del tablero">
+            <label class="cr-visitante-dash-filter">
+                <span class="cr-visitante-dash-filter-label">Categoría</span>
+                <select id="cr-visitante-cat" class="cr-visitante-dash-select">
+                    <option value="">Todas</option>
+                </select>
+            </label>
+            <label class="cr-visitante-dash-filter cr-visitante-dash-filter--school">
+                <span class="cr-visitante-dash-filter-label">Tu escuela</span>
+                <input
+                    id="cr-visitante-school"
+                    class="cr-visitante-dash-select cr-visitante-dash-school-input"
+                    type="text"
+                    list="cr-visitante-school-list"
+                    placeholder="Ej. UTNC, CETIS…"
+                    autocomplete="organization"
+                />
+                <datalist id="cr-visitante-school-list">
+                    <option value="Universidad Tecnológica del Norte de Coahuila"></option>
+                    <option value="UTNC"></option>
+                </datalist>
+            </label>
+            <p id="cr-visitante-school-hint" class="cr-visitante-dash-school-hint" aria-live="polite"></p>
+        </div>
+
+        <div class="cr-visitante-dash-bar-end">
+            <p id="cr-visitante-updated" class="cr-visitante-dash-updated" aria-live="polite"></p>
+            <button type="button" id="cr-visitante-refresh" class="cr-visitante-dash-btn" title="Actualizar ahora">
+                Actualizar
+            </button>
+            <button type="button" class="cr-visitante-dash-btn cr-visitante-dash-btn--ghost" data-route="/ranking">
+                Resultados
+            </button>
+        </div>
+    </header>
+
+    <main class="cr-visitante-dash-main">
+        <section class="cr-visitante-dash-zone cr-visitante-dash-zone--live" aria-labelledby="cr-visitante-live-title">
+            <h2 id="cr-visitante-live-title" class="cr-visitante-dash-zone-title">
+                <span class="cr-visitante-dash-zone-icon" data-cr-icon="signal" aria-hidden="true"></span>
+                Ahora en pista
+            </h2>
+            <div id="cr-visitante-live" class="cr-visitante-dash-live-grid" aria-live="polite">
+                <p class="cr-visitante-dash-msg">Cargando…</p>
+            </div>
+        </section>
+
+        <aside class="cr-visitante-dash-side">
+            <section class="cr-visitante-dash-zone cr-visitante-dash-zone--queue" aria-labelledby="cr-visitante-upcoming-title">
+                <h2 id="cr-visitante-upcoming-title" class="cr-visitante-dash-zone-title">Próximos</h2>
+                <div id="cr-visitante-upcoming" class="cr-visitante-dash-list" aria-live="polite"></div>
+            </section>
+
+            <section class="cr-visitante-dash-zone cr-visitante-dash-zone--results" aria-labelledby="cr-visitante-recent-title">
+                <h2 id="cr-visitante-recent-title" class="cr-visitante-dash-zone-title">Últimos resultados</h2>
+                <div id="cr-visitante-recent" class="cr-visitante-dash-list" aria-live="polite"></div>
+            </section>
+        </aside>
+    </main>
+
+    <footer class="cr-visitante-dash-foot" aria-label="Acceso personal">
+        <p id="cr-visitante-staff-label" class="cr-visitante-dash-foot-label hidden"></p>
+        <div class="cr-visitante-dash-foot-actions">
+            <button
+                type="button"
+                id="cr-visitante-staff-workspace"
+                class="cr-visitante-dash-btn cr-visitante-dash-btn--ghost hidden"
+            >
+                Ir a mi mesa
+            </button>
+            <button type="button" id="cr-visitante-staff-login" class="cr-visitante-dash-btn" data-route="/login">
+                Iniciar sesión
+            </button>
+            <button type="button" id="cr-visitante-staff-logout" class="cr-visitante-dash-btn cr-visitante-dash-btn--ghost hidden">
+                Cerrar sesión
+            </button>
+        </div>
+    </footer>
+</section>
