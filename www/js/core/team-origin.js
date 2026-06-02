@@ -175,7 +175,16 @@
             seen[String(n)] = true;
             ids.push(n);
         }
-        (partida.queue || []).forEach(pushId);
+        var hasExplicitSides =
+            partida.team_a_id != null ||
+            partida.team_b_id != null ||
+            (partida.team_a && partida.team_a.id != null) ||
+            (partida.team_b && partida.team_b.id != null);
+        // En partidas 1v1, queue puede contener remanentes de la cola y mezclar scopes.
+        // Para clasificar la partida usamos solo sus equipos reales; queue solo aplica a modo compartido.
+        if (!hasExplicitSides) {
+            (partida.queue || []).forEach(pushId);
+        }
         pushId(partida.team_a_id);
         pushId(partida.team_b_id);
         if (partida.team_a && partida.team_a.id != null) {
