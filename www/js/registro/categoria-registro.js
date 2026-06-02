@@ -92,6 +92,35 @@
         if (prev && sel.querySelector('option[value="' + prev.replace(/"/g, '\\"') + '"]')) {
             sel.value = prev;
         }
+        applyStaffCategoryLock(root, opts);
+    }
+
+    function applyStaffCategoryLock(root, opts) {
+        var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+        if (!ses) {
+            return;
+        }
+        var role = String(ses.role || '').toLowerCase();
+        if (role !== 'juez' && role !== 'registro') {
+            return;
+        }
+        var catId =
+            w.CRStaffSesion && typeof w.CRStaffSesion.primaryCategoryId === 'function'
+                ? w.CRStaffSesion.primaryCategoryId(ses)
+                : '';
+        if (!catId) {
+            return;
+        }
+        var sec = sectionRoot(root);
+        var sel = sec.querySelector('#reg-filtro-categoria');
+        if (!sel) {
+            return;
+        }
+        if (sel.querySelector('option[value="' + String(catId).replace(/"/g, '\\"') + '"]')) {
+            sel.value = catId;
+            sel.disabled = true;
+            onCategoriaChange(root, opts || {});
+        }
     }
 
     function initCategoriaRegistro(root, opts) {

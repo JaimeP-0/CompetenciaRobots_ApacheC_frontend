@@ -1247,6 +1247,42 @@
             selectEl.innerHTML = html;
         }
 
+        function applyStaffSessionLocks() {
+            var ses = w.CRStaffSesion && w.CRStaffSesion.read();
+            if (!ses || !ses.username) {
+                return;
+            }
+            var role = String(ses.role || '').toLowerCase();
+            if (role !== 'juez' && role !== 'arbitro' && role !== 'registro') {
+                return;
+            }
+            var catId =
+                w.CRStaffSesion && typeof w.CRStaffSesion.primaryCategoryId === 'function'
+                    ? w.CRStaffSesion.primaryCategoryId(ses)
+                    : '';
+            if (catId) {
+                selCat.value = catId;
+                selCat.disabled = true;
+                if (selListFilter) {
+                    selListFilter.value = catId;
+                    selListFilter.disabled = true;
+                }
+            }
+            var scope =
+                w.CRStaffSesion && typeof w.CRStaffSesion.queueScope === 'function'
+                    ? w.CRStaffSesion.queueScope(ses)
+                    : '';
+            if (scope && selQueueScope) {
+                selQueueScope.value = scope === 'external' ? 'external' : 'internal';
+                if (!lockedScope) {
+                    selQueueScope.disabled = true;
+                    selQueueScope.setAttribute('aria-disabled', 'true');
+                }
+                persistQueueScope();
+            }
+            syncMatchUiForCategory();
+        }
+
         function fillCategorias(cats) {
             categorias =
                 typeof w.CRApi.filterEventCategories === 'function'
@@ -1254,6 +1290,7 @@
                     : cats || [];
             fillCategoryOptions(selCat, false);
             fillCategoryOptions(selListFilter, true);
+            applyStaffSessionLocks();
             syncMatchUiForCategory();
             loadPartidasList();
         }

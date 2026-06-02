@@ -34,21 +34,37 @@
         return '';
     }
 
+    function staffScope(session) {
+        if (!session) {
+            return '';
+        }
+        if (session.scope) {
+            return normalizeScope(session.scope);
+        }
+        if (w.CRStaffSesion && typeof w.CRStaffSesion.queueScope === 'function') {
+            return normalizeScope(w.CRStaffSesion.queueScope(session));
+        }
+        return '';
+    }
+
     function staffWorkspaceHash(session) {
         if (!session) {
             return '#/dashboard';
         }
         var role = String(session.role || '').toLowerCase();
+        if (role === 'admin' || role === 'dev') {
+            return '#/admin';
+        }
+        if (role === 'visitante') {
+            return '#/dashboard';
+        }
         if (role === 'juez' || role === 'registro') {
             return '#/registro';
         }
-        if (role === 'admin') {
-            return '#/admin';
-        }
         if (role === 'arbitro') {
-            return matchHashForScope(session.scope);
+            return matchHashForScope(staffScope(session));
         }
-        return matchHashForScope(session.scope);
+        return matchHashForScope(staffScope(session));
     }
 
     /** Rutas staff permitidas según rol (prefijo de hash sin #). */
@@ -58,11 +74,20 @@
         }
         var r = String(route || '').split('?')[0];
         var role = String(session.role || '').toLowerCase();
-        if (role === 'admin') {
+        if (role === 'admin' || role === 'dev') {
             return true;
         }
         if (r.indexOf('/admin') === 0) {
             return false;
+        }
+        if (role === 'visitante') {
+            return (
+                r === '/dashboard' ||
+                r === '/visitante' ||
+                r === '/ranking' ||
+                r === '/categorias' ||
+                r.indexOf('/categoria/') === 0
+            );
         }
         if (role === 'juez' || role === 'registro') {
             return (

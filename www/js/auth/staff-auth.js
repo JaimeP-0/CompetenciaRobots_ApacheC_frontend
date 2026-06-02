@@ -18,48 +18,16 @@
                 new Error('El login aún no está conectado. El backend debe exponer POST /login.')
             );
         }
+        if (!Sesion || typeof Sesion.parseFromLogin !== 'function') {
+            return Promise.reject(new Error('Falta staff-sesion.js'));
+        }
         return w.CRApi.postLogin({ username: u, password: p }).then(function (res) {
             var body = res && res.body ? res.body : res;
-            if (!body || (body.id == null && !body.username)) {
-                throw new Error('Respuesta de login inválida.');
-            }
-            var uname = String((body.username || body.usuario || u)).trim();
-            var role = body.role ? String(body.role).toLowerCase() : uname.toLowerCase();
-            if (role === 'arbitro' || role === 'árbitro') {
-                role = 'arbitro';
-            }
-            var scope = body.scope ? String(body.scope) : '';
-            if (!scope && body.is_internal != null && w.CRTeamOrigin) {
-                scope = w.CRTeamOrigin.scopeFromIsInternal(body.is_internal) || '';
-            }
-            var category =
-                body.category != null
-                    ? String(body.category)
-                    : body.category_name != null
-                      ? String(body.category_name)
-                      : '';
-            var categoryId =
-                body.category_id != null
-                    ? String(body.category_id)
-                    : body.categoryId != null
-                      ? String(body.categoryId)
-                      : '';
-            var session = {
-                username: uname,
-                display_name: String(body.name || body.display_name || body.nombre || uname).trim(),
-                role: role,
-                scope: scope,
-                category: category,
-                category_id: categoryId,
-                token: body.token
-                    ? String(body.token)
-                    : 'sess:' + String(body.id != null ? body.id : uname)
-            };
-            if (Sesion) {
-                Sesion.save(session);
-            }
-            if (session.scope && w.CRTeamOrigin) {
-                w.CRTeamOrigin.storeQueueScope(session.scope);
+            var session = Sesion.parseFromLogin(body, u);
+            Sesion.save(session);
+            var scope = Sesion.queueScope(session);
+            if (scope && w.CRTeamOrigin) {
+                w.CRTeamOrigin.storeQueueScope(scope);
             }
             return { ok: true, session: session };
         });
@@ -74,23 +42,14 @@
     function redirectAfterLogin(session) {
         var s = session || (Sesion && Sesion.read());
         if (!s) {
-            w.location.hash = '#/visitante';
+            w.location.hash = '#/dashboard';
             return;
         }
         if (QueueRoutes && typeof QueueRoutes.staffWorkspaceHash === 'function') {
             w.location.hash = QueueRoutes.staffWorkspaceHash(s);
             return;
         }
-        var role = String(s.role || '').toLowerCase();
-        if (role === 'juez' || role === 'registro') {
-            w.location.hash = '#/registro';
-            return;
-        }
-        if (role === 'admin') {
-            w.location.hash = '#/admin';
-            return;
-        }
-        w.location.hash = '#/match/internos';
+        w.location.hash = '#/dashboard';
     }
 
     w.CRStaffAuth = {

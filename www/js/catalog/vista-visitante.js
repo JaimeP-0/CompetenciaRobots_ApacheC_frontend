@@ -36,6 +36,12 @@
             if (r === 'admin') {
                 return 'Admin';
             }
+            if (r === 'dev') {
+                return 'Desarrollo';
+            }
+            if (r === 'visitante') {
+                return 'Visitante';
+            }
             if (r === 'arbitro') {
                 return 'Árbitro';
             }
@@ -44,20 +50,15 @@
 
         if (label) {
             if (logged) {
-                var scopeLbl = '';
-                if (sesion.scope && w.CRTeamOrigin) {
-                    scopeLbl =
-                        w.CRTeamOrigin.normalizeQueueScope(sesion.scope) === 'internal'
-                            ? 'interno'
-                            : 'externo';
-                }
-                var catLbl = sesion.category || sesion.category_id || '';
+                var assign =
+                    w.CRStaffSesion && typeof w.CRStaffSesion.assignmentSummary === 'function'
+                        ? w.CRStaffSesion.assignmentSummary(sesion)
+                        : '';
                 label.textContent =
                     (sesion.display_name || sesion.username) +
                     ' · ' +
                     roleLabel(sesion.role) +
-                    (scopeLbl ? ' · ' + scopeLbl : '') +
-                    (catLbl ? ' · ' + catLbl : '');
+                    (assign ? ' · ' + assign : '');
                 label.classList.remove('hidden');
             } else {
                 label.textContent = '';
@@ -132,8 +133,11 @@
 
         function queueScope() {
             var ses = w.CRStaffSesion && w.CRStaffSesion.read();
-            if (ses && ses.scope && w.CRTeamOrigin) {
-                return w.CRTeamOrigin.normalizeQueueScope(ses.scope);
+            if (ses && w.CRStaffSesion && typeof w.CRStaffSesion.queueScope === 'function') {
+                var staffScope = w.CRStaffSesion.queueScope(ses);
+                if (staffScope) {
+                    return staffScope;
+                }
             }
             return guestScope();
         }
@@ -144,13 +148,22 @@
                 return;
             }
             var schoolWrap = root.querySelector('.cr-visitante-dash-filter--school');
-            if (ses.scope && schoolWrap) {
+            var staffScope =
+                w.CRStaffSesion && typeof w.CRStaffSesion.queueScope === 'function'
+                    ? w.CRStaffSesion.queueScope(ses)
+                    : '';
+            if (staffScope && schoolWrap) {
                 schoolWrap.classList.add('hidden');
             }
             if (!selCat) {
                 return;
             }
-            var catId = ses.category_id != null ? String(ses.category_id) : '';
+            var catId =
+                w.CRStaffSesion && typeof w.CRStaffSesion.primaryCategoryId === 'function'
+                    ? w.CRStaffSesion.primaryCategoryId(ses)
+                    : ses.category_id != null
+                      ? String(ses.category_id)
+                      : '';
             if (catId) {
                 selCat.value = catId;
                 selCat.disabled = true;
