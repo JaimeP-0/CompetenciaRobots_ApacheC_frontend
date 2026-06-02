@@ -138,6 +138,10 @@
         if (!isNaN(cid)) {
             item.category_id = cid;
         }
+        if (raw.is_internal != null && raw.is_internal !== '') {
+            var internalRaw = String(raw.is_internal).trim().toLowerCase();
+            item.is_internal = internalRaw === 'true' || internalRaw === '1';
+        }
         if (raw.team_a && typeof raw.team_a === 'object') {
             item.team_a = normalizeEmbeddedTeam(raw.team_a);
             if (item.team_a) {
@@ -458,6 +462,14 @@
 
     function fetchPartidas(query) {
         query = query || {};
+        if ((w.CR_APP || w.CR_CONFIG) && (w.CR_APP || w.CR_CONFIG).debugApi) {
+            var base = (w.CRApi && typeof w.CRApi.buildUrl === 'function')
+                ? w.CRApi.buildUrl(partidasPath(), query)
+                : partidasPath();
+            try {
+                console.info('[CR] fetch', base);
+            } catch (ignore) {}
+        }
         return request('GET', partidasPath(), { query: query }).then(function (data) {
             var list = normalizePartidasList(data);
             if (query.category_id != null && query.category_id !== '') {

@@ -1036,6 +1036,13 @@
                         return loadTeamsMaps(catIdsScope)
                             .then(function (teamsById) {
                                 var scoped = filtered.filter(function (p) {
+                                    if (
+                                        p &&
+                                        p.is_internal != null &&
+                                        typeof w.CRTeamOrigin.scopeFromIsInternal === 'function'
+                                    ) {
+                                        return w.CRTeamOrigin.scopeFromIsInternal(p.is_internal) === scope;
+                                    }
                                     return w.CRTeamOrigin.partidaMatchesQueueScope(p, scope, teamsById);
                                 });
                                 return renderFilteredList(scoped, teamsById);
