@@ -23,7 +23,14 @@
         }
         return w.CRApi.postLogin({ username: u, password: p }).then(function (res) {
             var body = res && res.body ? res.body : res;
-            var session = Sesion.parseFromLogin(body, u);
+            var session;
+            try {
+                session = Sesion.parseFromLogin(body, u);
+            } catch (parseErr) {
+                return Promise.reject(
+                    parseErr || new Error('Respuesta de login inválida del servidor.')
+                );
+            }
             Sesion.save(session);
             syncAdminSession(session);
             var scope = Sesion.queueScope(session);

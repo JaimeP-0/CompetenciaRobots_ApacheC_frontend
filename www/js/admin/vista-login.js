@@ -39,9 +39,17 @@
             if (msg) {
                 errEl.textContent = msg;
                 errEl.classList.remove('hidden');
+                errEl.classList.add('is-visible');
+                errEl.hidden = false;
+                errEl.style.display = 'block';
+                errEl.setAttribute('aria-hidden', 'false');
             } else {
                 errEl.textContent = '';
                 errEl.classList.add('hidden');
+                errEl.classList.remove('is-visible');
+                errEl.hidden = true;
+                errEl.style.display = 'none';
+                errEl.setAttribute('aria-hidden', 'true');
             }
         }
 

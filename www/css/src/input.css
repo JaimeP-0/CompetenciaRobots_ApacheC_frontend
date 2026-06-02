@@ -1802,6 +1802,10 @@
     .cr-admin-error {
         @apply rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800;
     }
+    .cr-admin-error.is-visible,
+    .cr-admin-error:not(.hidden) {
+        display: block !important;
+    }
     .cr-admin-stats {
         @apply grid max-w-2xl grid-cols-2 gap-3 md:gap-4 lg:max-w-none lg:grid-cols-2;
     }

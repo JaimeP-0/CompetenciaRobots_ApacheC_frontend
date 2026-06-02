@@ -244,13 +244,18 @@
         } catch (ignore) {}
     }
 
-    function blockNativeLoginSubmit(e) {
+    function onOutletSubmit(e) {
         var form = e.target;
-        if (!form || form.tagName !== 'FORM') {
+        if (!form || form.tagName !== 'FORM' || !outlet || !outlet.contains(form)) {
             return;
         }
-        if (form.id === 'f-staff-login' || form.id === 'f-admin-login') {
+        if (form.id === 'f-staff-login') {
             e.preventDefault();
+            var submitStaff =
+                w.CRCatalogViews && typeof w.CRCatalogViews.handleStaffLoginSubmit === 'function';
+            if (submitStaff) {
+                w.CRCatalogViews.handleStaffLoginSubmit(form, outlet);
+            }
         }
     }
 
@@ -263,7 +268,7 @@
             return;
         }
         loaded = true;
-        d.addEventListener('submit', blockNativeLoginSubmit, true);
+        outlet.addEventListener('submit', onOutletSubmit, false);
         outlet.addEventListener('click', onOutletClick, false);
         if (!w.location.hash || w.location.hash === '#/' || w.location.hash === '#/inicio') {
             w.location.hash = '/login';
