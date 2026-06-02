@@ -1051,7 +1051,7 @@
         @apply bg-[#1B8C7A]/25 text-emerald-200;
     }
     .cr-visitante-match {
-        @apply relative grid flex-1 items-center gap-2;
+        @apply relative grid items-center gap-2;
         grid-template-columns: 1fr auto 1fr;
     }
     .cr-visitante-match-side {
