@@ -380,6 +380,13 @@
             if (!scope || !w.CRTeamOrigin) {
                 return true;
             }
+            if (
+                partida &&
+                partida.is_internal != null &&
+                typeof w.CRTeamOrigin.scopeFromIsInternal === 'function'
+            ) {
+                return w.CRTeamOrigin.scopeFromIsInternal(partida.is_internal) === scope;
+            }
             return w.CRTeamOrigin.partidaMatchesQueueScope(partida, scope, teamsById);
         }
 
