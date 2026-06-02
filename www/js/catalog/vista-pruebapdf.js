@@ -46,10 +46,10 @@
         var cx = pageW / 2;
         var y = 40;
 
-        /* ── Logo ── */
+        /* ── Logo ── (proporción original 1252×1120 ≈ 1.12:1) */
         if (logoDataUrl) {
-            var logoW = 110;
-            var logoH = 50;
+            var logoH = 72;
+            var logoW = Math.round(logoH * (1252 / 1120));
             doc.addImage(logoDataUrl, 'PNG', cx - logoW / 2, y, logoW, logoH);
             y += logoH + 12;
         }
