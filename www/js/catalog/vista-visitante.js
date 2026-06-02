@@ -7,8 +7,8 @@
     var CRDom = w.CRDom;
     var POLL_MS = 5000;
     var LIVE_PAIRWISE_MAX = 6;
-    var QR_CYCLE_MS = 45000;
-    var QR_VISIBLE_MS = 7000;
+    var QR_CYCLE_MS = 80000;
+    var QR_VISIBLE_MS = 10000;
     var QR_ENABLED_KEY = 'cr-dashboard-official-qr-enabled';
     var QR_OWNER_KEY = 'cr-dashboard-official-qr-owner';
     var QR_OWNER_TOUCH_MS = 8000;
