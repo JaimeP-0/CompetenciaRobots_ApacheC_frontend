@@ -323,6 +323,21 @@
             return parts.join(' · ');
         }
 
+        function formatTeamMetaSubtitle(teamId) {
+            var meta = teamMeta(teamId);
+            var parts = [];
+            if (meta.school) {
+                parts.push(meta.school);
+            }
+            if (meta.tutor) {
+                parts.push(meta.tutor);
+            }
+            if (meta.captain) {
+                parts.push(meta.captain);
+            }
+            return parts.join(' - ');
+        }
+
         function indexResultados(resultados) {
             var map = {};
             (resultados || []).forEach(function (r) {
@@ -541,33 +556,29 @@
                 var parts = matchup.label.split(' vs ');
                 var ta = p.team_a_id || (p.team_a && p.team_a.id);
                 var tb = p.team_b_id || (p.team_b && p.team_b.id);
-                var metaA = formatTeamMetaLine(ta);
-                var metaB = formatTeamMetaLine(tb);
+                var titleA = parts[0] || '—';
+                var titleB = parts[1] || '—';
+                var metaA = formatTeamMetaSubtitle(ta);
+                var metaB = formatTeamMetaSubtitle(tb);
                 body =
                     '<div class="cr-visitante-match">' +
                     '<span class="cr-visitante-match-side">' +
-                    CRDom.escapeHtml(parts[0] || '—') +
+                    '<span class="cr-visitante-match-title">' +
+                    CRDom.escapeHtml(titleA) +
+                    '</span>' +
+                    (metaA
+                        ? '<span class="cr-visitante-match-subtitle">' + CRDom.escapeHtml(metaA) + '</span>'
+                        : '') +
                     '</span>' +
                     '<span class="cr-visitante-match-vs">VS</span>' +
                     '<span class="cr-visitante-match-side">' +
-                    CRDom.escapeHtml(parts[1] || '—') +
+                    '<span class="cr-visitante-match-title">' +
+                    CRDom.escapeHtml(titleB) +
                     '</span>' +
-                    '</div>' +
-                    '<div class="cr-visitante-team-meta-wrap">' +
-                    (metaA
-                        ? '<p class="cr-visitante-team-meta">' +
-                          CRDom.escapeHtml(parts[0] || '—') +
-                          ' · ' +
-                          CRDom.escapeHtml(metaA) +
-                          '</p>'
-                        : '') +
                     (metaB
-                        ? '<p class="cr-visitante-team-meta">' +
-                          CRDom.escapeHtml(parts[1] || '—') +
-                          ' · ' +
-                          CRDom.escapeHtml(metaB) +
-                          '</p>'
+                        ? '<span class="cr-visitante-match-subtitle">' + CRDom.escapeHtml(metaB) + '</span>'
                         : '') +
+                    '</span>' +
                     '</div>' +
                     '<p class="cr-visitante-match-meta">' +
                     CRDom.escapeHtml(matchup.sub) +

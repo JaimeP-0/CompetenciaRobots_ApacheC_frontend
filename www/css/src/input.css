@@ -1055,7 +1055,13 @@
         grid-template-columns: 1fr auto 1fr;
     }
     .cr-visitante-match-side {
-        @apply text-center text-base font-bold leading-tight text-navy sm:text-xl lg:text-2xl;
+        @apply min-w-0 text-center;
+    }
+    .cr-visitante-match-title {
+        @apply block text-base font-bold leading-tight text-navy sm:text-xl lg:text-2xl;
+    }
+    .cr-visitante-match-subtitle {
+        @apply mt-2 block text-[0.7rem] font-medium leading-snug text-graphite/70 sm:text-xs;
     }
     .cr-visitante-match-vs {
         @apply text-center text-[0.65rem] font-black tracking-[0.25em] text-[#C6D93D] sm:text-xs;
@@ -1070,7 +1076,7 @@
         @apply mt-2 flex flex-col gap-1;
     }
     .cr-visitante-team-meta {
-        @apply m-0 truncate text-[0.68rem] text-center text-graphite/65 sm:text-xs;
+        @apply m-0 text-[0.68rem] text-center text-graphite/65 sm:text-xs;
     }
     .cr-visitante-team-meta--solo {
         @apply mt-2;
