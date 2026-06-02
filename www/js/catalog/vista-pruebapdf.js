@@ -63,9 +63,9 @@
             };
         });
         var podium = [
-            { title: 'Primer Lugar', icon: '🥇', fill: [255, 243, 205], stroke: [245, 185, 52], value: results[0] ? results[0].value : 'Por definir' },
-            { title: 'Segundo Lugar', icon: '🥈', fill: [238, 242, 247], stroke: [160, 170, 182], value: results[1] ? results[1].value : 'Por definir' },
-            { title: 'Tercer Lugar', icon: '🥉', fill: [250, 233, 218], stroke: [201, 139, 82], value: results[2] ? results[2].value : 'Por definir' }
+            { title: 'Primer Lugar', fill: [255, 243, 205], stroke: [245, 185, 52], value: results[0] ? results[0].value : 'Por definir' },
+            { title: 'Segundo Lugar', fill: [238, 242, 247], stroke: [160, 170, 182], value: results[1] ? results[1].value : 'Por definir' },
+            { title: 'Tercer Lugar', fill: [250, 233, 218], stroke: [201, 139, 82], value: results[2] ? results[2].value : 'Por definir' }
         ];
 
         function footer() {
@@ -139,7 +139,7 @@
             doc.setFontSize(9);
             doc.setTextColor(95, 101, 116);
             doc.text('UNIVERSIDAD TECNOLÓGICA DEL NORTE DE COAHUILA', pageW / 2, y, { align: 'center' });
-            y += 20;
+            y += 30;
 
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(25);
@@ -243,23 +243,18 @@
                 var bx = contentX + (boxW + gap) * i;
                 doc.setFillColor(p.fill[0], p.fill[1], p.fill[2]);
                 doc.setDrawColor(p.stroke[0], p.stroke[1], p.stroke[2]);
-                doc.roundedRect(bx, y, boxW, boxH, 12, 12, 'FD');
-
-                doc.setFont('helvetica', 'bold');
-                doc.setFontSize(18);
-                doc.setTextColor(80, 80, 80);
-                doc.text(p.icon, bx + boxW / 2, y + 30, { align: 'center' });
+                doc.rect(bx, y, boxW, boxH, 'FD');
 
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(10);
                 doc.setTextColor(75, 75, 75);
-                doc.text(p.title.toUpperCase(), bx + boxW / 2, y + 52, { align: 'center' });
+                doc.text(p.title.toUpperCase(), bx + boxW / 2, y + 30, { align: 'center' });
 
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(11);
                 doc.setTextColor(30, 30, 30);
                 var podiumLines = doc.splitTextToSize(p.value, boxW - 18);
-                doc.text(podiumLines, bx + boxW / 2, y + 74, { align: 'center', maxWidth: boxW - 18 });
+                doc.text(podiumLines, bx + boxW / 2, y + 56, { align: 'center', maxWidth: boxW - 18 });
             });
             y += boxH + 14;
         }
