@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Despliegue obligatorio: Git + VPS
 
-Cuando modifiques código, configuración de despliegue o assets del proyecto **Competencia de Robots**, al terminar la tarea debes:
+Cuando modifiques código, configuración de despliegue o assets del proyecto **Competencia de Robots**, al terminar la tarea **SIEMPRE** debes (sin excepciones, aunque el usuario no lo repita):
 
 1. **Git (siempre)**
    - `git add` solo archivos relevantes a la tarea (nunca credenciales: `*.private.md`, `.env`, contraseñas).
@@ -24,4 +24,5 @@ Cuando modifiques código, configuración de despliegue o assets del proyecto **
    - Informar al usuario el error concreto y no dar por cerrada la tarea hasta resolverlo o dejar instrucciones explícitas.
 
 5. **Commits**
-   - Solo crear commits cuando el usuario lo pida **o** cuando esta regla aplique por haber completado una actualización de código solicitada (el usuario pidió explícitamente commit automático en cada actualización).
+   - Crear commit en **cada** sesión donde hubo cambios de código, sin esperar a que el usuario lo pida de nuevo.
+   - No incluir `.env`, `*.private.md`, credenciales ni `www/js/config.local.js`.
