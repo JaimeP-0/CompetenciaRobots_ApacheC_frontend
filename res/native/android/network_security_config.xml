@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- API en Tailscale/LAN sin TLS (HTTP). Si cambia la IP del servidor, no hace falta tocar esto. -->
+    <!-- API local/LAN sin TLS (HTTP): 127.0.0.1, 10.0.2.2 (emulador), IP Wi‑Fi. -->
     <base-config cleartextTrafficPermitted="true" />
 </network-security-config>

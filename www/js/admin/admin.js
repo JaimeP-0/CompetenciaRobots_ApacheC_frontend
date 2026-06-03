@@ -66,7 +66,7 @@
             if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
                 w.CRNavHistory.reset();
             }
-            w.location.hash = '#/';
+            w.location.hash = '#/login';
         },
         initLogin: function (outlet) {
             clearPanel();

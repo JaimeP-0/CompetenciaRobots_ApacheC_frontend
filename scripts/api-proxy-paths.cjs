@@ -12,7 +12,8 @@ var API_ROUTE_PREFIXES = [
     '/partidas',
     '/resultados',
     '/brackets',
-    '/login'
+    '/login',
+    '/cr-internal'
 ];
 
 function isApiRoute(url) {

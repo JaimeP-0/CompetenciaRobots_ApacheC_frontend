@@ -34,7 +34,10 @@
         categoryNamesById: {},
         registroMinLoadingMs: 0,
         debugApi: true,
-        adminLoginMock: overrides.adminLoginMock !== undefined ? !!overrides.adminLoginMock : true,
+        adminLoginMock:
+            overrides.adminLoginMock !== undefined
+                ? !!overrides.adminLoginMock
+                : profileName !== 'vps',
         adminMockUsuario: 'admin',
         adminMockPassword: 'admin',
         adminDatosLocales: false,

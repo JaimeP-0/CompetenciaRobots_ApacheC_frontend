@@ -10,8 +10,8 @@
  * Solo estáticos (sin proxy, sin API en Network):
  *   cordova run browser   ← no uses esto si necesitas /registro
  *
- * Variable CR_API_TARGET (opcional): por defecto Hostinger PHP.
- * Si apunta a 100.119.194.73 y da 502, borra: Remove-Item Env:CR_API_TARGET
+ * Variable CR_API_TARGET (opcional): por defecto API Go local (127.0.0.1:8080).
+ * Ver .env.example y npm run local
  * Variable CR_WWW_ROOT: carpeta a servir (por defecto platforms/browser/www si existe)
  */
 const http = require('http');
@@ -20,11 +20,10 @@ const path = require('path');
 const { exec } = require('child_process');
 const httpProxy = require('http-proxy');
 const { isApiRoute, API_ROUTE_PREFIXES } = require('./api-proxy-paths.cjs');
+const { getApiTarget } = require('./local-api.cjs');
 
 const PORT = Number(process.env.PORT || 8000);
-const API_TARGET = (
-    process.env.CR_API_TARGET || 'http://100.119.194.73:8080'
-).replace(/\/$/, '');
+const API_TARGET = getApiTarget();
 const projectRoot = path.join(__dirname, '..');
 const browserWww = path.join(projectRoot, 'platforms', 'browser', 'www');
 const defaultWww = path.join(projectRoot, 'www');

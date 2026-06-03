@@ -72,8 +72,7 @@
         if (w.CRQueueRoutes && typeof w.CRQueueRoutes.staffRole === 'function') {
             return w.CRQueueRoutes.staffRole(ses);
         }
-        var r = String((ses && ses.role) || '').toLowerCase();
-        return r === 'registro' ? 'arbitro' : r;
+        return String((ses && ses.role) || '').toLowerCase();
     }
 
     function resolveStaffCategoryValue(ses, sel) {

@@ -12,7 +12,7 @@
             return w.CRCategoriasCompetencia.matchModeLabel(mode, categoryName);
         }
         if (mode === 'pairwise') {
-            return 'Parejas (1 vs 1)';
+            return 'Parejas';
         }
         if (mode === 'solo') {
             return 'Carrera individual (1 por equipo)';

@@ -1,0 +1,23 @@
+# Adminer — solo localhost; nginx expone ruta oculta con auth_basic.
+services:
+  adminer:
+    image: adminer:4
+    container_name: cr-adminer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8081:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: robot-postgres
+      ADMINER_DB_SERVER: robot-postgres
+      ADMINER_DB_USER: robot
+      ADMINER_DB_PASSWORD: ${ADMINER_DB_PASSWORD:-robot}
+      ADMINER_DB_NAME: robot
+    volumes:
+      - ./adminer-cr-auto-login.php:/var/www/html/plugins-enabled/adminer-cr-auto-login.php:ro
+    networks:
+      - robot-net
+
+networks:
+  robot-net:
+    external: true
+    name: robot-net

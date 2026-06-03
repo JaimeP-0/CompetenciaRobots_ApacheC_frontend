@@ -8,8 +8,8 @@ const express = require('express');
 const httpProxy = require('http-proxy');
 const { isApiRoute } = require('./api-proxy-paths.cjs');
 
-const DEFAULT_API = 'http://100.119.194.73:8080';
-const API_TARGET = (process.env.CR_API_TARGET || DEFAULT_API).replace(/\/$/, '');
+const { getApiTarget } = require('./local-api.cjs');
+const API_TARGET = getApiTarget();
 const IS_HTTPS = API_TARGET.indexOf('https://') === 0;
 
 const proxy = httpProxy.createProxyServer({

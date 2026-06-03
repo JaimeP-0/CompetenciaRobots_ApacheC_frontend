@@ -8,7 +8,6 @@
     if (!V) throw new Error('Carga catalog/vista-*.js antes');
 
     w.CRCatalog = {
-        initInicio: V.inicio,
         initCategorias: V.categorias,
         initCategoriaDetalle: V.categoriaDetalle,
         initEquipos: V.equiposLista,

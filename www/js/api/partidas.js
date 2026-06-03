@@ -625,7 +625,7 @@
     /** Una partida por equipo (carrera individual con tiempo). */
     function postPartidasIniciarSolo(categoryId, opts) {
         opts = opts || {};
-        return fetchValidatedTeamIdsForCategory(categoryId)
+        return fetchValidatedTeamIdsForCategory(categoryId, opts)
             .then(function (validatedIds) {
                 return fetchPartidasByCategory(categoryId).then(function (existing) {
                     var toCreate = validatedIds.filter(function (tid) {
@@ -639,8 +639,6 @@
                     toCreate.forEach(function (tid) {
                         chain = chain.then(function () {
                             return createPartida({
-                                category_id: Number(categoryId, 10),
-                                mode: 'shared',
                                 queue: [tid]
                             }).then(function (p) {
                                 if (p) {

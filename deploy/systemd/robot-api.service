@@ -1,0 +1,15 @@
+[Unit]
+Description=Competencia de Robots — API Go
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/robot
+EnvironmentFile=-/var/www/robot/.env
+ExecStart=/usr/local/bin/robot-api
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

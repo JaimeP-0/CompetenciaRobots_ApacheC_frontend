@@ -175,7 +175,7 @@
 
         function onModalDescAceptar() {
             hideDescalificarModal();
-            w.location.hash = '#/';
+            w.location.hash = '#/login';
         }
 
         function onModalDescBackdrop(e) {

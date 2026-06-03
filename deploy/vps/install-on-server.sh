@@ -80,6 +80,7 @@ cat > "$FRONT_ROOT/www/js/config.local.js" <<EOF
     w.CR_API_OVERRIDES = {
         apiProfile: 'vps',
         publicUrl: '${PUBLIC_URL}',
+        adminLoginMock: false,
         diagFeedKey: '${DIAG_KEY}'
     };
 })(window);
