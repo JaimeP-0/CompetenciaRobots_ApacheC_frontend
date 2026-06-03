@@ -15,7 +15,7 @@ Cuando modifiques código, configuración de despliegue o assets del proyecto **
 2. **VPS (siempre, tras push exitoso)**
    - Ejecutar `npm run vps:pull` para actualizar el front en producción (`/var/www/competencia-robots`).
    - Si el cambio afecta la API Go en `deploy/robot/`, además `npm run deploy:robot` (o el script equivalente documentado en el proyecto).
-   - `vps:pull` **no toca Postgres**. Login roto → `npm run vps:fix-teamregistro` o `npm run vps:restore-passwords`.
+   - `vps:pull` **no toca Postgres** ni reinicia `robot-api`. Login roto tras reinicio API → `npm run vps:patch-robot-migrate` (una vez) y/o `npm run vps:restore-passwords`. No ejecutar `vps:schema` en prod con datos reales sin revisar.
 
 3. **No sustituir git por subidas manuales**
    - No usar solo `vps-upload-js.py` ni SFTP como despliegue final; como máximo como parche urgente, y en ese caso igualmente commit + push + `vps:pull` en la misma sesión.

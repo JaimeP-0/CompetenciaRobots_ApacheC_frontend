@@ -57,6 +57,10 @@ def main():
     sftp.put(str(SCHEMA), REMOTE_SCHEMA)
     sftp.close()
 
+    print(
+        "AVISO: schema.sql solo DDL. Usuarios/contraseñas: npm run vps:users-seed",
+        file=sys.stderr,
+    )
     print("==> Aplicando schema.sql en Postgres…", file=sys.stderr)
     apply = (
         f'docker exec -i {CONTAINER} psql -U {PG_USER} -d {PG_DB} -v ON_ERROR_STOP=1 '

@@ -8,7 +8,7 @@ Tras **cualquier** cambio de código o assets en este repo:
 
 Cambios en la API Go (`deploy/robot/`): además `npm run deploy:robot`.
 
-**Login / contraseñas:** `vps:pull` no modifica Postgres. Si falla `teamregistro` u otro usuario: `npm run vps:fix-teamregistro` o `npm run vps:restore-passwords` (requiere `CR_SSH_PASSWORD` en `.env`).
+**Login / contraseñas:** `vps:pull` **no** toca Postgres ni reinicia `robot-api`. Si los logins dejan de funcionar tras reiniciar la API o Postgres, suele ser la migración embebida en `robot-api` (pisaba `password_hash`). Parche una vez: `npm run vps:patch-robot-migrate`. Restaurar claves del evento: `npm run vps:restore-passwords`. **No uses** `vps:schema` en producción con datos reales salvo que sepas que ya no incluye seeds de usuarios.
 
 No usar solo subidas manuales (SFTP / `vps-upload-js.py`) como despliegue final.
 
