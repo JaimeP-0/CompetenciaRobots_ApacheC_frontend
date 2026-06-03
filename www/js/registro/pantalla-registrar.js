@@ -680,22 +680,14 @@
                         nombreEq = 'equipo #' + body.team_id;
                     }
                     var valido = res && (res.is_valid === true || res.is_valid === 1);
-                    var titulo = valido ? 'Robot validado' : 'Verificación registrada';
+                    var titulo = valido ? 'Robot validado' : 'No validado';
                     var mensaje = valido
-                        ? 'Se registró la verificación de ' + nombreEq + ': cumple todas las reglas marcadas y queda validado.'
-                        : 'Se guardó la verificación de ' +
-                          nombreEq +
-                          ' con ' +
-                          (body.valid_rules ? body.valid_rules.length : 0) +
-                          ' regla(s) aprobadas. Las reglas no marcadas quedan registradas como no cumplidas: el robot no está validado.';
+                        ? nombreEq + ' quedó validado.'
+                        : nombreEq + ' no quedó validado: faltan reglas por cumplir.';
                     var catId = resolveChecklistCategoryId();
                     showPostRegistroModal({
                         titulo: titulo,
-                        mensaje:
-                            mensaje +
-                            (catId != null
-                                ? ' Busca otro equipo en la misma categoría.'
-                                : ''),
+                        mensaje: mensaje,
                         irAlInicio: false,
                         redirectEquiposCategoryId: catId
                     });
