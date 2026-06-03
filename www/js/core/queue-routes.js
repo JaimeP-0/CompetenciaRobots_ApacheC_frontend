@@ -106,6 +106,10 @@
         var r = String(route || '').split('?')[0];
         var role = staffRole(session);
 
+        if (r === '/login') {
+            return true;
+        }
+
         if (role === 'admin' || role === 'dev') {
             return true;
         }

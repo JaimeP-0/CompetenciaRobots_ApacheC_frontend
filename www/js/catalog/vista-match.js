@@ -1454,7 +1454,7 @@
             var list = ctx.allPartidas.filter(function (p) {
                 return !catFilter || String(p.category_id) === String(catFilter);
             });
-            var teamsById = {};
+            var teamsById = mergeTeamsFromPartidas(list, ctx.teamsById || {});
             var pdfRows = list.map(function (p, idx) {
                 var res = ctx.resByMatch && ctx.resByMatch[String(p.id)];
                 var winner = null;

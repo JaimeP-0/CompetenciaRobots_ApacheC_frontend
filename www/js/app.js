@@ -299,6 +299,8 @@
                 w.CRStaffAuth.redirectAfterLogin();
                 return;
             }
+            w.location.hash = '#/visitante';
+            return;
         }
         var targetRoute = btn.getAttribute('data-route');
         if (!targetRoute) {

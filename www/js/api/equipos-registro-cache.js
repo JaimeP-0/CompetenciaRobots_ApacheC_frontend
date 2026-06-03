@@ -378,7 +378,7 @@
             (teams || []).map(function (t) {
                 // /categorias/{id}/equipos suele traer members:[] aunque existan filas en member;
                 // solo omitir el GET /equipos/{id}/miembros si ya hay integrantes en la respuesta.
-                if (Array.isArray(t.members) && t.members.length > 0) {
+                if (hasUsableMembers(t.members)) {
                     return Promise.resolve(t);
                 }
                 return fetchMembersForTeam(t.id).then(function (members) {
