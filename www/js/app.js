@@ -295,6 +295,9 @@
         if (!btn || !outlet || !outlet.contains(btn)) {
             return;
         }
+        if (btn.id === 'btn-staff-skip-login' && staffLoggedIn()) {
+            return;
+        }
         var targetRoute = btn.getAttribute('data-route');
         if (!targetRoute) {
             return;

@@ -114,27 +114,34 @@
             return;
         }
         var role = String(s.role || '').toLowerCase();
+        function go(hash) {
+            var h = hash.indexOf('#') === 0 ? hash : '#' + hash;
+            try {
+                w.location.replace(h);
+            } catch (ignore) {
+                w.location.hash = h;
+            }
+        }
         if (role === 'visitante') {
-            w.location.hash = '#/dashboard';
+            go('#/visitante');
             return;
         }
         if (role === 'registro') {
             try {
                 w.sessionStorage.removeItem('cr-queue-scope');
             } catch (ignore) {}
-            w.location.replace('#/registro');
+            go('#/registro');
             return;
         }
         if (role === 'admin' || role === 'dev') {
-            w.location.hash = '#/admin';
+            go('#/admin');
             return;
         }
         if (QueueRoutes && typeof QueueRoutes.staffWorkspaceHash === 'function') {
-            var dest = QueueRoutes.staffWorkspaceHash(s);
-            w.location.hash = dest.indexOf('#') === 0 ? dest : '#' + dest;
+            go(QueueRoutes.staffWorkspaceHash(s));
             return;
         }
-        w.location.hash = '#/login';
+        go('#/login');
     }
 
     w.CRStaffAuth = {

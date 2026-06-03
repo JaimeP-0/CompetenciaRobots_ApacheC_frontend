@@ -110,10 +110,15 @@
         var skipBtn = outlet.querySelector('#btn-staff-skip-login');
         if (skipBtn) {
             skipBtn.textContent = 'Continuar con esta sesión';
+            skipBtn.removeAttribute('data-route');
             skipBtn.onclick = function (e) {
                 e.preventDefault();
+                e.stopPropagation();
+                if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+                    w.CRNavHistory.reset();
+                }
                 if (Auth && typeof Auth.redirectAfterLogin === 'function') {
-                    Auth.redirectAfterLogin();
+                    Auth.redirectAfterLogin(ses);
                 }
             };
         }
@@ -141,6 +146,7 @@
                 }
                 if (skipBtn) {
                     skipBtn.textContent = 'Continuar sin iniciar sesión — ver dashboard público';
+                    skipBtn.setAttribute('data-route', '/dashboard');
                     skipBtn.onclick = null;
                 }
                 hideLoginError(outlet.querySelector('#staff-login-error'));
@@ -165,6 +171,12 @@
         }
         hideLoginError(errEl);
         form.setAttribute('action', '');
+        if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+            w.CRNavHistory.reset();
+            if (typeof w.CRNavHistory.onNavigate === 'function') {
+                w.CRNavHistory.onNavigate('/login');
+            }
+        }
         bindActiveSessionUi(outlet);
     }
 
