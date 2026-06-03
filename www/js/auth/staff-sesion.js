@@ -5,7 +5,7 @@
     'use strict';
 
     var STORAGE_KEY = 'cr_staff_sesion';
-    var ROLES_SIN_CATEGORIA = { admin: true, dev: true, visitante: true };
+    var ROLES_SIN_CATEGORIA = { admin: true, dev: true, visitante: true, registro: true };
 
     function read() {
         try {
@@ -97,6 +97,9 @@
         }
         var uname = String(body.username || fallbackUsername || '').trim();
         var role = normalizeRole(body.role || '');
+        if (uname === 'teamregistro') {
+            role = 'registro';
+        }
         var parsed = parseCategories(body);
         var categories = parsed.categories;
         var categoryIds = parsed.category_ids;
@@ -163,15 +166,66 @@
         return '';
     }
 
+    function isPlaceholderCategoryLabel(name) {
+        var s = String(name || '').trim();
+        if (!s) {
+            return true;
+        }
+        if (/^cat\.?\s*\d+$/i.test(s)) {
+            return true;
+        }
+        if (/^categor[ií]a\s*#?\s*\d+$/i.test(s)) {
+            return true;
+        }
+        return false;
+    }
+
+    function resolveCategoryName(session) {
+        if (!session) {
+            return '';
+        }
+        var stored = session.category != null ? String(session.category).trim() : '';
+        if (stored && !isPlaceholderCategoryLabel(stored)) {
+            return stored;
+        }
+        var catId = primaryCategoryId(session);
+        if (!catId) {
+            return '';
+        }
+        if (w.CRApiCategorias && typeof w.CRApiCategorias.labelById === 'function') {
+            var fromApi = w.CRApiCategorias.labelById(catId);
+            if (fromApi && !isPlaceholderCategoryLabel(fromApi)) {
+                return fromApi;
+            }
+        }
+        return '';
+    }
+
+    function refreshCategoryFromApi() {
+        var session = read();
+        if (!session) {
+            return;
+        }
+        var name = resolveCategoryName(session);
+        if (name) {
+            session.category = name;
+            save(session);
+        }
+    }
+
+    function categoryDisplayName(session) {
+        return resolveCategoryName(session);
+    }
+
     function assignmentSummary(session) {
         if (!session) {
             return '';
         }
-        var catId = primaryCategoryId(session);
         var scope = queueScope(session);
         var parts = [];
-        if (catId) {
-            parts.push('cat. ' + catId);
+        var catName = categoryDisplayName(session);
+        if (catName) {
+            parts.push(catName);
         }
         if (scope === 'internal') {
             parts.push('interno');
@@ -189,6 +243,9 @@
         parseFromLogin: parseFromLogin,
         primaryCategoryId: primaryCategoryId,
         queueScope: queueScope,
+        categoryDisplayName: categoryDisplayName,
+        isPlaceholderCategoryLabel: isPlaceholderCategoryLabel,
+        refreshCategoryFromApi: refreshCategoryFromApi,
         assignmentSummary: assignmentSummary
     };
 })(window);

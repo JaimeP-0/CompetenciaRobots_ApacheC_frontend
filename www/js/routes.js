@@ -16,8 +16,6 @@
 
     w.CR_ROUTES = {
         static: {
-            '/': 'public/inicio',
-            '/inicio': 'public/inicio',
             '/login': 'public/login',
             '/registro': 'registro/registrar',
             '/categorias': 'public/categorias',
@@ -40,6 +38,8 @@
         },
 
         redirects: {
+            '/': '/login',
+            '/inicio': '/login',
             '/tablero': '/dashboard',
             '/dashboard': '/visitante',
             '/tablero-normal': '/visitante',
@@ -98,7 +98,6 @@
         ],
 
         catalogInit: {
-            'public/inicio': 'initInicio',
             'public/categorias': 'initCategorias',
             'public/categoria-detalle': 'initCategoriaDetalle',
             'public/equipos': 'initEquipos',

@@ -45,7 +45,7 @@
         if (map[String(id)] != null) {
             return String(map[String(id)]);
         }
-        return 'Categoría ' + id;
+        return '';
     }
 
     function normalizeCatalogRules(rules, fallbackCategoryId) {

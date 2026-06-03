@@ -34,26 +34,23 @@
 
     function guardAuthEntry(route) {
         var r = String(route || '').split('?')[0];
+        if (r === '/' || r === '/inicio') {
+            return '#/login';
+        }
         if (staffLoggedIn()) {
             var ses = w.CRStaffSesion && w.CRStaffSesion.read();
             var role = ses && ses.role ? String(ses.role).toLowerCase() : '';
             if (role === 'registro') {
-                if (r === '/login' || r === '/' || r === '/inicio') {
+                if (r === '/login') {
                     return '#/registro';
                 }
                 if (r === '/match' || r.indexOf('/match/') === 0) {
                     return '#/registro';
                 }
             }
-            if (r === '/login' || r === '/' || r === '/inicio') {
-                if (w.CRQueueRoutes && typeof w.CRQueueRoutes.staffWorkspaceHash === 'function') {
-                    return w.CRQueueRoutes.staffWorkspaceHash(ses);
-                }
-                return '#/inicio';
-            }
             return null;
         }
-        if (r === '/' || r === '/inicio' || r === '/registro') {
+        if (r === '/registro' || r.indexOf('/registro/') === 0) {
             return '#/login';
         }
         return null;
@@ -84,7 +81,7 @@
         if (typeof w.CRQueueRoutes.staffForbiddenRedirect === 'function') {
             return w.CRQueueRoutes.staffForbiddenRedirect(ses);
         }
-        return '#/inicio';
+        return '#/login';
     }
 
     function guardAdminRoute(viewName) {
@@ -118,11 +115,10 @@
             }
             d.documentElement.classList.toggle('cr-registro-fit', name === 'registro/registrar');
             var isLogin = name === 'public/login';
-            var isInicio = name === 'public/inicio';
             var isVisitante = name === 'public/visitante';
             var isDiag = name === 'public/diag-feed';
-            d.body.classList.toggle('cr-view-inicio', isLogin || isInicio);
-            d.body.classList.toggle('cr-view-inner', !isVisitante && !isLogin && !isInicio && !isDiag);
+            d.body.classList.toggle('cr-view-inicio', isLogin);
+            d.body.classList.toggle('cr-view-inner', !isVisitante && !isLogin && !isDiag);
             d.documentElement.classList.toggle('cr-view-dashboard', isVisitante);
             d.body.classList.toggle('cr-view-dashboard', isVisitante);
             d.documentElement.classList.toggle('cr-view-diag', isDiag);
@@ -238,7 +234,7 @@
         if (r === '/registro' || r.indexOf('/registro/') === 0) {
             return null;
         }
-        if (r === '/match' || r.indexOf('/match/') === 0 || r === '/login' || r === '/' || r === '/inicio') {
+        if (r === '/match' || r.indexOf('/match/') === 0 || r === '/login') {
             return '#/registro';
         }
         return null;
@@ -301,7 +297,7 @@
         }
         if (btn.hasAttribute('data-back')) {
             e.preventDefault();
-            var fallback = btn.getAttribute('data-back-fallback') || '/inicio';
+            var fallback = btn.getAttribute('data-back-fallback') || '/login';
             if (w.CRNavHistory && typeof w.CRNavHistory.resolveFallback === 'function') {
                 fallback = w.CRNavHistory.resolveFallback(fallback);
             }
@@ -370,17 +366,7 @@
         outlet.addEventListener('submit', onOutletSubmit, false);
         outlet.addEventListener('click', onOutletClick, false);
         if (!w.location.hash || w.location.hash === '#/') {
-            if (!staffLoggedIn()) {
-                w.location.hash = '/login';
-            } else if (
-                w.CRQueueRoutes &&
-                typeof w.CRQueueRoutes.staffWorkspaceHash === 'function'
-            ) {
-                var bootSes = w.CRStaffSesion && w.CRStaffSesion.read();
-                w.location.hash = w.CRQueueRoutes.staffWorkspaceHash(bootSes);
-            } else {
-                w.location.hash = '/inicio';
-            }
+            w.location.hash = '/login';
         }
         renderCurrentRoute();
     }

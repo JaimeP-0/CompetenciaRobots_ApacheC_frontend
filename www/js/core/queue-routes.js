@@ -56,7 +56,7 @@
 
     function staffWorkspaceHash(session) {
         if (!session) {
-            return '#/dashboard';
+            return '#/login';
         }
         var role = staffRole(session);
         if (role === 'admin' || role === 'dev') {
@@ -71,7 +71,7 @@
         if (role === 'juez' || role === 'arbitro') {
             return matchHashForScope(staffScope(session));
         }
-        return '#/inicio';
+        return '#/login';
     }
 
     function staffMayUseRegistro(session) {
@@ -85,7 +85,6 @@
     function isPublicCatalogRoute(route) {
         var r = String(route || '').split('?')[0];
         return (
-            r === '/inicio' ||
             r === '/login' ||
             r === '/dashboard' ||
             r === '/visitante' ||
@@ -152,7 +151,7 @@
         if (role === 'juez' || role === 'arbitro') {
             return matchHashForScope(staffScope(session));
         }
-        return '#/inicio';
+        return '#/login';
     }
 
     w.CRQueueRoutes = {

@@ -98,6 +98,20 @@
             labelEl.textContent = logged ? sessionSummary(ses) : '';
         }
         wireLogout(btnLogout);
+
+        if (logged && w.CRApi && typeof w.CRApi.fetchCategorias === 'function') {
+            w.CRApi.fetchCategorias()
+                .then(function () {
+                    if (w.CRStaffSesion && typeof w.CRStaffSesion.refreshCategoryFromApi === 'function') {
+                        w.CRStaffSesion.refreshCategoryFromApi();
+                    }
+                    var sesFresh = w.CRStaffSesion && w.CRStaffSesion.read();
+                    if (labelEl && sesFresh) {
+                        labelEl.textContent = sessionSummary(sesFresh);
+                    }
+                })
+                .catch(function () {});
+        }
     }
 
     w.CRStaffShell = {

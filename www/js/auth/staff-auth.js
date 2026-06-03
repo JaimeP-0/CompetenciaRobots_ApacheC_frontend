@@ -31,13 +31,44 @@
                     parseErr || new Error('Respuesta de login inválida del servidor.')
                 );
             }
-            Sesion.save(session);
             syncAdminSession(session);
-            var scope = Sesion.queueScope(session);
-            if (scope && w.CRTeamOrigin) {
-                w.CRTeamOrigin.storeQueueScope(scope);
-            }
-            return { ok: true, session: session };
+            var loginRole = String(session.role || '').toLowerCase();
+            var enrich =
+                session.category_ids &&
+                session.category_ids.length &&
+                w.CRApi &&
+                typeof w.CRApi.fetchCategorias === 'function'
+                    ? w.CRApi.fetchCategorias().then(function () {
+                          if (w.CRApiCategorias && typeof w.CRApiCategorias.labelById === 'function') {
+                              var nm = w.CRApiCategorias.labelById(session.category_ids[0]);
+                              if (
+                                  nm &&
+                                  w.CRStaffSesion &&
+                                  typeof w.CRStaffSesion.isPlaceholderCategoryLabel === 'function' &&
+                                  !w.CRStaffSesion.isPlaceholderCategoryLabel(nm)
+                              ) {
+                                  session.category = nm;
+                              }
+                          }
+                          Sesion.save(session);
+                      })
+                    : Promise.resolve();
+            return enrich.then(function () {
+                if (!session.category_ids || !session.category_ids.length) {
+                    Sesion.save(session);
+                }
+                if (loginRole === 'registro') {
+                    try {
+                        w.sessionStorage.removeItem('cr-queue-scope');
+                    } catch (ignore) {}
+                } else {
+                    var scope = Sesion.queueScope(session);
+                    if (scope && w.CRTeamOrigin) {
+                        w.CRTeamOrigin.storeQueueScope(scope);
+                    }
+                }
+                return { ok: true, session: session };
+            });
         });
     }
 
@@ -79,7 +110,7 @@
     function redirectAfterLogin(session) {
         var s = session || (Sesion && Sesion.read());
         if (!s) {
-            w.location.hash = '#/inicio';
+            w.location.hash = '#/login';
             return;
         }
         var role = String(s.role || '').toLowerCase();
@@ -87,15 +118,23 @@
             w.location.hash = '#/dashboard';
             return;
         }
+        if (role === 'registro') {
+            try {
+                w.sessionStorage.removeItem('cr-queue-scope');
+            } catch (ignore) {}
+            w.location.replace('#/registro');
+            return;
+        }
         if (role === 'admin' || role === 'dev') {
             w.location.hash = '#/admin';
             return;
         }
         if (QueueRoutes && typeof QueueRoutes.staffWorkspaceHash === 'function') {
-            w.location.hash = QueueRoutes.staffWorkspaceHash(s);
+            var dest = QueueRoutes.staffWorkspaceHash(s);
+            w.location.hash = dest.indexOf('#') === 0 ? dest : '#' + dest;
             return;
         }
-        w.location.hash = '#/inicio';
+        w.location.hash = '#/login';
     }
 
     w.CRStaffAuth = {

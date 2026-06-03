@@ -60,6 +60,13 @@
         var password = String(inputPass.value || '');
         hideLoginError(errEl);
 
+        if (Auth && typeof Auth.logout === 'function') {
+            Auth.logout();
+        }
+        if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+            w.CRNavHistory.reset();
+        }
+
         if (btn) {
             btn.disabled = true;
         }
@@ -82,13 +89,68 @@
             });
     }
 
-    function initStaffLogin(outlet) {
-        if (!outlet) {
+    function bindActiveSessionUi(outlet) {
+        if (!outlet || !Sesion || !Sesion.isLoggedIn()) {
             return;
         }
+        var ses = Sesion.read();
+        if (!ses) {
+            return;
+        }
+        var lead = outlet.querySelector('.cr-page-lead');
+        var role = String(ses.role || '').trim();
+        var who = String(ses.display_name || ses.username || '').trim();
+        if (lead) {
+            lead.textContent =
+                'Sesión activa: ' +
+                who +
+                (role ? ' (' + role + ')' : '') +
+                '. Para cambiar de usuario, pulsa Cerrar sesión y vuelve a entrar.';
+        }
+        var skipBtn = outlet.querySelector('#btn-staff-skip-login');
+        if (skipBtn) {
+            skipBtn.textContent = 'Continuar con esta sesión';
+            skipBtn.onclick = function (e) {
+                e.preventDefault();
+                if (Auth && typeof Auth.redirectAfterLogin === 'function') {
+                    Auth.redirectAfterLogin();
+                }
+            };
+        }
+        var logoutBtn = outlet.querySelector('#btn-staff-logout-active');
+        if (!logoutBtn && skipBtn && skipBtn.parentNode) {
+            logoutBtn = w.document.createElement('button');
+            logoutBtn.type = 'button';
+            logoutBtn.id = 'btn-staff-logout-active';
+            logoutBtn.className = 'cr-staff-login-skip cr-staff-login-skip--logout';
+            logoutBtn.textContent = 'Cerrar sesión';
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (Auth && typeof Auth.logout === 'function') {
+                    Auth.logout();
+                }
+                if (w.CRNavHistory && typeof w.CRNavHistory.reset === 'function') {
+                    w.CRNavHistory.reset();
+                }
+                var oldLogout = outlet.querySelector('#btn-staff-logout-active');
+                if (oldLogout) {
+                    oldLogout.remove();
+                }
+                if (lead) {
+                    lead.textContent = 'Personal del evento: usa el usuario que te asignaron.';
+                }
+                if (skipBtn) {
+                    skipBtn.textContent = 'Continuar sin iniciar sesión — ver dashboard público';
+                    skipBtn.onclick = null;
+                }
+                hideLoginError(outlet.querySelector('#staff-login-error'));
+            }, false);
+            skipBtn.parentNode.insertBefore(logoutBtn, skipBtn);
+        }
+    }
 
-        if (Sesion && Sesion.isLoggedIn() && Auth) {
-            Auth.redirectAfterLogin();
+    function initStaffLogin(outlet) {
+        if (!outlet) {
             return;
         }
 
@@ -103,6 +165,7 @@
         }
         hideLoginError(errEl);
         form.setAttribute('action', '');
+        bindActiveSessionUi(outlet);
     }
 
     w.CRCatalogViews = w.CRCatalogViews || {};
