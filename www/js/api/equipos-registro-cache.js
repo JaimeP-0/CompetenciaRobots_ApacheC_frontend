@@ -347,7 +347,8 @@
     function attachMembersToTeams(teams) {
         return Promise.all(
             (teams || []).map(function (t) {
-                if (Array.isArray(t.members)) {
+                /* GET /categorias/{id}/equipos suele traer members:[] vacío; siempre refrescar si no hay datos. */
+                if (Array.isArray(t.members) && t.members.length > 0) {
                     return Promise.resolve(t);
                 }
                 return fetchMembersForTeam(t.id).then(function (members) {
