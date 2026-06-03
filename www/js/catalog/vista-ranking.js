@@ -17,6 +17,9 @@
         var selSort = root.querySelector('#cr-ranking-sort');
         var listEl = root.querySelector('#cr-ranking-list');
         var countEl = root.querySelector('#cr-ranking-count');
+        var finalsEl = root.querySelector('#cr-ranking-finals');
+        var championEl = root.querySelector('#cr-ranking-champion');
+        var btnPdfChampion = root.querySelector('#cr-ranking-pdf-champion');
         if (!selCat || !listEl) {
             return;
         }
@@ -278,6 +281,58 @@
             });
         }
 
+        function loadChampion(catFilter) {
+            if (!finalsEl || !championEl) {
+                return Promise.resolve();
+            }
+            if (!catFilter || !w.CRApi || typeof w.CRApi.getBracket !== 'function') {
+                finalsEl.classList.add('hidden');
+                return Promise.resolve();
+            }
+            return w.CRApi.getBracket(catFilter, {})
+                .then(function (br) {
+                    var champId = br && br.champion != null ? br.champion : null;
+                    if (champId == null) {
+                        finalsEl.classList.add('hidden');
+                        return;
+                    }
+                    var name = teamsById[String(champId)] && teamsById[String(champId)].name;
+                    if (!name && w.CRApi.getEquiposByCategory) {
+                        return w.CRApi.getEquiposByCategory(catFilter).then(function (teams) {
+                            (teams || []).forEach(function (t) {
+                                if (t && t.id != null) {
+                                    teamsById[String(t.id)] = t;
+                                }
+                            });
+                            name =
+                                (teamsById[String(champId)] && teamsById[String(champId)].name) ||
+                                'Equipo #' + champId;
+                            championEl.textContent = name;
+                            finalsEl.classList.remove('hidden');
+                        });
+                    }
+                    championEl.textContent = name || 'Equipo #' + champId;
+                    finalsEl.classList.remove('hidden');
+                })
+                .catch(function () {
+                    finalsEl.classList.add('hidden');
+                });
+        }
+
+        function onPdfChampionClick() {
+            var catFilter = selCat.value;
+            if (!catFilter || !w.CRPdfEvento || typeof w.CRPdfEvento.campeonCategoria !== 'function') {
+                return;
+            }
+            var catName = categoryLabel(catFilter);
+            var champName = championEl ? championEl.textContent : '';
+            w.CRPdfEvento.campeonCategoria({
+                categoryName: catName,
+                championName: champName,
+                filename: 'ganador-' + String(catName).replace(/\s+/g, '-').toLowerCase() + '.pdf'
+            }).catch(function () {});
+        }
+
         function loadRanking() {
             listEl.innerHTML = '<p class="cr-ranking-loading">Cargando resultados…</p>';
             var catFilter = selCat.value;
@@ -320,9 +375,10 @@
                         }
                         if (!rows.length) {
                             renderEmpty(!!catFilter);
-                            return;
+                            return loadChampion(catFilter);
                         }
                         renderTable(rows);
+                        return loadChampion(catFilter);
                     });
                 })
                 .catch(function (err) {
@@ -365,6 +421,9 @@
         selCat.addEventListener('change', loadRanking, false);
         if (selSort) {
             selSort.addEventListener('change', loadRanking, false);
+        }
+        if (btnPdfChampion) {
+            btnPdfChampion.addEventListener('click', onPdfChampionClick, false);
         }
 
         if (w.CRApi.fetchCategorias) {

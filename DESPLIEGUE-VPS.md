@@ -33,26 +33,22 @@ git commit -m "…"
 git push origin master
 ```
 
-4. En el VPS, **git pull** del mismo repo (rápido; no usa SFTP):
+4. Despliega en el VPS (build local + git pull en el servidor):
 
 ```powershell
 $env:CR_SSH_PASSWORD = "tu-contraseña-root"
-npm run vps:pull
-```
-
-Eso hace `git pull` en `/var/www/competencia-robots`, opcionalmente `build:css` si hay Node en el servidor, y `install-front-on-server.sh` (nginx + `config.local.js`).
-
-El backend Go vive en **otro repo** (`/var/www/robot`); no lo actualiza este comando.
-
-### Despliegue completo por SFTP (solo si hace falta)
-
-Primera vez o sin git en el VPS:
-
-```powershell
 npm run deploy:vps
 ```
 
-Sube `www/` + `deploy/` por SFTP (más lento que `vps:pull`).
+Equivale a `npm run build:vps` + `npm run vps:pull`: actualiza `/var/www/competencia-robots` desde git y ejecuta `install-front-on-server.sh` (nginx + `config.local.js`). **No toca Postgres ni contraseñas.**
+
+Si ya hiciste `build:vps` y solo quieres pull:
+
+```powershell
+npm run vps:pull
+```
+
+El backend Go vive en **otro repo** (`/var/www/robot`); actualízalo con `npm run deploy:robot`.
 
 ## Solo en el VPS (sin PC)
 
@@ -91,7 +87,7 @@ docker compose -f /var/www/robot/docker-compose.yml ps
 
 ## APK Android
 
-El perfil `vps` en `config.local.js` usa `publicUrl: http://2.25.159.127` (sin puerto 8080). Tras cambiar la IP, vuelve a `npm run deploy:vps` o edita en el servidor `www/js/config.local.js`.
+El perfil `vps` en `config.local.js` usa `publicUrl` del VPS. Tras cambiar la IP, `npm run build:vps`, commit, push y `npm run deploy:vps` (o edita `www/js/config.local.js` en el servidor).
 
 ## Desarrollo en PC (opcional)
 

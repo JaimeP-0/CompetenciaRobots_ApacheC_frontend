@@ -225,9 +225,15 @@
         });
     }
 
+    function denyCatRuleEdit() {
+        return Promise.reject(
+            new Error('Editar o eliminar categorías y reglas no está permitido desde la app.')
+        );
+    }
+
     function updateCategoria(id, name) {
         if (useRemoto()) {
-            return remoto().updateCategoria(id, name);
+            return denyCatRuleEdit();
         }
         var cid = Number(id, 10);
         var n = String(name || '').trim();
@@ -249,7 +255,7 @@
 
     function deleteCategoria(id) {
         if (useRemoto()) {
-            return remoto().deleteCategoria(id);
+            return denyCatRuleEdit();
         }
         var cid = Number(id, 10);
         return ensureSeeded().then(function (db) {
@@ -301,7 +307,7 @@
 
     function updateRegla(categoriaId, reglaId, description, type) {
         if (useRemoto()) {
-            return remoto().updateRegla(categoriaId, reglaId, description, type);
+            return denyCatRuleEdit();
         }
         var cid = Number(categoriaId, 10);
         var rid = Number(reglaId, 10);
@@ -334,7 +340,7 @@
 
     function deleteRegla(categoriaId, reglaId) {
         if (useRemoto()) {
-            return remoto().deleteRegla(categoriaId, reglaId);
+            return denyCatRuleEdit();
         }
         var cid = Number(categoriaId, 10);
         var rid = Number(reglaId, 10);

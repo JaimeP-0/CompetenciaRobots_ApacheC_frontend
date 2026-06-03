@@ -1,6 +1,6 @@
 #!/bin/bash
 # Instalación completa en el VPS (Postgres, API Go en /var/www/robot, nginx).
-# No lo ejecuta npm run deploy:vps — solo sube ESTE repo. Usar manualmente si hace falta.
+# No lo ejecuta npm run deploy:vps (solo front vía git). Usar manualmente en el VPS si hace falta.
 set -euo pipefail
 
 FRONT_ROOT="${CR_FRONT_ROOT:-/var/www/competencia-robots}"

@@ -7,7 +7,7 @@
 --  1 | admin              | Administrador                                | admin     | adminrobots09 | —         | —
 --  2 | dev                | Desarrollador                                | dev       | 47291         | —         | —
 --  3 | visitante          | Visitante                                    | visitante | 63840         | —         | —
---  4 | guillermo.iglesias | Ing. Guillermo Elías Iglesias López          | juez      | 84821         | Minisumo  | no
+--  4 | guillermo.iglesias | Ing. Guillermo Elías Iglesias López          | juez      | p             | Minisumo  | no
 --  5 | jesus.hernandez    | Ing. Jesús Arturo Hernández Soberón          | juez      | 51937         | Velocista | no
 --  6 | alejandra.gonzales | Mtra. Alejandra González Miranda             | juez      | 26408         | Futbol    | no
 --  7 | martha.sanchez     | Mtra. Martha Lilia Sánchez Sánchez          | juez      | 90315         | Minisumo  | sí
@@ -31,7 +31,7 @@ WITH user_seed(id, username, name, role, password_hash) AS (
         (1,  'admin',              'Administrador',                              'admin',     '$2b$10$SLNSdMb6Vtp/q/E5vw8gc.1AQrl13nELUA.mV2hAcqnzNeVzUq0u6'),
         (2,  'dev',                'Desarrollador',                              'dev',       '$2b$10$fGnmXZSZ5yfbgdXQEzsg2.xL7XwSDQqISDqpP88p7ns9c9qZ0d7O6'),
         (3,  'visitante',          'Visitante',                                  'visitante', '$2b$10$DBILz6gKc/wSjkffkw/2AuBo.bpwl7fDUa1uIdXYCwqdcJrTtsjiW'),
-        (4,  'guillermo.iglesias', 'Ing. Guillermo Elías Iglesias López',        'juez',      '$2b$10$uuQMcINfGGPQ09/jJuV42.LAIVuPrX0PRab/IGUTjFAuV5urODyW2'),
+        (4,  'guillermo.iglesias', 'Ing. Guillermo Elías Iglesias López',        'juez',      '$2b$10$3N41d3Xawe7noFwxhuri6OUugwelbgtkOGye7FSZEYAyaKQAFTQiC'),
         (5,  'jesus.hernandez',    'Ing. Jesús Arturo Hernández Soberón',        'juez',      '$2b$10$SeqYsoX4nz4/FzTWRDxWpON759dEurKaW2trhufqtPxdY6LAZKI1e'),
         (6,  'alejandra.gonzales', 'Mtra. Alejandra González Miranda',           'juez',      '$2b$10$rPkb6WNcVbBwOXrqT4x3aO327rK1ZkxHXJ/mcj8MP7nXh1KOjBLrW'),
         (7,  'martha.sanchez',     'Mtra. Martha Lilia Sánchez Sánchez',         'juez',      '$2b$10$wrorlrQpWN6tCVE2k.PmL.P/l15PbqUnytPi4KPjLI5ZmEttiXagK'),

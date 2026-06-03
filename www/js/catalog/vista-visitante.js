@@ -1189,6 +1189,14 @@
             if (officialControls) {
                 officialControls.classList.add('hidden');
             }
+            if (qrHeaderProgressEl) {
+                qrHeaderProgressEl.classList.add('hidden');
+                qrHeaderProgressEl.setAttribute('aria-hidden', 'true');
+            }
+        }
+        if (officialMode && qrHeaderProgressEl) {
+            qrHeaderProgressEl.classList.remove('hidden');
+            qrHeaderProgressEl.setAttribute('aria-hidden', 'false');
         }
 
         if (w.CRApi.fetchCategorias) {

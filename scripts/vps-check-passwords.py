@@ -30,7 +30,10 @@ def load_dotenv() -> None:
 def expected_hashes() -> dict[str, str]:
     text = SEED.read_text(encoding="utf-8")
     out: dict[str, str] = {}
-    for m in re.finditer(r"\('([^']+)',\s*'[^']*',\s*'[^']*',\s*'(\$2b\$[^']+)'\)", text):
+    pat = re.compile(
+        r"\(\s*(?:\d+,\s*)?'([^']+)',\s*'[^']*',\s*'[^']*',\s*'(\$2b\$[^']+)'\)"
+    )
+    for m in pat.finditer(text):
         out[m.group(1)] = m.group(2)
     return out
 
@@ -39,9 +42,15 @@ def expected_passwords() -> dict[str, str]:
     text = CRED.read_text(encoding="utf-8")
     out: dict[str, str] = {}
     for line in text.splitlines():
-        m = re.match(r"\|\s*`([^`]+)`\s*\|[^|]+\|\s*`([^`]+)`\s*\|", line)
-        if m:
-            out[m.group(1)] = m.group(2)
+        if not line.startswith("|") or "`" not in line:
+            continue
+        parts = [p.strip() for p in line.split("|")]
+        if len(parts) < 7 or not parts[1].isdigit():
+            continue
+        user_m = re.search(r"`([^`]+)`", parts[2])
+        pwd_m = re.search(r"`([^`]+)`", parts[5])
+        if user_m and pwd_m:
+            out[user_m.group(1)] = pwd_m.group(1)
     return out
 
 

@@ -62,6 +62,10 @@ ROLES-Y-COLAS.md
 NOTES.md
 *.private.md
 deploy/vps/credenciales-evento.private.md
+local-db/export-user_account-*.sql
+local-db/export-user_account-*.csv
+local-db/user_account-export.sql
+local-db/user_account-export.csv
 
 # ─── Scripts / docs de un solo uso (opcional, no versionar) ───
 scripts/reorganize-www-js.cjs

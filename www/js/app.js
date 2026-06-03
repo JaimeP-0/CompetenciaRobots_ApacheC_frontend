@@ -295,8 +295,13 @@
         if (!btn || !outlet || !outlet.contains(btn)) {
             return;
         }
-        if (btn.id === 'btn-staff-skip-login' && staffLoggedIn()) {
-            return;
+        if (btn.id === 'btn-staff-skip-login') {
+            e.preventDefault();
+            e.stopPropagation();
+            if (staffLoggedIn() && w.CRStaffAuth && typeof w.CRStaffAuth.redirectAfterLogin === 'function') {
+                w.CRStaffAuth.redirectAfterLogin();
+                return;
+            }
         }
         var targetRoute = btn.getAttribute('data-route');
         if (!targetRoute) {

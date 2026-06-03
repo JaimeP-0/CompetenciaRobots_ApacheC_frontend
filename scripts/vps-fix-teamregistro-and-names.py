@@ -72,10 +72,9 @@ def main() -> None:
         sys.exit("CR_SSH_PASSWORD requerida")
 
     files = [
-        ROOT / "deploy" / "vps" / "add-teamregistro-user.sql",
+        ROOT / "deploy" / "vps" / "fix-teamregistro-only.sql",
         ROOT / "deploy" / "vps" / "restore-event-passwords.sql",
         ROOT / "deploy" / "vps" / "update-user-names.sql",
-        ROOT / "deploy" / "vps" / "diag-users.sql",
     ]
     for f in files:
         if not f.is_file():

@@ -37,13 +37,42 @@
             var s = m.trim();
             return s ? { name: s, email: null, is_leader: false } : null;
         }
-        var name = m.name != null ? m.name : m.nombre;
+        var name =
+            m.name != null
+                ? m.name
+                : m.nombre != null
+                  ? m.nombre
+                  : m.full_name != null
+                    ? m.full_name
+                    : m.member_name;
         return {
             id: m.id != null ? m.id : undefined,
             name: name != null ? String(name).trim() : '',
-            email: m.email != null ? m.email : null,
-            is_leader: !!(m.is_leader || m.isLeader || m.lider || m.leader)
+            email: m.email != null ? m.email : m.correo,
+            is_leader: !!(m.is_leader || m.isLeader || m.lider || m.leader || m.is_captain)
         };
+    }
+
+    function hasUsableMembers(members) {
+        if (!Array.isArray(members) || !members.length) {
+            return false;
+        }
+        return members.some(function (m) {
+            var n = normalizeMember(m);
+            return n && n.name;
+        });
+    }
+
+    function formatMemberLine(m) {
+        var n = normalizeMember(m);
+        if (!n || !n.name) {
+            return '';
+        }
+        var line = n.is_leader ? n.name + ' (capitán)' : n.name;
+        if (n.email) {
+            line += ' · ' + n.email;
+        }
+        return line;
     }
 
     function normalizeMembers(arr) {
@@ -582,9 +611,7 @@
             return null;
         }
         var ints = (t.members || [])
-            .map(function (m) {
-                return m.name;
-            })
+            .map(formatMemberLine)
             .filter(Boolean);
         return {
             team_id: t.id,
@@ -642,6 +669,8 @@
         filterByQuery: filterTeamsByQuery,
         findByName: findRegistroTeamByName,
         toDetallePanel: teamToRegistroDetalle,
+        formatMemberLine: formatMemberLine,
+        normalizeMember: normalizeMember,
         sugerencias: function (q, categoryId) {
             if (categoryId == null || categoryId === '') {
                 return Promise.resolve([]);

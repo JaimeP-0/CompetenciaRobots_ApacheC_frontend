@@ -1,29 +1,12 @@
 # -*- coding: utf-8 -*-
 """Verifica que los hashes del repo coinciden con credenciales-evento.private.md."""
-import re
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CRED = ROOT / "deploy" / "vps" / "credenciales-evento.private.md"
-
-def parse_credentials():
-    text = CRED.read_text(encoding="utf-8")
-    users = {}
-    for line in text.splitlines():
-        m = re.match(r"\|\s*`([^`]+)`\s*\|[^|]+\|\s*`([^`]+)`\s*\|", line)
-        if m:
-            users[m.group(1)] = m.group(2)
-    return users
-
-
-def parse_hashes_from_seed():
-    text = (ROOT / "deploy" / "vps" / "seed-users.sql").read_text(encoding="utf-8")
-    hashes = {}
-    for m in re.finditer(r"\('([^']+)',\s*'[^']*',\s*'[^']*',\s*'(\$2b\$[^']+)'\)", text):
-        hashes[m.group(1)] = m.group(2)
-    return hashes
+sys.path.insert(0, str(ROOT / "scripts"))
+from credenciales_parse import parse_credentials, parse_hashes_from_seed
 
 
 def check_bcrypt(password: str, hash_: str) -> bool:

@@ -2,24 +2,14 @@
 """Prueba POST /login para todos los usuarios del evento."""
 import json
 import os
-import re
 import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CRED = ROOT / "deploy" / "vps" / "credenciales-evento.private.md"
-
-
-def parse_credentials():
-    text = CRED.read_text(encoding="utf-8")
-    users = {}
-    for line in text.splitlines():
-        m = re.match(r"\|\s*`([^`]+)`\s*\|[^|]+\|\s*`([^`]+)`\s*\|", line)
-        if m:
-            users[m.group(1)] = m.group(2)
-    return users
+sys.path.insert(0, str(ROOT / "scripts"))
+from credenciales_parse import parse_credentials
 
 
 def try_login(base: str, username: str, password: str):

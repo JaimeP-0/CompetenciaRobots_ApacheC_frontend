@@ -42,6 +42,7 @@
     "vps:fix-staff": "python scripts/vps-fix-teamregistro-and-names.py",
     "vps:fix-teamregistro": "python scripts/vps-fix-teamregistro-only.py",
     "vps:check-passwords": "python scripts/vps-check-passwords.py",
+    "vps:export-users": "python scripts/vps-export-users.py",
     "vps:nginx-https": "python scripts/vps-nginx-https.py",
     "android:install-logcat": "node scripts/android-install-logcat.cjs"
   },

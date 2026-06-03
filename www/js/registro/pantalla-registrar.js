@@ -31,6 +31,7 @@
         var btnVer = section.querySelector('#btn-reg-verificar');
         var btnSig = section.querySelector('#btn-reg-checklist-siguiente');
         var btnReg = section.querySelector('#btn-reg-registrar');
+        var btnPdf = section.querySelector('#btn-reg-pdf-checklist');
         var scrollHost = section.querySelector('#reg-checklist-scroll');
         var modalPost = section.querySelector('#reg-modal-postregistro');
         var modalPostTitulo = section.querySelector('#reg-modal-postregistro-titulo');
@@ -138,6 +139,56 @@
                 }
             });
             return ids;
+        }
+
+        function scrollChecklistTop() {
+            if (scrollHost) {
+                scrollHost.scrollTop = 0;
+            }
+        }
+
+        function buildChecklistPdfRows() {
+            var rows = [];
+            var typeLabel = function (t) {
+                return String(t || '').toLowerCase() === 'characteristic' ? 'Característica' : 'Restricción';
+            };
+            function addFromHost(host, rules) {
+                (rules || []).forEach(function (rule) {
+                    var rid = rule.id != null ? String(rule.id) : '';
+                    var chk = host
+                        ? host.querySelector('input[data-rule-id="' + rid + '"]')
+                        : null;
+                    rows.push({
+                        description: rule.description || '',
+                        typeLabel: typeLabel(rule.type),
+                        checked: !!(chk && chk.checked)
+                    });
+                });
+            }
+            addFromHost(host1, Chk.rulesByType(cachedReglasCategoria, 'characteristic'));
+            addFromHost(host2, Chk.rulesByType(cachedReglasCategoria, 'restriction'));
+            return rows;
+        }
+
+        function onPdfChecklistClick() {
+            if (!w.CRPdfEvento || typeof w.CRPdfEvento.checklistVerificacion !== 'function') {
+                showAvisoModal('PDF', 'No se cargó el módulo de PDF.');
+                return;
+            }
+            var teamName = String(input.value || '').trim() || 'Equipo';
+            var catId = resolveChecklistCategoryId();
+            var catName = '';
+            if (catId != null && w.CRApiCategorias && w.CRApiCategorias.labelById) {
+                catName = w.CRApiCategorias.labelById(catId) || '';
+            }
+            w.CRPdfEvento.checklistVerificacion({
+                teamName: teamName,
+                categoryName: catName,
+                rows: buildChecklistPdfRows(),
+                filename: 'verificacion-' + teamName.replace(/\s+/g, '-').toLowerCase() + '.pdf'
+            }).catch(function (err) {
+                showAvisoModal('PDF', (err && err.message) || 'No se pudo generar el PDF.');
+            });
         }
 
         function verificacionCompleta(body) {
@@ -794,11 +845,13 @@
                     var redirectCat = catId;
 
                     if (!valido) {
-                        titulo = 'No validado';
-                        mensaje = nombreEq + ' no quedó validado: faltan reglas por cumplir.';
+                        titulo = 'Registro guardado';
+                        mensaje =
+                            nombreEq +
+                            ': revisión registrada. El robot no quedó validado (faltan reglas por cumplir).';
                     } else if (needTwo && regRobotSlot < 2) {
-                        titulo = 'Robot 1 listo';
-                        mensaje = nombreEq + ': robot 1 registrado. Completa el checklist del robot 2.';
+                        titulo = 'Robot 1 validado';
+                        mensaje = nombreEq + ': robot 1 validado. Marca el checklist del robot 2.';
                         redirectCat = null;
                         modalPostContinueFutbol = true;
                         regRobotSlot = 2;
@@ -879,6 +932,7 @@
                     btnReg.disabled = false;
                 }
                 bindTabla1Checks();
+                scrollChecklistTop();
                 return;
             }
 
@@ -893,6 +947,7 @@
             filaReg.classList.remove('hidden');
             btnReg.disabled = false;
             bindTabla2Checks();
+            scrollChecklistTop();
         }
 
         function onVerificarClick() {
@@ -931,6 +986,7 @@
             hideSpecModalT1();
             if (!cachedRestrictionRules.length) {
                 showRegistrarTrasChecklist();
+                scrollChecklistTop();
                 return;
             }
             host1.classList.add('hidden');
@@ -945,6 +1001,7 @@
             filaReg.classList.remove('hidden');
             btnReg.disabled = false;
             bindTabla2Checks();
+            scrollChecklistTop();
         }
 
         syncDetallePanel();
@@ -961,6 +1018,9 @@
         btnVer.addEventListener('click', onVerificarClick, false);
         btnSig.addEventListener('click', onSiguienteClick, false);
         btnReg.addEventListener('click', onRegistrarClick, false);
+        if (btnPdf) {
+            btnPdf.addEventListener('click', onPdfChecklistClick, false);
+        }
 
         return {
             cleanup: function () {
@@ -980,6 +1040,9 @@
                 btnVer.removeEventListener('click', onVerificarClick, false);
                 btnSig.removeEventListener('click', onSiguienteClick, false);
                 btnReg.removeEventListener('click', onRegistrarClick, false);
+                if (btnPdf) {
+                    btnPdf.removeEventListener('click', onPdfChecklistClick, false);
+                }
                 resetChecklistUi();
             },
             onDetalleChange: onDetalleChange,

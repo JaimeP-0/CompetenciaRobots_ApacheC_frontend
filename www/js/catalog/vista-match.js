@@ -514,17 +514,60 @@
             );
         }
 
+        function renderMatchPdfBtn(match) {
+            return (
+                '<button type="button" class="cr-app-btn cr-app-btn--secondary cr-app-btn--sm cr-match-pdf-one mt-2" data-match-id="' +
+                CRDom.escapeHtml(String(match.id)) +
+                '">PDF esta partida</button>'
+            );
+        }
+
+        function exportOneMatchPdf(matchId) {
+            if (!w.CRPdfEvento || !lastPartidasLoadCtx) {
+                return;
+            }
+            var ctx = lastPartidasLoadCtx;
+            var p = (ctx.allPartidas || []).filter(function (x) {
+                return String(x.id) === String(matchId);
+            })[0];
+            if (!p) {
+                return;
+            }
+            var res = ctx.resByMatch && ctx.resByMatch[String(p.id)];
+            var winner = null;
+            if (res && w.CRApiPartidas && typeof w.CRApiPartidas.winnerIdFromResultado === 'function') {
+                winner = w.CRApiPartidas.winnerIdFromResultado(res);
+            }
+            var tb = (ctx.teamsById || {});
+            w.CRPdfEvento.partidasTabla({
+                title: 'Partida #' + p.id,
+                subtitle: categoryLabel(p.category_id),
+                rows: [
+                    {
+                        label: 'Encuentro',
+                        lines: [
+                            'A: ' + teamName(tb, p.team_a_id),
+                            'B: ' + teamName(tb, p.team_b_id)
+                        ],
+                        winnerManual: winner != null ? teamName(tb, winner) : ''
+                    }
+                ],
+                filename: 'partida-' + p.id + '.pdf'
+            }).catch(function () {});
+        }
+
         function renderResultSection(match, resultado, teamsById) {
             var kind = resultKindForCategory(match.category_id);
+            var pdfBtn = renderMatchPdfBtn(match);
             if (isResultComplete(kind, resultado)) {
-                return renderResultSaved(kind, match, resultado, teamsById);
+                return renderResultSaved(kind, match, resultado, teamsById) + pdfBtn;
             }
             if (judgeSpectator) {
                 return (
-                    '<p class="cr-match-spectator-pending">Pendiente de registro por el árbitro.</p>'
+                    '<p class="cr-match-spectator-pending">Pendiente de registro por el árbitro.</p>' + pdfBtn
                 );
             }
-            return renderResultForm(kind, match, teamsById);
+            return renderResultForm(kind, match, teamsById) + pdfBtn;
         }
 
         function readTimeFromForm(form) {
@@ -930,6 +973,9 @@
         function renderPartidasList(filtered, resByMatch, teamsById) {
             updateListSectionTitle(false);
             teamsById = mergeTeamsFromPartidas(filtered, teamsById || {});
+            if (lastPartidasLoadCtx) {
+                lastPartidasLoadCtx.teamsById = teamsById;
+            }
             var html = filtered
                 .map(function (m) {
                     var res = resByMatch[String(m.id)] || null;
@@ -1382,6 +1428,65 @@
             focusVelocistaEnPista();
         }
 
+        function teamLabelPdf(tid, teamsById) {
+            if (tid == null) {
+                return '—';
+            }
+            var t = teamsById && teamsById[String(tid)];
+            return t && t.name ? String(t.name) : 'Equipo #' + tid;
+        }
+
+        function onMatchPdfListaClick() {
+            if (!w.CRPdfEvento || typeof w.CRPdfEvento.partidasTabla !== 'function') {
+                if (statusEl) {
+                    statusEl.textContent = 'No se cargó el módulo PDF.';
+                }
+                return;
+            }
+            var ctx = lastPartidasLoadCtx;
+            if (!ctx || !ctx.allPartidas || !ctx.allPartidas.length) {
+                if (statusEl) {
+                    statusEl.textContent = 'Carga la categoría con partidas antes de exportar PDF.';
+                }
+                return;
+            }
+            var catFilter = ctx.catFilter;
+            var list = ctx.allPartidas.filter(function (p) {
+                return !catFilter || String(p.category_id) === String(catFilter);
+            });
+            var teamsById = {};
+            var pdfRows = list.map(function (p, idx) {
+                var res = ctx.resByMatch && ctx.resByMatch[String(p.id)];
+                var winner = null;
+                if (res && w.CRApiPartidas && typeof w.CRApiPartidas.winnerIdFromResultado === 'function') {
+                    winner = w.CRApiPartidas.winnerIdFromResultado(res);
+                } else if (res && res.winner_team_id != null) {
+                    winner = res.winner_team_id;
+                } else if (res && res.winner != null) {
+                    winner = res.winner;
+                }
+                return {
+                    label: 'Partida #' + p.id + (p.status ? ' (' + p.status + ')' : ''),
+                    lines: [
+                        'A: ' + teamLabelPdf(p.team_a_id, teamsById),
+                        'B: ' + teamLabelPdf(p.team_b_id, teamsById)
+                    ],
+                    winnerManual: winner != null ? teamLabelPdf(winner, teamsById) : ''
+                };
+            });
+            var catName = catFilter && selCat ? selCat.options[selCat.selectedIndex].text : 'Todas';
+            w.CRPdfEvento.partidasTabla({
+                title: 'Encuentros — ' + catName,
+                subtitle: 'Registro manual de ganadores en mesa',
+                rows: pdfRows,
+                filename: 'encuentros.pdf'
+            }).catch(function (err) {
+                if (statusEl) {
+                    statusEl.textContent = (err && err.message) || 'Error al generar PDF.';
+                }
+            });
+        }
+
         function onQueueScopeChange() {
             if (lockedScope) {
                 return;
@@ -1422,7 +1527,23 @@
         if (btnVelocistaSiguiente) {
             btnVelocistaSiguiente.addEventListener('click', onVelocistaSiguienteClick, false);
         }
+        var btnPdfLista = root.querySelector('#cr-match-pdf-lista');
+        if (btnPdfLista) {
+            btnPdfLista.addEventListener('click', onMatchPdfListaClick, false);
+        }
         listEl.addEventListener('submit', onListSubmit, false);
+        listEl.addEventListener(
+            'click',
+            function (e) {
+                var pdfBtn = e.target.closest('.cr-match-pdf-one');
+                if (!pdfBtn) {
+                    return;
+                }
+                e.preventDefault();
+                exportOneMatchPdf(pdfBtn.getAttribute('data-match-id'));
+            },
+            false
+        );
 
         if (w.CRApi.fetchCategorias) {
             w.CRApi.fetchCategorias()

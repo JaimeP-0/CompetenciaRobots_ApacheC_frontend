@@ -1172,6 +1172,13 @@
         @apply mx-auto w-full max-w-md cursor-pointer rounded-xl border border-dashed border-white/20 bg-transparent px-4 py-2.5 text-xs font-medium text-snow/55 transition hover:border-[#C6D93D]/40 hover:text-snow/80 sm:text-sm;
         font: inherit;
     }
+
+    .cr-ranking-finals {
+        @apply mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+    }
+    .cr-ranking-champion-name {
+        @apply m-0 text-lg font-bold text-navy sm:text-xl;
+    }
     .cr-visitante-qr-overlay {
         @apply pointer-events-none absolute inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/45 p-3;
     }
@@ -2507,7 +2514,7 @@ html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-
     -webkit-overflow-scrolling: touch;
     scroll-padding-bottom: env(safe-area-inset-bottom, 0px);
     flex: 1 1 auto;
-    min-height: 12rem;
+    min-height: 16rem;
     max-height: calc(100dvh - 11rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
 }
 #reg-checklist-scroll .cr-catalog-card-block-h {
