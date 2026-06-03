@@ -2208,6 +2208,15 @@
         @apply grid min-w-0 grid-cols-1 gap-2 rounded-xl border border-graphite/15 bg-mist/20 p-3;
         @apply sm:grid-cols-[auto_10.5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-3;
     }
+    .cr-admin-regla-item--readonly {
+        @apply sm:grid-cols-[auto_10.5rem_minmax(0,1fr)];
+    }
+    .cr-admin-regla-type-badge {
+        @apply inline-flex shrink-0 items-center rounded-md bg-graphite/10 px-2 py-1 text-xs font-semibold text-graphite;
+    }
+    .cr-admin-regla-text-readonly {
+        @apply min-w-0 text-sm text-graphite;
+    }
     .cr-admin-rule-num {
         @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-navy text-xs font-bold text-snow sm:h-9 sm:w-9;
     }

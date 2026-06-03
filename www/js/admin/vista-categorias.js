@@ -1,5 +1,5 @@
 /**
- * Admin: CRUD categorías y reglas (#/admin/categorias).
+ * Admin: categorías y reglas (#/admin/categorias) — crear y consultar; sin editar ni eliminar.
  */
 (function (w) {
     'use strict';
@@ -75,33 +75,26 @@
                     '<p class="cr-admin-cats-empty-rules">Aún no hay reglas. Agrega la primera abajo.</p>'
                 );
             }
+            function reglaTypeLabel(type) {
+                return String(type || '').toLowerCase() === 'characteristic'
+                    ? 'Característica'
+                    : 'Restricción';
+            }
             return (
                 '<ol class="cr-admin-rule-list">' +
                 rules
                     .map(function (r, idx) {
                         return (
-                            '<li class="cr-admin-rule-row cr-admin-regla-item" data-cat-id="' +
-                            esc(cat.id) +
-                            '" data-regla-id="' +
-                            esc(r.id) +
-                            '">' +
+                            '<li class="cr-admin-rule-row cr-admin-regla-item cr-admin-regla-item--readonly">' +
                             '<span class="cr-admin-rule-num" aria-hidden="true">' +
                             (idx + 1) +
                             '</span>' +
-                            renderReglaTypeSelect(r.type, 'cr-admin-regla-type-row') +
-                            '<input type="text" class="cr-admin-input cr-admin-regla-text" value="' +
+                            '<span class="cr-admin-regla-type-badge">' +
+                            esc(reglaTypeLabel(r.type)) +
+                            '</span>' +
+                            '<span class="cr-admin-regla-text-readonly">' +
                             esc(r.description) +
-                            '" aria-label="Regla ' +
-                            (idx + 1) +
-                            '" />' +
-                            '<div class="cr-admin-rule-actions">' +
-                            '<button type="button" class="cr-admin-icon-btn cr-admin-btn-save-regla" title="Guardar regla">' +
-                            '<span data-cr-icon="check" data-cr-icon-class="cr-icon--btn-only"></span>' +
-                            '<span class="sr-only">Guardar</span></button>' +
-                            '<button type="button" class="cr-admin-icon-btn cr-admin-icon-btn--danger cr-admin-btn-del-regla" title="Eliminar regla">' +
-                            '<span data-cr-icon="trash" data-cr-icon-class="cr-icon--btn-only"></span>' +
-                            '<span class="sr-only">Eliminar</span></button>' +
-                            '</div></li>'
+                            '</span></li>'
                         );
                     })
                     .join('') +
@@ -130,25 +123,6 @@
                 '<span class="cr-admin-cat-summary-chevron" aria-hidden="true">▼</span>' +
                 '</summary>' +
                 '<div class="cr-admin-cat-card-inner">' +
-                '<header class="cr-admin-cat-card-top">' +
-                '<div class="cr-admin-cat-card-name-wrap cr-admin-cat-card-name-wrap--full">' +
-                '<label class="cr-admin-label" for="cat-name-' +
-                esc(cat.id) +
-                '">Nombre</label>' +
-                '<input id="cat-name-' +
-                esc(cat.id) +
-                '" type="text" class="cr-admin-input cr-admin-cat-name" value="' +
-                esc(cat.name) +
-                '" />' +
-                '</div>' +
-                '<div class="cr-admin-cat-card-toolbar">' +
-                '<button type="button" class="cr-admin-icon-btn cr-admin-btn-save-cat" title="Guardar categoría">' +
-                '<span data-cr-icon="check" data-cr-icon-class="cr-icon--btn-only"></span>' +
-                '<span class="cr-admin-icon-btn-label">Guardar</span></button>' +
-                '<button type="button" class="cr-admin-icon-btn cr-admin-icon-btn--danger cr-admin-btn-del-cat" title="Eliminar categoría">' +
-                '<span data-cr-icon="trash" data-cr-icon-class="cr-icon--btn-only"></span>' +
-                '<span class="cr-admin-icon-btn-label cr-admin-icon-btn-label--hide-sm">Eliminar</span></button>' +
-                '</div></header>' +
                 '<section class="cr-admin-cat-rules-panel" aria-labelledby="cat-rules-title-' +
                 esc(cat.id) +
                 '">' +
@@ -210,76 +184,6 @@
                 });
         }
 
-        function onListClick(e) {
-            var saveCat = e.target.closest('.cr-admin-btn-save-cat');
-            var delCat = e.target.closest('.cr-admin-btn-del-cat');
-            var saveRegla = e.target.closest('.cr-admin-btn-save-regla');
-            var delRegla = e.target.closest('.cr-admin-btn-del-regla');
-            var card = e.target.closest('.cr-admin-cat-card');
-
-            if (saveCat && card) {
-                var nameIn = card.querySelector('.cr-admin-cat-name');
-                Almacen.updateCategoria(card.getAttribute('data-cat-id'), nameIn.value)
-                    .then(function () {
-                        showMsg('Categoría actualizada.');
-                        render();
-                    })
-                    .catch(function (err) {
-                        showMsg(err.message, true);
-                    });
-                return;
-            }
-            if (delCat && card) {
-                if (!w.confirm('¿Eliminar esta categoría y sus reglas? Los equipos quedarán sin esa categoría.')) {
-                    return;
-                }
-                Almacen.deleteCategoria(card.getAttribute('data-cat-id'))
-                    .then(function () {
-                        showMsg('Categoría eliminada.');
-                        render();
-                    })
-                    .catch(function (err) {
-                        showMsg(err.message, true);
-                    });
-                return;
-            }
-            if (saveRegla) {
-                var li = saveRegla.closest('.cr-admin-regla-item');
-                if (!li) {
-                    return;
-                }
-                var txt = li.querySelector('.cr-admin-regla-text');
-                var typeSel = li.querySelector('.cr-admin-regla-type-row');
-                Almacen.updateRegla(
-                    li.getAttribute('data-cat-id'),
-                    li.getAttribute('data-regla-id'),
-                    txt.value,
-                    typeSel ? typeSel.value : 'restriction'
-                )
-                    .then(function () {
-                        showMsg('Regla guardada.');
-                    })
-                    .catch(function (err) {
-                        showMsg(err.message, true);
-                    });
-                return;
-            }
-            if (delRegla) {
-                var liDel = delRegla.closest('.cr-admin-regla-item');
-                if (!liDel || !w.confirm('¿Eliminar esta regla?')) {
-                    return;
-                }
-                Almacen.deleteRegla(liDel.getAttribute('data-cat-id'), liDel.getAttribute('data-regla-id'))
-                    .then(function () {
-                        showMsg('Regla eliminada.');
-                        render();
-                    })
-                    .catch(function (err) {
-                        showMsg(err.message, true);
-                    });
-            }
-        }
-
         function onListSubmit(e) {
             var reglaForm = e.target.closest('.cr-admin-add-regla');
             if (!reglaForm) {
@@ -315,7 +219,6 @@
                 });
         }
 
-        listHost.addEventListener('click', onListClick, false);
         listHost.addEventListener('submit', onListSubmit, false);
         if (form) {
             form.addEventListener('submit', onNuevaCat, false);
@@ -324,7 +227,6 @@
         Almacen.ensureSeeded().then(render);
 
         return function cleanup() {
-            listHost.removeEventListener('click', onListClick, false);
             listHost.removeEventListener('submit', onListSubmit, false);
             if (form) {
                 form.removeEventListener('submit', onNuevaCat, false);
