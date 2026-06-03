@@ -20,7 +20,6 @@
             return;
         }
         var cfg = w.CR_CONFIG || w.CR_APP || {};
-        var volver = outlet.querySelector('#cr-equipos-volver');
         var rawItems = [];
         var mq = w.matchMedia('(min-width: 640px)');
 
@@ -84,9 +83,6 @@
             if (subt) {
                 subt.textContent = 'Elige una categoría para ver sus equipos.';
             }
-            if (volver) {
-                volver.setAttribute('data-back-fallback', '/categorias');
-            }
             listHost.innerHTML =
                 '<p class="cr-catalog-msg">Selecciona una categoría arriba.</p>';
         }
@@ -95,12 +91,6 @@
             if (!catId) {
                 showPickCategory();
                 return;
-            }
-            if (volver) {
-                volver.setAttribute(
-                    'data-back-fallback',
-                    '/categoria/' + encodeURIComponent(String(catId))
-                );
             }
             if (titulo) {
                 titulo.textContent = 'Equipos de la categoría';

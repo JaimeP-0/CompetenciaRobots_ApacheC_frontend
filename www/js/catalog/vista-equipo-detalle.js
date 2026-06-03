@@ -37,17 +37,6 @@
                 if (pageTitle) {
                     pageTitle.textContent = t.name || 'Equipo';
                 }
-                var backBtn = outlet.querySelector('#cr-equipo-volver');
-                if (backBtn) {
-                    if (t.category_id != null && String(t.category_id).trim() !== '') {
-                        backBtn.setAttribute(
-                            'data-back-fallback',
-                            '/categoria/' + t.category_id + '/equipos'
-                        );
-                    } else {
-                        backBtn.setAttribute('data-back-fallback', '/equipos');
-                    }
-                }
                 var capName = String(t.captain_name || '').trim();
                 if (!capName) {
                     var lead = members.filter(function (m) {

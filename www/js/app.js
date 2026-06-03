@@ -291,21 +291,8 @@
     }
 
     function onOutletClick(e) {
-        var btn = e.target.closest('[data-back], [data-route]');
+        var btn = e.target.closest('[data-route]');
         if (!btn || !outlet || !outlet.contains(btn)) {
-            return;
-        }
-        if (btn.hasAttribute('data-back')) {
-            e.preventDefault();
-            var fallback = btn.getAttribute('data-back-fallback') || '/login';
-            if (w.CRNavHistory && typeof w.CRNavHistory.resolveFallback === 'function') {
-                fallback = w.CRNavHistory.resolveFallback(fallback);
-            }
-            if (w.CRNavHistory && typeof w.CRNavHistory.back === 'function') {
-                w.CRNavHistory.back(fallback);
-            } else {
-                w.location.hash = fallback.charAt(0) === '/' ? fallback : '/' + fallback;
-            }
             return;
         }
         var targetRoute = btn.getAttribute('data-route');
