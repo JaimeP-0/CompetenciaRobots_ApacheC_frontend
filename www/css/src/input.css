@@ -2476,14 +2476,64 @@ html.cr-registro-fit #cr-outlet {
     overscroll-behavior-y: contain;
 }
 
-/* Checklist: fila clicable; columna Cumple; bordes por fila (evita cortes con texto largo) */
+/* Checklist visible: una sola zona de scroll alta (no 3 filas + scroll incómodo) */
+html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #cr-outlet {
+    overflow: hidden;
+}
+html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+}
+html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #f-registro-equipo {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-page-head {
+    padding-bottom: 0.25rem;
+}
+html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-page-lead {
+    display: none;
+}
+html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-page-title {
+    font-size: 1.125rem;
+    line-height: 1.25;
+}
+#reg-checklist-shell:not(.hidden) {
+    flex: 1 1 auto;
+    min-height: calc(100dvh - 7.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
 #reg-checklist-scroll {
     -webkit-overflow-scrolling: touch;
     scroll-padding-bottom: env(safe-area-inset-bottom, 0px);
+    flex: 1 1 auto;
+    min-height: 12rem;
+    max-height: calc(100dvh - 11rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+}
+#reg-checklist-scroll .cr-catalog-card-block-h {
+    padding: 0.5rem 0.75rem;
+}
+#reg-checklist-scroll .cr-catalog-card-block-h-title,
+#reg-checklist-scroll .cr-catalog-card-block-h-title--dynamic {
+    font-size: 0.9375rem;
+    line-height: 1.25;
+}
+#reg-checklist-scroll .cr-catalog-kicker {
+    margin-bottom: 0.125rem;
+    font-size: 0.625rem;
+}
+#reg-checklist-scroll .cr-reg-checklist-table {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+}
+#reg-checklist-scroll .cr-reg-checklist-table th {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.6875rem;
 }
 #reg-checklist-scroll .cr-catalog-table tbody td {
     border-bottom-width: 0;
     vertical-align: top;
+    padding: 0.35rem 0.5rem;
 }
 #reg-checklist-scroll .cr-catalog-table tbody tr {
     border-bottom: 1px solid rgb(55 65 81 / 0.1);
@@ -2496,9 +2546,9 @@ html.cr-registro-fit #cr-outlet {
     -webkit-tap-highlight-color: transparent;
 }
 #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) {
-    min-width: 3.25rem;
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
+    min-width: 2.75rem;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
     text-align: center;
     vertical-align: top;
     white-space: nowrap;
@@ -2511,12 +2561,23 @@ html.cr-registro-fit #cr-outlet {
 }
 @media (min-width: 640px) {
     #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) {
-        min-width: 4.5rem;
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
+        min-width: 3.25rem;
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+    }
+    #reg-checklist-scroll .cr-reg-checklist-table {
+        font-size: 0.875rem;
     }
     #reg-checklist-scroll tbody td:has(> input.cr-reg-check-input) input + label {
-        font-size: 0.875rem;
+        font-size: 0.75rem;
+    }
+}
+@media (min-width: 1024px) {
+    #reg-checklist-shell:not(.hidden) {
+        min-height: calc(100dvh - 8rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    }
+    #reg-checklist-scroll {
+        max-height: calc(100dvh - 10rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     }
 }
 

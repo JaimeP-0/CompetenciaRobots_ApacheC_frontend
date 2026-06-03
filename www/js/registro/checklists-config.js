@@ -99,7 +99,7 @@
             '</h3></div>' +
             '<div class="cr-catalog-card-block-body cr-catalog-card-block-body--equipo !px-0 !pb-0 !pt-0 sm:!px-0">' +
             '<div class="cr-catalog-table-wrap rounded-none border-0 shadow-none">' +
-            '<table class="cr-catalog-table min-w-[min(100%,18rem)] text-xs leading-normal sm:min-w-0 sm:text-sm md:text-[0.9375rem] lg:text-base">' +
+            '<table class="cr-catalog-table cr-reg-checklist-table min-w-[min(100%,18rem)] leading-snug sm:min-w-0">' +
             '<thead><tr><th class="min-w-0">' +
             esc(colLabel) +
             '</th>' +
