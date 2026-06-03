@@ -39,15 +39,21 @@
 
     /**
      * @param {Array} rules — reglas con id, description, type
-     * @param {object} opts — kicker, title, columnLabel, tableKind ('characteristic'|'restriction')
+     * @param {object} opts — kicker, title, columnLabel, tableKind, robotSlot (1|2, solo Fútbol)
      */
     function renderChecklistTable(rules, opts) {
         opts = opts || {};
         var list = rules || [];
         var tableKind = opts.tableKind === 'restriction' ? 'restriction' : 'characteristic';
-        var prefix = tableKind === 'restriction' ? 'r2' : 'r1';
+        var prefix =
+            tableKind === 'restriction'
+                ? 'r2' + (opts.robotSlot != null ? '-rb' + String(opts.robotSlot) : '')
+                : 'r1' + (opts.robotSlot != null ? '-rb' + String(opts.robotSlot) : '');
         var kicker = opts.kicker != null ? String(opts.kicker) : 'Checklist';
         var title = opts.title != null ? String(opts.title) : tableKind === 'restriction' ? 'Restricciones' : 'Características';
+        if (opts.robotSlot != null) {
+            title = 'Robot ' + String(opts.robotSlot) + ' · ' + title;
+        }
         var colLabel = opts.columnLabel != null ? String(opts.columnLabel) : title;
 
         var bodyRows = '';

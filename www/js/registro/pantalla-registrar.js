@@ -7,6 +7,7 @@
     var U = w.CRUtil;
     var Equipos = w.CRRegistroEquipos;
     var Chk = w.CRRegistroChecklists;
+    var Cats = w.CRCategoriasCompetencia;
     if (!U || !Equipos || !Chk) {
         throw new Error("Carga registro/* y core/views antes");
     }
@@ -83,6 +84,74 @@
                 catId = getRegFiltroCategoriaId(section);
             }
             return catId;
+        }
+
+        function resolveCategoryName() {
+            var cell = section.querySelector('#reg-dato-categoria');
+            if (cell) {
+                var t = String(cell.textContent || '').trim();
+                if (t && t !== '—') {
+                    return t;
+                }
+            }
+            var sel = section.querySelector('#reg-filtro-categoria');
+            if (sel && sel.selectedIndex >= 0) {
+                return String(sel.options[sel.selectedIndex].text || '').trim();
+            }
+            return '';
+        }
+
+        function isFutbolRegistro() {
+            return Cats && typeof Cats.isFutbolCategoryName === 'function'
+                ? Cats.isFutbolCategoryName(resolveCategoryName())
+                : false;
+        }
+
+        function robotsRequiredForRegistro() {
+            if (isFutbolRegistro() && Cats && typeof Cats.robotsRequiredPerTeam === 'function') {
+                return Cats.robotsRequiredPerTeam(resolveCategoryName());
+            }
+            return 1;
+        }
+
+        function checklistRenderOpts(tableKind, title, columnLabel) {
+            var catLabel = Chk.categoryLabelFromSection(section);
+            var opts = {
+                kicker: 'Checklist · ' + catLabel,
+                title: title,
+                columnLabel: columnLabel,
+                tableKind: tableKind
+            };
+            if (isFutbolRegistro()) {
+                opts.robotSlot = regRobotSlot;
+                opts.kicker = 'Checklist · ' + catLabel + ' · Robot ' + regRobotSlot;
+            }
+            return opts;
+        }
+
+        function allRuleIdsFromCache() {
+            var ids = [];
+            (cachedReglasCategoria || []).forEach(function (r) {
+                var n = Number(r && r.id, 10);
+                if (!isNaN(n) && n > 0 && ids.indexOf(n) === -1) {
+                    ids.push(n);
+                }
+            });
+            return ids;
+        }
+
+        function verificacionCompleta(body) {
+            var required = allRuleIdsFromCache();
+            if (!required.length || !body || !Array.isArray(body.valid_rules)) {
+                return false;
+            }
+            if (body.valid_rules.length < required.length) {
+                return false;
+            }
+            var missing = required.filter(function (id) {
+                return body.valid_rules.indexOf(id) === -1;
+            });
+            return missing.length === 0;
         }
 
         /* --- Modales (aviso, confirmar, descalificación, especificación tabla 1) --- */
@@ -201,6 +270,21 @@
 
         function onModalPostAceptar() {
             hidePostRegistroModal();
+            if (modalPostContinueFutbol) {
+                modalPostContinueFutbol = false;
+                var rules = cachedReglasCategoria || [];
+                if (rules.length) {
+                    showChecklistForRules(rules);
+                } else {
+                    loadCategoryRulesForChecklist().then(showChecklistForRules).catch(function (err) {
+                        showAvisoModal(
+                            'Error al cargar',
+                            (err && err.message) || 'No se pudieron cargar las reglas.'
+                        );
+                    });
+                }
+                return;
+            }
             if (modalPostRedirectEquiposCat != null) {
                 w.location.hash =
                     '#/categoria/' + encodeURIComponent(String(modalPostRedirectEquiposCat)) + '/equipos';
@@ -379,6 +463,8 @@
         function resetChecklistUi() {
             cachedReglasCategoria = null;
             cachedRestrictionRules = [];
+            regRobotSlot = 1;
+            modalPostContinueFutbol = false;
             hidePostRegistroModal();
             hideConfirmModal();
             hideDescalificarModal();
@@ -554,13 +640,32 @@
             if (!pass) {
                 return Promise.resolve([]);
             }
-            var fromChecks = collectCheckedRuleIdsFromHosts();
-            if (!fromChecks.length) {
-                return Promise.reject(
-                    new Error('Marca al menos una regla que el robot sí cumple, o usa «Descalificar» si no pasa.')
-                );
-            }
-            return Promise.resolve(fromChecks);
+            return loadCategoryRulesForChecklist().then(function () {
+                var required = allRuleIdsFromCache();
+                var fromChecks = collectCheckedRuleIdsFromHosts();
+                if (!fromChecks.length) {
+                    return Promise.reject(
+                        new Error('Marca las reglas que el robot cumple, o usa «Eliminar» si no pasa.')
+                    );
+                }
+                if (!required.length) {
+                    return Promise.resolve(fromChecks);
+                }
+                var missing = required.filter(function (id) {
+                    return fromChecks.indexOf(id) === -1;
+                });
+                if (missing.length) {
+                    var needBoth =
+                        Chk.rulesByType(cachedReglasCategoria, 'characteristic').length > 0 &&
+                        Chk.rulesByType(cachedReglasCategoria, 'restriction').length > 0;
+                    var msg =
+                        needBoth && host2 && host2.classList.contains('hidden')
+                            ? 'Marca todas las características y pulsa «Siguiente» para las restricciones.'
+                            : 'Marca todas las reglas del checklist antes de registrar.';
+                    return Promise.reject(new Error(msg));
+                }
+                return fromChecks;
+            });
         }
 
         function buildPayloadRegistroVerificacion(teamId, validRules) {
@@ -679,17 +784,37 @@
                     if (!nombreEq) {
                         nombreEq = 'equipo #' + body.team_id;
                     }
-                    var valido = res && (res.is_valid === true || res.is_valid === 1);
-                    var titulo = valido ? 'Robot validado' : 'No validado';
-                    var mensaje = valido
-                        ? nombreEq + ' quedó validado.'
-                        : nombreEq + ' no quedó validado: faltan reglas por cumplir.';
+                    var valido =
+                        (res && (res.is_valid === true || res.is_valid === 1)) || verificacionCompleta(body);
+                    var futbol = isFutbolRegistro();
+                    var needTwo = futbol && robotsRequiredForRegistro() > 1;
                     var catId = resolveChecklistCategoryId();
+                    var titulo;
+                    var mensaje;
+                    var redirectCat = catId;
+
+                    if (!valido) {
+                        titulo = 'No validado';
+                        mensaje = nombreEq + ' no quedó validado: faltan reglas por cumplir.';
+                    } else if (needTwo && regRobotSlot < 2) {
+                        titulo = 'Robot 1 listo';
+                        mensaje = nombreEq + ': robot 1 registrado. Completa el checklist del robot 2.';
+                        redirectCat = null;
+                        modalPostContinueFutbol = true;
+                        regRobotSlot = 2;
+                    } else if (needTwo) {
+                        titulo = 'Equipo validado';
+                        mensaje = nombreEq + ': los 2 robots quedaron validados.';
+                    } else {
+                        titulo = 'Robot validado';
+                        mensaje = nombreEq + ' quedó validado.';
+                    }
+
                     showPostRegistroModal({
                         titulo: titulo,
                         mensaje: mensaje,
                         irAlInicio: false,
-                        redirectEquiposCategoryId: catId
+                        redirectEquiposCategoryId: redirectCat
                     });
                 },
                 onErr: function (err) {
@@ -700,6 +825,74 @@
                     });
                 }
             });
+        }
+
+        function showChecklistForRules(rules) {
+            var chars = Chk.rulesByType(rules, 'characteristic');
+            var rests = Chk.rulesByType(rules, 'restriction');
+            cachedRestrictionRules = rests;
+
+            if (!chars.length && !rests.length) {
+                showAvisoModal('Sin reglas', 'No hay reglas de verificación para esta categoría.');
+                return;
+            }
+
+            detalleOcultoTrasVerificar = true;
+            input.disabled = true;
+            panel.classList.add('hidden');
+            shell.classList.remove('hidden');
+            host1.innerHTML = '';
+            host2.innerHTML = '';
+            host1.classList.add('hidden');
+            host2.classList.add('hidden');
+            if (filaSig) {
+                filaSig.classList.remove('hidden');
+            }
+            filaReg.classList.add('hidden');
+            btnSig.disabled = true;
+            btnReg.disabled = true;
+
+            if (btnReg) {
+                btnReg.textContent =
+                    isFutbolRegistro() && robotsRequiredForRegistro() > 1
+                        ? 'Registrar robot ' + regRobotSlot
+                        : 'Registrar';
+            }
+
+            if (chars.length) {
+                host1.innerHTML = Chk.renderTable(
+                    chars,
+                    checklistRenderOpts('characteristic', 'Características', 'Característica')
+                );
+                host1.classList.remove('hidden');
+                if (rests.length) {
+                    if (filaSig) {
+                        filaSig.classList.remove('hidden');
+                    }
+                    filaReg.classList.add('hidden');
+                    btnSig.disabled = false;
+                } else {
+                    if (filaSig) {
+                        filaSig.classList.add('hidden');
+                    }
+                    filaReg.classList.remove('hidden');
+                    btnReg.disabled = false;
+                }
+                bindTabla1Checks();
+                return;
+            }
+
+            host2.innerHTML = Chk.renderTable(
+                rests,
+                checklistRenderOpts('restriction', 'Restricciones', 'Restricción')
+            );
+            host2.classList.remove('hidden');
+            if (filaSig) {
+                filaSig.classList.add('hidden');
+            }
+            filaReg.classList.remove('hidden');
+            btnReg.disabled = false;
+            bindTabla2Checks();
         }
 
         function onVerificarClick() {
@@ -713,65 +906,7 @@
             resetChecklistUi();
             loadCategoryRulesForChecklist()
                 .then(function (rules) {
-                    var catLabel = Chk.categoryLabelFromSection(section);
-                    var chars = Chk.rulesByType(rules, 'characteristic');
-                    var rests = Chk.rulesByType(rules, 'restriction');
-                    cachedRestrictionRules = rests;
-
-                    if (!chars.length && !rests.length) {
-                        showAvisoModal(
-                            'Sin reglas',
-                            'No hay reglas de verificación para esta categoría.'
-                        );
-                        return;
-                    }
-
-                    detalleOcultoTrasVerificar = true;
-                    input.disabled = true;
-                    panel.classList.add('hidden');
-                    shell.classList.remove('hidden');
-
-                    if (chars.length) {
-                        host1.innerHTML = Chk.renderTable(chars, {
-                            kicker: 'Checklist · ' + catLabel,
-                            title: 'Características',
-                            columnLabel: 'Característica',
-                            tableKind: 'characteristic'
-                        });
-                        host1.classList.remove('hidden');
-                        host2.innerHTML = '';
-                        host2.classList.add('hidden');
-                        if (rests.length) {
-                            if (filaSig) {
-                                filaSig.classList.remove('hidden');
-                            }
-                            filaReg.classList.add('hidden');
-                            btnSig.disabled = false;
-                        } else {
-                            if (filaSig) {
-                                filaSig.classList.add('hidden');
-                            }
-                            filaReg.classList.remove('hidden');
-                            btnReg.disabled = false;
-                        }
-                        bindTabla1Checks();
-                        return;
-                    }
-
-                    host1.classList.add('hidden');
-                    host2.innerHTML = Chk.renderTable(rests, {
-                        kicker: 'Checklist · ' + catLabel,
-                        title: 'Restricciones',
-                        columnLabel: 'Restricción',
-                        tableKind: 'restriction'
-                    });
-                    host2.classList.remove('hidden');
-                    if (filaSig) {
-                        filaSig.classList.add('hidden');
-                    }
-                    filaReg.classList.remove('hidden');
-                    btnReg.disabled = false;
-                    bindTabla2Checks();
+                    showChecklistForRules(rules);
                 })
                 .catch(function (err) {
                     showAvisoModal(
@@ -798,14 +933,11 @@
                 showRegistrarTrasChecklist();
                 return;
             }
-            var catLabel = Chk.categoryLabelFromSection(section);
             host1.classList.add('hidden');
-            host2.innerHTML = Chk.renderTable(cachedRestrictionRules, {
-                kicker: 'Checklist · ' + catLabel,
-                title: 'Restricciones',
-                columnLabel: 'Restricción',
-                tableKind: 'restriction'
-            });
+            host2.innerHTML = Chk.renderTable(
+                cachedRestrictionRules,
+                checklistRenderOpts('restriction', 'Restricciones', 'Restricción')
+            );
             host2.classList.remove('hidden');
             if (filaSig) {
                 filaSig.classList.add('hidden');
