@@ -41,9 +41,6 @@
             var ses = w.CRStaffSesion && w.CRStaffSesion.read();
             var role = ses && ses.role ? String(ses.role).toLowerCase() : '';
             if (role === 'registro') {
-                if (r === '/login') {
-                    return '#/registro';
-                }
                 if (r === '/match' || r.indexOf('/match/') === 0) {
                     return '#/registro';
                 }
@@ -234,7 +231,7 @@
         if (r === '/registro' || r.indexOf('/registro/') === 0) {
             return null;
         }
-        if (r === '/match' || r.indexOf('/match/') === 0 || r === '/login') {
+        if (r === '/match' || r.indexOf('/match/') === 0) {
             return '#/registro';
         }
         return null;

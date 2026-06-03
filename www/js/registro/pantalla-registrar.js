@@ -74,6 +74,8 @@
 
         /** Tras cerrar el modal: inicio, equipos de la categoría, o solo re-habilitar Registrar. */
         var modalPostIrAlInicio = false;
+        var modalPostContinueFutbol = false;
+        var regRobotSlot = 1;
         var modalPostRedirectEquiposCat = null;
         var modalConfirmOnAceptar = null;
         var cachedReglasCategoria = null;
