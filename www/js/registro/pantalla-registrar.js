@@ -523,6 +523,7 @@
             hideDescalificarModal();
             hideSpecModalT1();
             shell.classList.add('hidden');
+            shell.removeAttribute('data-cr-open');
             host1.innerHTML = '';
             host2.innerHTML = '';
             host1.classList.remove('hidden');
@@ -896,6 +897,7 @@
             input.disabled = true;
             panel.classList.add('hidden');
             shell.classList.remove('hidden');
+            shell.setAttribute('data-cr-open', '1');
             host1.innerHTML = '';
             host2.innerHTML = '';
             host1.classList.add('hidden');

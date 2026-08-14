@@ -1972,8 +1972,7 @@
     .cr-admin-error {
         @apply rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-800;
     }
-    .cr-admin-error.is-visible,
-    .cr-admin-error:not(.hidden) {
+    .cr-admin-error.is-visible {
         display: block !important;
     }
     .cr-admin-stats {
@@ -2483,30 +2482,31 @@ html.cr-registro-fit #cr-outlet {
     overscroll-behavior-y: contain;
 }
 
-/* Checklist visible: una sola zona de scroll alta (no 3 filas + scroll incómodo) */
-html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #cr-outlet {
+/* Checklist visible: una sola zona de scroll alta (no 3 filas + scroll incómodo).
+   data-cr-open: Tailwind reescribe :not(.hidden) y aplica este layout desde el inicio. */
+html.cr-registro-fit:has(#reg-checklist-shell[data-cr-open='1']) #cr-outlet {
     overflow: hidden;
 }
-html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root {
+html.cr-registro-fit:has(#reg-checklist-shell[data-cr-open='1']) #registrar-root {
     flex: 1 1 auto;
     min-height: 0;
     max-height: 100%;
 }
-html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #f-registro-equipo {
+html.cr-registro-fit:has(#reg-checklist-shell[data-cr-open='1']) #f-registro-equipo {
     flex: 1 1 auto;
     min-height: 0;
 }
-html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-page-head {
+html.cr-registro-fit:has(#reg-checklist-shell[data-cr-open='1']) #registrar-root .cr-page-head {
     padding-bottom: 0.25rem;
 }
-html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-page-lead {
+html.cr-registro-fit:has(#reg-checklist-shell[data-cr-open='1']) #registrar-root .cr-page-lead {
     display: none;
 }
-html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-page-title {
+html.cr-registro-fit:has(#reg-checklist-shell[data-cr-open='1']) #registrar-root .cr-page-title {
     font-size: 1.125rem;
     line-height: 1.25;
 }
-#reg-checklist-shell:not(.hidden) {
+#reg-checklist-shell[data-cr-open='1'] {
     flex: 1 1 auto;
     min-height: calc(100dvh - 7.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
 }
@@ -2580,7 +2580,7 @@ html.cr-registro-fit:has(#reg-checklist-shell:not(.hidden)) #registrar-root .cr-
     }
 }
 @media (min-width: 1024px) {
-    #reg-checklist-shell:not(.hidden) {
+    #reg-checklist-shell[data-cr-open='1'] {
         min-height: calc(100dvh - 8rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     }
     #reg-checklist-scroll {
