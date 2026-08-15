@@ -117,6 +117,18 @@
             return 1;
         }
 
+        function setChecklistOpen(on) {
+            if (on) {
+                shell.classList.remove('hidden');
+                shell.setAttribute('data-cr-open', '1');
+                document.documentElement.classList.add('cr-registro-checking');
+            } else {
+                shell.classList.add('hidden');
+                shell.removeAttribute('data-cr-open');
+                document.documentElement.classList.remove('cr-registro-checking');
+            }
+        }
+
         function checklistRenderOpts(tableKind, title, columnLabel) {
             var catLabel = Chk.categoryLabelFromSection(section);
             var opts = {
@@ -522,8 +534,7 @@
             hideConfirmModal();
             hideDescalificarModal();
             hideSpecModalT1();
-            shell.classList.add('hidden');
-            shell.removeAttribute('data-cr-open');
+            setChecklistOpen(false);
             host1.innerHTML = '';
             host2.innerHTML = '';
             host1.classList.remove('hidden');
@@ -896,8 +907,7 @@
             detalleOcultoTrasVerificar = true;
             input.disabled = true;
             panel.classList.add('hidden');
-            shell.classList.remove('hidden');
-            shell.setAttribute('data-cr-open', '1');
+            setChecklistOpen(true);
             host1.innerHTML = '';
             host2.innerHTML = '';
             host1.classList.add('hidden');
@@ -1028,6 +1038,7 @@
 
         return {
             cleanup: function () {
+                setChecklistOpen(false);
                 window.clearTimeout(detalleTimer);
                 U.bumpDetalleFetchGen();
                 U.setRegDetalleLoading(section, false);

@@ -111,6 +111,9 @@
                 w.CRIcons.decorate(outlet);
             }
             d.documentElement.classList.toggle('cr-registro-fit', name === 'registro/registrar');
+            if (name !== 'registro/registrar') {
+                d.documentElement.classList.remove('cr-registro-checking');
+            }
             var isLogin = name === 'public/login';
             var isVisitante = name === 'public/visitante';
             var isDiag = name === 'public/diag-feed';

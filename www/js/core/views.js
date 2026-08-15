@@ -37,7 +37,7 @@
         if (!outlet) {
             return;
         }
-        document.documentElement.classList.remove('cr-registro-fit', 'cr-tablero-ultra-only', 'cr-view-dashboard', 'cr-view-diag');
+        document.documentElement.classList.remove('cr-registro-fit', 'cr-registro-checking', 'cr-tablero-ultra-only', 'cr-view-dashboard', 'cr-view-diag');
         document.body.classList.remove('cr-view-dashboard', 'cr-view-diag');
         outlet.removeAttribute('data-cr-outlet-mode');
         outlet.innerHTML =
