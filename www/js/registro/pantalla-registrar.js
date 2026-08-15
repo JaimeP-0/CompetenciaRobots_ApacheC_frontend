@@ -31,7 +31,7 @@
         var btnVer = section.querySelector('#btn-reg-verificar');
         var btnSig = section.querySelector('#btn-reg-checklist-siguiente');
         var btnReg = section.querySelector('#btn-reg-registrar');
-        var btnPdf = section.querySelector('#btn-reg-pdf-checklist');
+        var pdfBtns = section.querySelectorAll('[id^="btn-reg-pdf-checklist"]');
         var scrollHost = section.querySelector('#reg-checklist-scroll');
         var modalPost = section.querySelector('#reg-modal-postregistro');
         var modalPostTitulo = section.querySelector('#reg-modal-postregistro-titulo');
@@ -1032,9 +1032,9 @@
         btnVer.addEventListener('click', onVerificarClick, false);
         btnSig.addEventListener('click', onSiguienteClick, false);
         btnReg.addEventListener('click', onRegistrarClick, false);
-        if (btnPdf) {
-            btnPdf.addEventListener('click', onPdfChecklistClick, false);
-        }
+        Array.prototype.forEach.call(pdfBtns, function (el) {
+            el.addEventListener('click', onPdfChecklistClick, false);
+        });
 
         return {
             cleanup: function () {
@@ -1055,9 +1055,9 @@
                 btnVer.removeEventListener('click', onVerificarClick, false);
                 btnSig.removeEventListener('click', onSiguienteClick, false);
                 btnReg.removeEventListener('click', onRegistrarClick, false);
-                if (btnPdf) {
-                    btnPdf.removeEventListener('click', onPdfChecklistClick, false);
-                }
+                Array.prototype.forEach.call(pdfBtns, function (el) {
+                    el.removeEventListener('click', onPdfChecklistClick, false);
+                });
                 resetChecklistUi();
             },
             onDetalleChange: onDetalleChange,
