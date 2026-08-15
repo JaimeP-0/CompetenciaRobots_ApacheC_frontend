@@ -122,6 +122,77 @@
         ctx.y = y + 12;
     }
 
+    function dash(s) {
+        var t = String(s == null ? '' : s).trim();
+        return t && t !== '—' ? t : '—';
+    }
+
+    function memberList(raw) {
+        if (Array.isArray(raw)) {
+            return raw
+                .map(function (m) {
+                    return String(m == null ? '' : m).trim();
+                })
+                .filter(function (s) {
+                    return s && s !== '—';
+                });
+        }
+        return String(raw == null ? '' : raw)
+            .split(/\n+/)
+            .map(function (s) {
+                return s.trim();
+            })
+            .filter(function (s) {
+                return s && s !== '—';
+            });
+    }
+
+    function drawTeamMeta(ctx, opts) {
+        var doc = ctx.doc;
+        var x = ctx.margin;
+        var y = ctx.y;
+        var w = ctx.contentW;
+        var members = memberList(opts.members);
+
+        function writeLabeled(label, value) {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9.5);
+            doc.setTextColor(0, 58, 140);
+            doc.text(label, x, y);
+            var labelW = doc.getTextWidth(label) + 6;
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(40, 40, 40);
+            var lines = doc.splitTextToSize(dash(value), w - labelW);
+            doc.text(lines, x + labelW, y);
+            y += Math.max(14, lines.length * 13);
+        }
+
+        writeLabeled('Líder:', opts.leader);
+        writeLabeled('Tutor:', opts.tutor);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9.5);
+        doc.setTextColor(0, 58, 140);
+        doc.text('Integrantes:', x, y);
+        y += 14;
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(40, 40, 40);
+        if (!members.length) {
+            doc.text('—', x + 12, y);
+            y += 14;
+        } else {
+            members.forEach(function (m, i) {
+                var wrapped = doc.splitTextToSize(i + 1 + '. ' + m, w - 12);
+                if (y + wrapped.length * 13 > 720) {
+                    doc.addPage();
+                    y = 48;
+                }
+                doc.text(wrapped, x + 12, y);
+                y += wrapped.length * 13;
+            });
+        }
+        ctx.y = y + 10;
+    }
+
     function checklistVerificacion(opts) {
         opts = opts || {};
         return logoBase64().then(function (logo) {
@@ -145,6 +216,7 @@
                 doc.text('Estado: validado', ctx.margin, ctx.y);
                 ctx.y += 16;
             }
+            drawTeamMeta(ctx, opts);
             drawCheckTable(ctx, opts.rows || []);
             doc.save(opts.filename || 'verificacion-equipo.pdf');
         });

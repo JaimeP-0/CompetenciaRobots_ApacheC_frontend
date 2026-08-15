@@ -195,9 +195,17 @@
             if (catId != null && w.CRApiCategorias && w.CRApiCategorias.labelById) {
                 catName = w.CRApiCategorias.labelById(catId) || '';
             }
+            function datoTexto(id) {
+                var el = section.querySelector('#' + id);
+                var t = el ? String(el.textContent || '').trim() : '';
+                return t === '—' ? '' : t;
+            }
             w.CRPdfEvento.checklistVerificacion({
                 teamName: teamName,
                 categoryName: catName,
+                leader: datoTexto('reg-dato-capitan'),
+                tutor: datoTexto('reg-dato-asesor'),
+                members: datoTexto('reg-dato-integrantes'),
                 rows: buildChecklistPdfRows(),
                 filename: 'verificacion-' + teamName.replace(/\s+/g, '-').toLowerCase() + '.pdf'
             }).catch(function (err) {
